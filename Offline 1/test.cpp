@@ -51,6 +51,7 @@ class SymbolInfo
 class ScopeTable{
     long long num_of_buckets;
     long long unique_id;
+    long long *bucketsizes;
     SymbolInfo **scope_table;
     ScopeTable *parent_scope;
     public:
@@ -59,9 +60,11 @@ class ScopeTable{
         this->num_of_buckets=num_of_buckets;
         parent_scope=NULL;
         scope_table= new SymbolInfo*[num_of_buckets];
+        bucketsizes=new long long[num_of_buckets];
         for(int i=0;i<num_of_buckets;i++)
         {
             scope_table[i]= NULL;
+            bucketsizes[i]=0;
         }
 
     }
@@ -71,9 +74,11 @@ class ScopeTable{
         parent_scope=parent;
         unique_id=id;
         scope_table= new SymbolInfo*[num_of_buckets];
+        bucketsizes=new long long[num_of_buckets];
         for(int i=0;i<num_of_buckets;i++)
         {
             scope_table[i]= NULL;
+            bucketsizes[i]=0;
         }
 
     }
@@ -139,6 +144,93 @@ class ScopeTable{
 
         }
         return NULL;
+    }
+    bool Insert(string nm,string tp)
+    {
+        SymbolInfo *temp= Lookup(nm);
+        if(temp!=NULL)
+        {
+            return false;
+        }
+        else
+        {
+            long long hash=index_gen(nm);
+            SymbolInfo *newsymbol = new SymbolInfo(nm,tp);
+            if(ScopeTable[hash]==NULL)
+            {
+                ScopeTable[hash]=newsymbol;
+                bucketsizes[hash]=1;
+                return true;
+            }
+            else
+            {
+                int position=0;
+                SymbolInfo *temp= ScopeTable[hash];
+                ++bucketsizes[hash];
+                while(temp->get_next()!=NULL)
+                {
+                    temp=temp->get_next();
+                    position++;
+                }
+                temp->set_next(newsymbol);
+                return true;
+            }
+        }
+    }
+    void print()
+    {   cout<<"ScopeTable # "<<unique_id<<endl;
+        for(int i=0;i<num_of_buckets;i++)
+        {
+            cout<<i<<"--> ";
+            SymbolInfo *temp=ScopeTable[i];
+            while(temp!=NULL)
+            {
+                cout<<"< "<<temp->get_name()<<" : "<<temp->get_type()<<" > ";
+                temp=temp->get_next();
+            }
+            cout<<endl;
+        }
+        cout<<endl;
+    }
+    bool Delete(string nm)
+    {
+        if(!Lookup(nm))
+        {
+            return false;
+        }
+
+        int hash=index_gen(nm);
+        SymbolInfo *target = ScopeTable[hash];
+        if(target->get_name()==nm)
+        {
+            scope_table[hash]=target->get_next();
+            --bucketsizes[hash];
+            return true;
+        }
+
+        SymbolInfo *prev;
+        long long position=0;
+        while(target!=NULL)
+        {
+            if(target->get_name()==nm)
+            {
+                prev->set_next(target->get_next());
+                break;
+            }
+            prev=target;
+            target= target->get_next();
+            position++;
+        }
+        --bucketsizes[hash];
+        return true;
+    }
+
+    ~ScopeTable()
+    {
+        for(int i=0;i<num_of_buckets;i++)
+        {
+            delete (ScopeTable[i]);
+        }
     }
 
 };
