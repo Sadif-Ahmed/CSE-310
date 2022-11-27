@@ -123,6 +123,23 @@ class ScopeTable{
         long long hash_value=hash_function(str);
         return hash_value%num_of_buckets;
     }
+    SymbolInfo* Lookup(string searchtext)
+    {
+        long long hash=index_gen(searchtext);
+        long long position=0;
+        SymbolInfo *temp= ScopeTable[hash];
+        while(temp!=NULL)
+        {
+            if(temp->get_name==searchtext)
+            {
+                 return temp;
+            }
+           temp=temp->get_next();
+           position++;
+
+        }
+        return NULL;
+    }
 
 };
 int main()
