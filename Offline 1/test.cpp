@@ -42,6 +42,10 @@ class SymbolInfo
     {
         this->next=temp;
     }
+    void print()
+    {
+        cout<<" < "<<name<<" , "<<type<<" > "<<endl;
+    }
     ~SymbolInfo()
     {
 
@@ -54,6 +58,7 @@ class ScopeTable{
     long long *bucketsizes;
     SymbolInfo **scope_table;
     ScopeTable *parent_scope;
+    int pr;
     public:
     ScopeTable(long long num_of_buckets)
     {
@@ -66,6 +71,7 @@ class ScopeTable{
             scope_table[i]= NULL;
             bucketsizes[i]=0;
         }
+        pr=true;
 
     }
     ScopeTable(long long num_of_buckets,long long id,ScopeTable* parent)
@@ -80,6 +86,7 @@ class ScopeTable{
             scope_table[i]= NULL;
             bucketsizes[i]=0;
         }
+        pr=true;
 
     }
     long long get_num_of_buckets()
@@ -114,6 +121,18 @@ class ScopeTable{
     {
         this->parent_scope=temp;
     }
+    void toggle_print()
+    {
+        if(pr==true)
+        {
+            pr=false;
+        }
+        else
+        {
+            pr=true;
+        }
+
+    }
     long long hash_function(string str)
     {
         long long hash=0;
@@ -132,22 +151,31 @@ class ScopeTable{
     {
         long long hash=index_gen(searchtext);
         long long position=0;
-        SymbolInfo *temp= ScopeTable[hash];
+        SymbolInfo *temp= scope_table[hash];
         while(temp!=NULL)
         {
-            if(temp->get_name==searchtext)
-            {
+            if(temp->get_name()==searchtext)
+            {   
+                if(pr)
+                {
+                    cout<<"Found at Scopetable  "<<unique_id<<" at index "<<hash+1<<" at position "<<position<<endl;
+                }
                  return temp;
             }
            temp=temp->get_next();
            position++;
 
         }
+        if(pr)
+        {
+            cout<<searchtext<<" Not Found in ScopeTable "<<unique_id;
+        }
         return NULL;
     }
     bool Insert(string nm,string tp)
-    {
+    {   toggle_print();
         SymbolInfo *temp= Lookup(nm);
+        toggle_print();
         if(temp!=NULL)
         {
             return false;
@@ -156,16 +184,16 @@ class ScopeTable{
         {
             long long hash=index_gen(nm);
             SymbolInfo *newsymbol = new SymbolInfo(nm,tp);
-            if(ScopeTable[hash]==NULL)
+            if(scope_table[hash]==NULL)
             {
-                ScopeTable[hash]=newsymbol;
+                scope_table[hash]=newsymbol;
                 bucketsizes[hash]=1;
                 return true;
             }
             else
             {
                 int position=0;
-                SymbolInfo *temp= ScopeTable[hash];
+                SymbolInfo *temp= scope_table[hash];
                 ++bucketsizes[hash];
                 while(temp->get_next()!=NULL)
                 {
@@ -181,8 +209,8 @@ class ScopeTable{
     {   cout<<"ScopeTable # "<<unique_id<<endl;
         for(int i=0;i<num_of_buckets;i++)
         {
-            cout<<i<<"--> ";
-            SymbolInfo *temp=ScopeTable[i];
+            cout<<i+1<<"--> ";
+            SymbolInfo *temp=scope_table[i];
             while(temp!=NULL)
             {
                 cout<<"< "<<temp->get_name()<<" : "<<temp->get_type()<<" > ";
@@ -193,14 +221,15 @@ class ScopeTable{
         cout<<endl;
     }
     bool Delete(string nm)
-    {
+    { toggle_print();
         if(!Lookup(nm))
         {
             return false;
         }
+        toggle_print();
 
         int hash=index_gen(nm);
-        SymbolInfo *target = ScopeTable[hash];
+        SymbolInfo *target = scope_table[hash];
         if(target->get_name()==nm)
         {
             scope_table[hash]=target->get_next();
@@ -229,12 +258,28 @@ class ScopeTable{
     {
         for(int i=0;i<num_of_buckets;i++)
         {
-            delete (ScopeTable[i]);
+            delete (scope_table[i]);
         }
     }
 
 };
 int main()
 {
-    cout<<"Hello"<<endl;
+    SymbolInfo X("sadif","variable");
+    X.print();
+    ScopeTable M(10);
+    M.print();
+    M.Insert("sadif","variable");
+    M.Insert("karim","function");
+    M.Insert("rahim","variable");
+    SymbolInfo *Z = M.Lookup("Jamal");
+    if(Z!=NULL)
+    {
+    Z->print();
+    }
+    else
+    {
+        cout<<"Not Found"<<endl;
+    }
+    M.print();
 }
