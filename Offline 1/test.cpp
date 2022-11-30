@@ -158,7 +158,7 @@ class ScopeTable{
             {   
                 if(pr)
                 {
-                    cout<<"Found at Scopetable  "<<unique_id<<" at index "<<hash+1<<" at position "<<position<<endl;
+                    cout<<"Found at Scopetable  "<<unique_id<<" at index "<<hash+1<<" at position "<<position+1<<endl;
                 }
                  return temp;
             }
@@ -261,18 +261,158 @@ class ScopeTable{
             delete (scope_table[i]);
         }
     }
+    };
+    class SymbolTable
+    {
+        ScopeTable *current;
+        ScopeTable *head;
+        long long max_bucket_size;
+        long long current_id_gen;
+        public:
+        SymbolTable(long long bucket_size)
+        {
+            max_bucket_size=bucket_size;
+            current_id_gen=1;
+            head=NULL;
+            current=NULL;
+            Enter_Scope(bucket_size);
+        }
+        ScopeTable* get_current()
+        {
+            return current;
+        }
+        ScopeTable* get_head()
+        {
+            return head;
+        }
+        void set_current(ScopeTable *temp)
+        {
+            current=temp;
+        }
+        void set_head(ScopeTable *temp)
+        {
+            head=temp;
+        }
+        long long get_max_bucket_size()
+        {
+            return max_bucket_size;
+        }
+        void set_max_bucket_size(long long n)
+        {
+            max_bucket_size=n;
+        }
+        long long get_current_id()
+        {
+            return current_id_gen;
+        }
+        void set_current_id_gen(long long n)
+        {
+            current_id_gen=n;
+        }
+        void Enter_Scope()
+        { 
+            ScopeTable *newtable;
+            if(head!=NULL)
+            {
+                newtable = new ScopeTable(max_bucket_size,current_id_gen+1,current);
+            }
+            else
+            {
+                newtable = new ScopeTable(max_bucket_size,current_id_gen+1,current);
+                head=newtable;
+            }
+            current_id_gen++;
+            current=newtable;
 
-};
+        }
+        void Enter_Scope(long long bucket_size)
+        {
+            ScopeTable *newtable;
+            if(head!=NULL)
+            {
+                newtable = new ScopeTable(bucket_size,current_id_gen+1,current);
+            }
+            else
+            {
+                newtable = new ScopeTable(bucket_size,current_id_gen+1,current);
+                head=newtable;
+            }
+            current_id_gen++;
+            current=newtable;
+        }
+        void Exit_Scope()
+        {
+            if(current!=head)
+            {
+                current=current->get_parentscope();
+            }
+            else
+            {
+                current=NULL;
+                head=NULL;
+            }
+        }
+        bool Insert(string name,string type)
+        {
+            return current->Insert(name,type);
+        }
+        bool Remove(string name)
+        {
+            return current->Delete(name);
+        }
+        SymbolInfo* Lookup(string name)
+        {
+            ScopeTable *temp=current;
+            while (temp)
+            {
+                temp->toggle_print();
+                if(temp->Lookup(name))
+                {
+                    temp->toggle_print();
+                    return temp->Lookup(name);
+                }
+                else{
+                    temp=temp->get_parentscope();
+                }
+            }
+           return NULL;
+            
+        }
+        void print_current_scope()
+        {
+            current->print();
+        }
+        void printall()
+        {
+            ScopeTable *temp=current;
+            while(temp)
+            {
+                temp->print();
+                temp=temp->get_parentscope();
+            }
+        }
+        void clear_recursively(ScopeTable *temp)
+        {
+            if(temp==NULL)
+            {
+                return;
+            }
+            clear_recursively(temp->get_parentscope());
+            delete temp;
+        }
+        ~SymbolTable()
+        {
+            clear_recursively(current);
+        }
+         }
+    ;
 int main()
 {
-    SymbolInfo X("sadif","variable");
-    X.print();
-    ScopeTable M(10);
+    ScopeTable M(7);
     M.print();
-    M.Insert("sadif","variable");
-    M.Insert("karim","function");
-    M.Insert("rahim","variable");
-    SymbolInfo *Z = M.Lookup("Jamal");
+    M.Insert("i","variable");
+    M.Insert("foo","function");
+    SymbolInfo *Z = M.Lookup("i");
     if(Z!=NULL)
     {
     Z->print();
