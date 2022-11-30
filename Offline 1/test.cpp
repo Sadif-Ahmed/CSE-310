@@ -168,7 +168,7 @@ class ScopeTable{
         }
         if(pr)
         {
-            cout<<searchtext<<" Not Found in ScopeTable "<<unique_id;
+            cout<<searchtext<<" Not Found in ScopeTable "<<unique_id<<endl;
         }
         return NULL;
     }
@@ -178,6 +178,7 @@ class ScopeTable{
         toggle_print();
         if(temp!=NULL)
         {
+             cout<<"<"<<nm<<","<<temp->get_type()<<">"<<" already exists in current ScopeTable"<<endl;
             return false;
         }
         else
@@ -188,6 +189,7 @@ class ScopeTable{
             {
                 scope_table[hash]=newsymbol;
                 bucketsizes[hash]=1;
+                cout<<"Inserted in ScopeTable# "<<unique_id<<" at position "<<hash+1<<", 1"<<endl;
                 return true;
             }
             else
@@ -201,6 +203,7 @@ class ScopeTable{
                     position++;
                 }
                 temp->set_next(newsymbol);
+                cout<<"Inserted in ScopeTable# "<<unique_id<<" at position "<<hash+1<<", "<<position+1<<endl;
                 return true;
             }
         }
@@ -234,6 +237,7 @@ class ScopeTable{
         {
             scope_table[hash]=target->get_next();
             --bucketsizes[hash];
+            cout<<"Deleted Entry "<<hash+1<<", 1 from current ScopeTable"<<endl;
             return true;
         }
 
@@ -244,6 +248,7 @@ class ScopeTable{
             if(target->get_name()==nm)
             {
                 prev->set_next(target->get_next());
+                cout<<"Deleted entry at "<<hash<<", "<<position+1<<" from current ScopeTable"<<endl;
                 break;
             }
             prev=target;
@@ -260,6 +265,7 @@ class ScopeTable{
         {
             delete (scope_table[i]);
         }
+        cout<<"Scopetable with id  "<<unique_id<<"  deleted  "<<endl;
     }
     };
     class SymbolTable
@@ -314,11 +320,12 @@ class ScopeTable{
             ScopeTable *newtable;
             if(head!=NULL)
             {
-                newtable = new ScopeTable(max_bucket_size,current_id_gen+1,current);
+                newtable = new ScopeTable(max_bucket_size,current_id_gen,current);
+            cout<<"New ScopeTable with id "<<current_id_gen<<" created"<<endl;
             }
             else
             {
-                newtable = new ScopeTable(max_bucket_size,current_id_gen+1,current);
+                newtable = new ScopeTable(max_bucket_size,current_id_gen,current);
                 head=newtable;
             }
             current_id_gen++;
@@ -330,11 +337,11 @@ class ScopeTable{
             ScopeTable *newtable;
             if(head!=NULL)
             {
-                newtable = new ScopeTable(bucket_size,current_id_gen+1,current);
+                newtable = new ScopeTable(bucket_size,current_id_gen,current);
             }
             else
             {
-                newtable = new ScopeTable(bucket_size,current_id_gen+1,current);
+                newtable = new ScopeTable(bucket_size,current_id_gen,NULL);
                 head=newtable;
             }
             current_id_gen++;
@@ -344,12 +351,12 @@ class ScopeTable{
         {
             if(current!=head)
             {
+                cout<<"ScopeTable with id "<<current->get_unique_id()<<" removed"<<endl;
                 current=current->get_parentscope();
             }
             else
             {
-                current=NULL;
-                head=NULL;
+               cout<<"You can not delete the base scope"<<endl;
             }
         }
         bool Insert(string name,string type)
@@ -408,18 +415,18 @@ class ScopeTable{
     ;
 int main()
 {
-    ScopeTable M(7);
-    M.print();
-    M.Insert("i","variable");
-    M.Insert("foo","function");
-    SymbolInfo *Z = M.Lookup("i");
-    if(Z!=NULL)
-    {
-    Z->print();
-    }
-    else
-    {
-        cout<<"Not Found"<<endl;
-    }
-    M.print();
+    /*
+    SymbolTable S(7);
+    S.Insert("i","Variable");
+    S.Insert("foo","function");
+    S.Enter_Scope();
+    S.Insert("damn","variable");
+    S.Insert("fucck","function");
+    S.printall();
+    S.Lookup("damn");
+    S.Lookup("i");
+    S.Exit_Scope();
+    S.Exit_Scope();
+    return 0;
+    */
 }
