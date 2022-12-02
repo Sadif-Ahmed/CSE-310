@@ -46,7 +46,7 @@ class SymbolInfo
     }
     void print()
     {
-        cout<<" < "<<name<<" , "<<type<<" > "<<endl;
+        cout<<'\t'<<" < "<<name<<" , "<<type<<" > "<<endl;
     }
     ~SymbolInfo()
     {
@@ -160,7 +160,7 @@ class ScopeTable{
             {   
                 if(pr)
                 {
-                    cout<<"'"<<searchtext<<"'"<<" found in Scopetable# "<<unique_id<<" at position "<<hash+1<<", "<<position+1<<endl;
+                    cout<<'\t'<<"'"<<searchtext<<"'"<<" found in ScopeTable# "<<unique_id<<" at position "<<hash+1<<", "<<position+1<<endl;
                 }
                  return temp;
             }
@@ -176,7 +176,7 @@ class ScopeTable{
         toggle_print();
         if(temp!=NULL)
         {
-             cout<<"'"<<nm<<"' "<<"already exists in the current ScopeTable"<<endl;
+             cout<<'\t'<<"'"<<nm<<"' "<<"already exists in the current ScopeTable"<<endl;
             return false;
         }
         else
@@ -187,30 +187,28 @@ class ScopeTable{
             {
                 scope_table[hash]=newsymbol;
                 bucketsizes[hash]=1;
-                cout<<"Inserted in ScopeTable# "<<unique_id<<" at position "<<hash+1<<", 1"<<endl;
+                cout<<'\t'<<"Inserted in ScopeTable# "<<unique_id<<" at position "<<hash+1<<", "<<bucketsizes[hash]<<endl;
                 return true;
             }
             else
             {
-                int position=0;
                 SymbolInfo *temp= scope_table[hash];
                 ++bucketsizes[hash];
                 while(temp->get_next()!=NULL)
                 {
                     temp=temp->get_next();
-                    position++;
                 }
                 temp->set_next(newsymbol);
-                cout<<"Inserted in ScopeTable# "<<unique_id<<" at position "<<hash+1<<", "<<position+1<<endl;
+                cout<<'\t'<<"Inserted in ScopeTable# "<<unique_id<<" at position "<<hash+1<<", "<<bucketsizes[hash]<<endl;
                 return true;
             }
         }
     }
     void print()
-    {   cout<<"ScopeTable# "<<unique_id<<endl;
+    {   cout<<'\t'<<"ScopeTable# "<<unique_id<<endl;
         for(int i=0;i<num_of_buckets;i++)
         {
-            cout<<"    "<<i+1<<"--> ";
+            cout<<'\t'<<i+1<<"--> ";
             SymbolInfo *temp=scope_table[i];
             while(temp!=NULL)
             {
@@ -225,7 +223,7 @@ class ScopeTable{
     { toggle_print();
         if(!Lookup(nm))
         { 
-            cout<<"Not found in the current ScopeTable"<<endl;
+            cout<<'\t'<<"Not found in the current ScopeTable"<<endl;
             return false;
         }
         toggle_print();
@@ -236,7 +234,7 @@ class ScopeTable{
         {
             scope_table[hash]=target->get_next();
             --bucketsizes[hash];
-            cout<<"Deleted "<<"'"<<nm<<"' from ScopeTable# "<<unique_id<<"at position"<<hash+1<<", 1"<<endl;
+            cout<<'\t'<<"Deleted "<<"'"<<nm<<"' from ScopeTable# "<<unique_id<<" at position "<<hash+1<<", 1"<<endl;
             return true;
         }
 
@@ -247,7 +245,7 @@ class ScopeTable{
             if(target->get_name()==nm)
             {
                 prev->set_next(target->get_next());
-                cout<<"Deleted "<<"'"<<nm<<"' from ScopeTable# "<<unique_id<<"at position"<<hash+1<<", "<<position+1<<endl;
+                cout<<'\t'<<"Deleted "<<"'"<<nm<<"' from ScopeTable# "<<unique_id<<" at position "<<hash+1<<", "<<position+1<<endl;
                 break;
             }
             prev=target;
@@ -264,7 +262,7 @@ class ScopeTable{
         {
             delete (scope_table[i]);
         }
-        cout<<"ScopeTable# "<<unique_id<<" removed"<<endl;
+        cout<<'\t'<<"ScopeTable# "<<unique_id<<" removed"<<endl;
     }
     };
     class SymbolTable
@@ -320,12 +318,12 @@ class ScopeTable{
             if(head!=NULL)
             {
                 newtable = new ScopeTable(max_bucket_size,current_id_gen,current);
-            cout<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
+            cout<<'\t'<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
             }
             else
             {
                 newtable = new ScopeTable(max_bucket_size,current_id_gen,current);
-                cout<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
+                cout<<'\t'<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
                 head=newtable;
             }
             current_id_gen++;
@@ -338,13 +336,13 @@ class ScopeTable{
             if(head!=NULL)
             {
                 newtable = new ScopeTable(bucket_size,current_id_gen,current);
-            cout<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
+            cout<<'\t'<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
             }
             else
             {
                 newtable = new ScopeTable(bucket_size,current_id_gen,NULL);
                 head=newtable;
-                cout<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
+                cout<<'\t'<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
             }
             current_id_gen++;
             current=newtable;
@@ -353,12 +351,12 @@ class ScopeTable{
         {
             if(current!=head)
             {
-                cout<<"ScopeTable# "<<current->get_unique_id()<<" removed"<<endl;
+                cout<<'\t'<<"ScopeTable# "<<current->get_unique_id()<<" removed"<<endl;
                 current=current->get_parentscope();
             }
             else
             {
-               cout<<"ScopeTable# "<<current->get_unique_id()<<" cannot be removed"<<endl;
+               cout<<'\t'<<"ScopeTable# "<<current->get_unique_id()<<" cannot be removed"<<endl;
             }
         }
         bool Insert(string name,string type)
@@ -383,7 +381,7 @@ class ScopeTable{
                 else{
                     if(temp==head)
                     {
-                        cout<<"'"<<name<<"' "<<"not found in any of the ScopeTables"<<endl;
+                        cout<<'\t'<<"'"<<name<<"' "<<"not found in any of the ScopeTables"<<endl;
                     }
                     temp->toggle_print();
                     temp=temp->get_parentscope();
@@ -474,7 +472,7 @@ int main()
         }
         abc[count++]=str;
         cout<<"Cmd "<<cmdcount-1<<": "<<tempstring<<endl;
-        cout<<"    ";
+        
         if(abc[0]=="I" && count==3)
         {
             S.Insert(abc[1],abc[2]);
@@ -499,7 +497,7 @@ int main()
             }
             else
             {
-                cout<<"Number of parameters mismatch for the command "<<abc[0]<<endl;
+                cout<<'\t'<<"Number of parameters mismatch for the command "<<abc[0]<<endl;
             }
 
         }
@@ -517,7 +515,7 @@ int main()
         }
         else
         {
-            cout<<"Number of parameters mismatch for the command "<<abc[0]<<endl;
+            cout<<'\t'<<"Number of parameters mismatch for the command "<<abc[0]<<endl;
         }
         
         }
