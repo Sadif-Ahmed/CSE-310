@@ -1,5 +1,7 @@
 #include<iostream>
 #include<bits/stdc++.h>
+#include<fstream>
+#include<string>
 using namespace std;
 
 class SymbolInfo
@@ -166,10 +168,6 @@ class ScopeTable{
            position++;
 
         }
-        if(pr)
-        {
-            cout<<searchtext<<" Not Found in ScopeTable "<<unique_id<<endl;
-        }
         return NULL;
     }
     bool Insert(string nm,string tp)
@@ -212,7 +210,7 @@ class ScopeTable{
     {   cout<<"ScopeTable# "<<unique_id<<endl;
         for(int i=0;i<num_of_buckets;i++)
         {
-            cout<<i+1<<"--> ";
+            cout<<"    "<<i+1<<"--> ";
             SymbolInfo *temp=scope_table[i];
             while(temp!=NULL)
             {
@@ -387,6 +385,7 @@ class ScopeTable{
                     {
                         cout<<"'"<<name<<"' "<<"not found in any of the ScopeTables"<<endl;
                     }
+                    temp->toggle_print();
                     temp=temp->get_parentscope();
                 }
             }
@@ -418,11 +417,24 @@ class ScopeTable{
             }
             delete temp;
         }
-         }
-    ;
+         };
+        int num_words(string s)
+        {
+            int count=0;
+            for(auto x:s)
+        {
+            if(x==' ')
+            {
+               count++;
+            }
+        }
+        count++;
+        return count;
+
+        }
 int main()
 {
-    
+ /*   
     SymbolTable S(7);
     S.Insert("i","Variable");
     S.Insert("foo","function");
@@ -432,6 +444,84 @@ int main()
     S.printall();
     S.Lookup("damn");
     S.Lookup("i");
+   */
+    fstream tempfile;
+    string tempstring;
+    freopen("testinput.txt","r+",stdin);
+    freopen("testoutput.txt","w+",stdout);
+    getline(cin, tempstring);
+    SymbolTable S(stoi(tempstring));
+    long long cmdcount=1;
+     
+      while(getline(cin, tempstring)){ 
+        cmdcount++;
+        
+            string * abc= new string[num_words(tempstring)];
+            string str;
+            int count=0;
+
+            for(int i=0;i<tempstring.size();i++)
+        {
+            if(tempstring[i]==' ')
+            {
+                abc[count++]=str;
+                 str.erase();
+            }
+            
+            else
+                  str=str+tempstring[i];
+      
+        }
+        abc[count++]=str;
+        cout<<"Cmd "<<cmdcount-1<<": "<<tempstring<<endl;
+        cout<<"    ";
+        if(abc[0]=="I" && count==3)
+        {
+            S.Insert(abc[1],abc[2]);
+        }
+        else if (abc[0]=="L" && count==2)
+        {
+            S.Lookup(abc[1]);
+        }
+        else if(abc[0]=="D" && count==2)
+        {
+            S.Remove(abc[1]);
+        }
+        else if(abc[0]=="P" && count==2)
+        {
+            if(abc[1]=="A")
+            {
+                S.printall();
+            }
+            else if(abc[1]=="C")
+            {
+                S.print_current_scope();
+            }
+            else
+            {
+                cout<<"Number of parameters mismatch for the command "<<abc[0]<<endl;
+            }
+
+        }
+        else if(abc[0]=="S" && count==1)
+        {
+            S.Enter_Scope();
+        }
+        else if(abc[0]=="E" && count==1)
+        {
+            S.Exit_Scope();
+        }
+        else if(abc[0]=="Q" && count==1)
+        {
+            break;
+        }
+        else
+        {
+            cout<<"Number of parameters mismatch for the command "<<abc[0]<<endl;
+        }
+        
+        }
+   
     return 0;
     
 }
