@@ -158,7 +158,7 @@ class ScopeTable{
             {   
                 if(pr)
                 {
-                    cout<<"Found at Scopetable  "<<unique_id<<" at index "<<hash+1<<" at position "<<position+1<<endl;
+                    cout<<"'"<<searchtext<<"'"<<" found in Scopetable# "<<unique_id<<" at position "<<hash+1<<", "<<position+1<<endl;
                 }
                  return temp;
             }
@@ -178,7 +178,7 @@ class ScopeTable{
         toggle_print();
         if(temp!=NULL)
         {
-             cout<<"<"<<nm<<","<<temp->get_type()<<">"<<" already exists in current ScopeTable"<<endl;
+             cout<<"'"<<nm<<"' "<<"already exists in the current ScopeTable"<<endl;
             return false;
         }
         else
@@ -209,24 +209,25 @@ class ScopeTable{
         }
     }
     void print()
-    {   cout<<"ScopeTable # "<<unique_id<<endl;
+    {   cout<<"ScopeTable# "<<unique_id<<endl;
         for(int i=0;i<num_of_buckets;i++)
         {
             cout<<i+1<<"--> ";
             SymbolInfo *temp=scope_table[i];
             while(temp!=NULL)
             {
-                cout<<"< "<<temp->get_name()<<" : "<<temp->get_type()<<" > ";
+                cout<<"<"<<temp->get_name()<<","<<temp->get_type()<<"> ";
                 temp=temp->get_next();
             }
             cout<<endl;
         }
-        cout<<endl;
+        
     }
     bool Delete(string nm)
     { toggle_print();
         if(!Lookup(nm))
-        {
+        { 
+            cout<<"Not found in the current ScopeTable"<<endl;
             return false;
         }
         toggle_print();
@@ -237,7 +238,7 @@ class ScopeTable{
         {
             scope_table[hash]=target->get_next();
             --bucketsizes[hash];
-            cout<<"Deleted Entry "<<hash+1<<", 1 from current ScopeTable"<<endl;
+            cout<<"Deleted "<<"'"<<nm<<"' from ScopeTable# "<<unique_id<<"at position"<<hash+1<<", 1"<<endl;
             return true;
         }
 
@@ -248,7 +249,7 @@ class ScopeTable{
             if(target->get_name()==nm)
             {
                 prev->set_next(target->get_next());
-                cout<<"Deleted entry at "<<hash<<", "<<position+1<<" from current ScopeTable"<<endl;
+                cout<<"Deleted "<<"'"<<nm<<"' from ScopeTable# "<<unique_id<<"at position"<<hash+1<<", "<<position+1<<endl;
                 break;
             }
             prev=target;
@@ -265,7 +266,7 @@ class ScopeTable{
         {
             delete (scope_table[i]);
         }
-        cout<<"Scopetable with id  "<<unique_id<<"  deleted  "<<endl;
+        cout<<"ScopeTable# "<<unique_id<<" removed"<<endl;
     }
     };
     class SymbolTable
@@ -321,11 +322,12 @@ class ScopeTable{
             if(head!=NULL)
             {
                 newtable = new ScopeTable(max_bucket_size,current_id_gen,current);
-            cout<<"New ScopeTable with id "<<current_id_gen<<" created"<<endl;
+            cout<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
             }
             else
             {
                 newtable = new ScopeTable(max_bucket_size,current_id_gen,current);
+                cout<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
                 head=newtable;
             }
             current_id_gen++;
@@ -338,11 +340,13 @@ class ScopeTable{
             if(head!=NULL)
             {
                 newtable = new ScopeTable(bucket_size,current_id_gen,current);
+            cout<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
             }
             else
             {
                 newtable = new ScopeTable(bucket_size,current_id_gen,NULL);
                 head=newtable;
+                cout<<"ScopeTable# "<<current_id_gen<<" created"<<endl;
             }
             current_id_gen++;
             current=newtable;
@@ -351,12 +355,12 @@ class ScopeTable{
         {
             if(current!=head)
             {
-                cout<<"ScopeTable with id "<<current->get_unique_id()<<" removed"<<endl;
+                cout<<"ScopeTable# "<<current->get_unique_id()<<" removed"<<endl;
                 current=current->get_parentscope();
             }
             else
             {
-               cout<<"You can not delete the base scope"<<endl;
+               cout<<"ScopeTable# "<<current->get_unique_id()<<" cannot be removed"<<endl;
             }
         }
         bool Insert(string name,string type)
@@ -379,6 +383,10 @@ class ScopeTable{
                     return temp->Lookup(name);
                 }
                 else{
+                    if(temp==head)
+                    {
+                        cout<<"'"<<name<<"' "<<"not found in any of the ScopeTables"<<endl;
+                    }
                     temp=temp->get_parentscope();
                 }
             }
@@ -398,24 +406,23 @@ class ScopeTable{
                 temp=temp->get_parentscope();
             }
         }
-        void clear_recursively(ScopeTable *temp)
-        {
-            if(temp==NULL)
-            {
-                return;
-            }
-            clear_recursively(temp->get_parentscope());
-            delete temp;
-        }
+        
         ~SymbolTable()
         {
-            clear_recursively(current);
+           ScopeTable *temp=current;
+            while (temp)
+            {
+               ScopeTable *x=temp->get_parentscope();
+               delete temp;
+               temp=x;
+            }
+            delete temp;
         }
          }
     ;
 int main()
 {
-    /*
+    
     SymbolTable S(7);
     S.Insert("i","Variable");
     S.Insert("foo","function");
@@ -425,8 +432,6 @@ int main()
     S.printall();
     S.Lookup("damn");
     S.Lookup("i");
-    S.Exit_Scope();
-    S.Exit_Scope();
     return 0;
-    */
+    
 }
