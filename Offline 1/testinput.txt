@@ -1,41 +1,42 @@
-7
-I foo FUNCTION
-I i VAR
-L i
-L i j
-L j
-I 23 NUMBER
+5
+I cachar VAR
+I haildakandi VAR
+I < RELOP
+I buet
+I 
+I Karimganj is a FUNCTION
+I getDistrictName FUNCTION
+I false BOOL
 P C
-D i
-D j
-P A
 S
-I <= RELOP
-I == RELOP
+L cachar
+D cachar
+I cachar VAR
+L cachar
+I = RELOP
 P A
-I >= RELOP
+D <
+D =
 P C
-I <= RELOP
-I foo FUNCTION
-D ==
-D 23
-D
-P A
-L 23
-S
-I x VAR
-I y VAR
-P A
-L foo
 E
-I num VAR
+P A
 S
-I true BOOL
+I a VAR
+I print FUNCTION
+S
+I a VAR
+I scan FUNCTION
+S
+I a VAR
+I > RELOP
 I a
 P A
-E
-E
-E
+L haildakandi VAR
+L haildakandi
+L print
+D
+D a
+P C
 S
 P A
 Q

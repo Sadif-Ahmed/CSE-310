@@ -141,6 +141,7 @@ class ScopeTable{
         for(long long i=0;i<str.length();i++)
         {
             hash = (str[i]) + (hash << 6) + (hash << 16) - hash;
+            hash=hash%num_of_buckets;
         }
         return hash;
     }
