@@ -10,8 +10,8 @@
     #include "SymbolTable.h"
     using namespace std;
 
-    long line_count=1;
-    long error_count=0;
+    int line_count=1;
+    int error_count=0;
     string comment="";
 
     FILE *log = fopen("log.txt","w");
@@ -22,7 +22,7 @@
 
     pair<string,int> string_manipulation(string str)
     {
-        long temp_l = line_count;
+        int temp_l = line_count;
         string temp_s;
         for(int i=0,i<str.size();i++)
         {
@@ -34,7 +34,7 @@
             {
                 continue;
             }
-            long flag=0;
+            int flag=0;
             if(str[i]=='\\' && str[i+1]=='n')
             {
                 temp_s.push_back('\n');
@@ -210,8 +210,17 @@ UNFINISHED_COMMENT "/*"({ANYTHING_EXCEPT_STAR}|{STAR_FOLLOWED_BY_ANYTHING_EXCEPT
 /*MULTI CHARACTER ERROR EXAMPLE:‘ab’ */
 MULTI_CHAR_ERROR '(({NORMAL_CHAR_FOR_ERR}|{SPECIAL_CHAR_FOR_ERR})+)'
 
-/*RULES SECTION*/
+/*EMPTY*/
+EMPTY_CHAR_ERROR ('')
 
+/*UNFINISHED STRING*/
+UNFINISHED_STRING_ERROR (\"([^\"\n]|(\\[\n])|(\\\"))*)
+
+/*UNRECOGNISED CHARACTER*/
+UNRECOGNISED_CHAR_ERROR [^\n]
+
+/*RULES SECTION*/
+%%
 {WHITESPACE} {}
 
 {NEWLINE} {line_count++}
@@ -222,7 +231,7 @@ BEGIN comment_state;
 comment += yytext;
 }
 {SINGLE_LINE_COMMENT} {
-    long temp = line_count;
+    int temp = line_count;
     for(int i=0;i<yytext.length();i++)
         {
             if(yytext[i]=='\n')
@@ -233,7 +242,7 @@ comment += yytext;
         fprintf(log,"Line# %d: Token <COMMENT> Lexeme %s found\n\n",temp,yytext)
 }
 <comment_state>"*/"{
-    long temp=line_count;
+    int temp=line_count;
     comment += yytext;
 
     for(int i=0;i<yytext.length();i++)
@@ -252,7 +261,7 @@ comment += yytext;
 }
 <comment_state><<EOF>>{
     error_count++;
-    long temp= line_count;
+    int temp= line_count;
      for(int i=0;i<yytext.length();i++)
         {
             if(yytext[i]=='\n')
@@ -260,7 +269,7 @@ comment += yytext;
                 line_count++;
             }
         }
-        fprintf(logfile,"Error at line# %d: Unfinished comment %s\n\n",temp,comment.c_str());
+        fprintf(log,"Error at line# %d: Unfinished comment %s\n\n",temp,comment.c_str());
         return 0;
 }
 {INT_TOKEN}{
@@ -341,6 +350,242 @@ comment += yytext;
         }
         fprintf(token,"<CONST_CHAR,%c> ",temp_ch);
         fprintf(log,"Line# %d: Token <CONST_CHAR> Lexeme %s found\n\n",line_count,yytext);
+    }
+       
 }
+{BREAK}
+{
+    fprintf(token,"<BREAK,break> ");
+    fprintf(log,"Line# %d: Token <BREAK> Lexeme %s found\n\n",line_count,yytext);
+}
+{CASE}
+{
+    fprintf(token,"<CASE,case> ");
+    fprintf(log,"Line# %d: Token <CASE> Lexeme %s found\n\n",line_count,yytext);
+}
+{CHAR}
+{
+     fprintf(token,"<CHAR,char> ");
+    fprintf(log,"Line# %d: Token <CHAR> Lexeme %s found\n\n",line_count,yytext);
+}
+{CONTINUE}
+{
+    fprintf(token,"<CONTINUE,continue> ");
+    fprintf(log,"Line# %d: Token <CONTINUE> Lexeme %s found\n\n",line_count,yytext);
+}
+{DEFAULT}
+{
+    fprintf(token,"<DEFAULT,default> ");
+    fprintf(log,"Line# %d: Token <DEFAULT> Lexeme %s found\n\n",line_count,yytext);
+}
+{DO}
+{
+    fprintf(token,"<DO,do> ");
+    fprintf(log,"Line# %d: Token <DO> Lexeme %s found\n\n",line_count,yytext);
+}
+{DOUBLE}
+{
+    fprintf(token,"<DOUBLE,double> ");
+    fprintf(log,"Line# %d: Token <DOUBLE> Lexeme %s found\n\n",line_count,yytext);
+}
+{ELSE}
+{
+    fprintf(token,"<ELSE,else> ");
+    fprintf(log,"Line# %d: Token <ELSE> Lexeme %s found\n\n",line_count,yytext);
+}
+{FLOAT}
+{
+    fprintf(token,"<FLOAT,float> ");
+    fprintf(log,"Line# %d: Token <FLOAT> Lexeme %s found\n\n",line_count,yytext);
+}
+{FOR}
+{
+    fprintf(token,"<FOR,for> ");
+    fprintf(log,"Line# %d: Token <FOR> Lexeme %s found\n\n",line_count,yytext);
+}
+{IF}
+{
+    fprintf(token,"<IF,if> ");
+    fprintf(log,"Line# %d: Token <IF> Lexeme %s found\n\n",line_count,yytext);
+}
+{INT}
+{
+    fprintf(token,"<INT,int> ");
+    fprintf(log,"Line# %d: Token <INT> Lexeme %s found\n\n",line_count,yytext);
+}
+{RETURN}
+{
+    fprintf(token,"<RETURN,return> ");
+    fprintf(log,"Line# %d: Token <RETURN> Lexeme %s found\n\n",line_count,yytext);
+}
+{SWITCH}
+{
+    fprintf(token,"<SWITCH,switch> ");
+    fprintf(log,"Line# %d: Token <SWITCH> Lexeme %s found\n\n",line_count,yytext);
+}
+{WHILE}
+{
+    fprintf(token,"<WHILE,while> ");
+    fprintf(log,"Line# %d: Token <WHILE> Lexeme %s found\n\n",line_count,yytext);
+}
+{VOID}
+{
+    fprintf(token,"<VOID,void> ");
+    fprintf(log,"Line# %d: Token <VOID> Lexeme %s found\n\n",line_count,yytext);
+}
+{ADDOP}
+{
+    fprintf(token,"<ADDOP,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <ADDOP> Lexeme %s found\n\n",line_count,yytext);
+}
+{MULOP}
+{
+    fprintf(token,"<MULOP,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <MULOP> Lexeme %s found\n\n",line_count,yytext);
+}
+{RELOP}
+{
+    fprintf(token,"<RELOP,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <RELOP> Lexeme %s found\n\n",line_count,yytext);
+}
+{INCOP}
+{
+    fprintf(token,"<INCOP,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <INCOP> Lexeme %s found\n\n",line_count,yytext);
+}
+{LOGICOP}
+{
+    fprintf(token,"<LOGICOP,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <LOGICOP> Lexeme %s found\n\n",line_count,yytext);
+}
+{ASSIGNOP}
+{
+    fprintf(token,"<ASSIGNOP,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <ASSIGNOP> Lexeme %s found\n\n",line_count,yytext);
+}
+{NOT}
+{
+    fprintf(token,"<NOT,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <NOT> Lexeme %s found\n\n",line_count,yytext);
+}
+{LPAREN}
+{
+    fprintf(token,"<LPAREN,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <LPAREN> Lexeme %s found\n\n",line_count,yytext);
+}
+{RPAREN}
+{
+    fprintf(token,"<RPAREN,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <RPAREN> Lexeme %s found\n\n",line_count,yytext);
+}
+{LCURL}
+{
+    fprintf(token,"<LCURL,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <LCURL> Lexeme %s found\n\n",line_count,yytext);
+}
+{RCURL}
+{
+    fprintf(token,"<RCURL,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <RCURL> Lexeme %s found\n\n",line_count,yytext);
+}
+{LSQUARE}
+{
+    fprintf(token,"<LSQUARE,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <LSQUARE> Lexeme %s found\n\n",line_count,yytext);
+}
+{RSQUARE}
+{
+    fprintf(token,"<RSQUARE,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <RSQUARE> Lexeme %s found\n\n",line_count,yytext);
+}
+{COMMA}
+{
+    fprintf(token,"<COMMA,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <COMMA> Lexeme %s found\n\n",line_count,yytext);
+}
+{SEMICOLON}
+{
+    fprintf(token,"<SEMICOLON,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <SEMICOLON> Lexeme %s found\n\n",line_count,yytext);
+}
+{IDENTIFIER}
+{
+    fprintf(token,"<ID,%s> ",yytext);
+    fprintf(log,"Line# %d: Token <ID> Lexeme %s found\n\n",line_count,yytext);
+    if(Table.Insert(yytext,"ID",log))
+    {
+        Table.printall();
+    }
+}
+{STRING}
+{
+    pair<string,int> intermediate_str=string_manipulation(yytext);
+    fprintf(token,"<STRING,%s> ",intermediate_str.first.c_str());
+    fprintf(log,"Line# %d: Token <STRING> Lexeme %s found\n\n",intermediate_str.second,intermediate_str.first.c_str());   
+}
+{TOO_MANY_DECIMAL_POINT_ERROR}
+{
+    error_count++;
+    fprintf(log,"Error at line# %d: Too many decimal points %s\n\n",line_count,yytext);
 
-
+}
+{ILL_FORMED_NUMBER}
+{
+    error_count++;
+    fprintf(log,"Error at line# %d: Ill Formed Number %s\n\n",line_count,yytext);
+}
+{INVALID_SUFFIX_PREFIX}
+{
+     error_count++;
+    fprintf(log,"Error at line# %d: Invalid Suffix Prefix %s\n\n",line_count,yytext);
+}
+{EMPTY_CHAR_ERROR}{
+     error_count++;
+    fprintf(log,"Error at line# %d: Empty character constant error %s\n\n",line_count,yytext);
+}
+{UNFINISHED_CHAR_ERROR}
+{
+     error_count++;
+    fprintf(log,"Error at line# %d: Unfinished character %s\n\n",line_count,yytext);
+}
+{MULTI_CHAR_ERROR}
+{
+     error_count++;
+    fprintf(log,"Error at line# %d: Multi Character error %s\n\n",line_count,yytext);
+}
+{UNFINISHED_STRING_ERROR}
+{
+     error_count++;
+    int temp=line;
+    pair<string,int> temp_pair= string_manipulation(yytext);
+    fprintf(log,"Error at line# %d: Unfinished String error %s\n\n",temp,yytext);
+}
+{UNRECOGNISED_CHAR_ERROR}
+{
+     error_count++;
+    fprintf(log,"Error at line# %d: Unrecognised character error %s\n\n",line_count,yytext);
+}
+%%
+int main(int argc,char *argv[]){
+	
+	if(argc!=2){
+		printf("Please provide input file name and try again\n");
+		return 0;
+	}
+	
+	FILE *fin=fopen(argv[1],"r");
+	if(fin==NULL){
+		printf("Cannot open specified file\n");
+		return 0;
+	}
+	
+	
+	yyin= fin;
+	yylex();
+    Table.printall(log);
+	fprintf(log,"\nTotal Lines : %d\nTotal Errors : %d\n",line,error_cnt);
+	fclose(yyin);
+	fclose(token);
+	fclose(log);
+	return 0;
+}
