@@ -1,0 +1,35 @@
+Line no 3: TOKEN <ADDOP> Lexeme + found
+Line no 3: TOKEN <CONST_INT> Lexeme 1 found
+Line no 4: TOKEN <CONST_INT> Lexeme 2 found
+Line no 7: TOKEN <ADDOP> Lexeme - found
+Line no 7: TOKEN <CONST_INT> Lexeme 3 found
+Line no 7: TOKEN <CONST_INT> Lexeme 14 found
+Line no 8: TOKEN <CONST_INT> Lexeme 2 found
+Line no 8: TOKEN <CONST_INT> Lexeme 81 found
+Line no 8: TOKEN <CONST_INT> Lexeme 0 found
+Line no 15: TOKEN <CONST_INT> Lexeme 3 found
+Line no 15: TOKEN <CONST_INT> Lexeme 2022 found
+Line no 20: TOKEN <CONST_INT> Lexeme 310 found
+Line no 24: TOKEN <CONST_INT> Lexeme 0 found
+
+1 CONST_INT
+
+2 CONST_INT
+
+3 CONST_INT
+
+14 CONST_INT
+
+2 CONST_INT
+
+81 CONST_INT
+
+0 CONST_INT
+
+3 CONST_INT
+
+2022 CONST_INT
+
+310 CONST_INT
+
+0 CONST_INT
