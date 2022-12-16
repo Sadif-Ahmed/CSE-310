@@ -56,7 +56,7 @@ class SymbolInfo
 };
 class ScopeTable{
     long long num_of_buckets;
-    long long unique_id;
+    int unique_id;
     long long *bucketsizes;
     SymbolInfo **scope_table;
     ScopeTable *parent_scope;
@@ -208,7 +208,7 @@ class ScopeTable{
     }
     void print(FILE* logfile)
     {   //cout<<'\t'<<"ScopeTable# "<<unique_id<<endl;
-    fprintf(logfile,"ScopeTable # %s\n",unique_id);
+    fprintf(logfile,"ScopeTable # %d\n",unique_id);
         for(int i=0;i<num_of_buckets;i++)
         {
           //  cout<<'\t'<<i+1<<"--> ";
