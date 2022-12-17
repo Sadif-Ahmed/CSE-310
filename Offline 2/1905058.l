@@ -1,13 +1,11 @@
 %option noyywrap
 
-%x comment_state
-
 %{
     #include<stdio.h>
     #include<stdlib.h>
     #include<string>
     #include<iostream>
-    #include "SymbolTable.h"
+    #include "1905058_SymbolTable.h"
     using namespace std;
 
     int line_count=1;
