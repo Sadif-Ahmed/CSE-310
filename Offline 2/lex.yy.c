@@ -365,15 +365,15 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[225] =
     {   0,
-       46,   46,    0,    0,   54,   50,    2,    1,   29,   50,
-       23,   28,   48,   30,   31,   22,   36,   22,   50,   23,
+       46,   46,    0,    0,   54,   52,    2,    1,   29,   50,
+       23,   28,   48,   30,   31,   22,   36,   22,   52,   23,
         3,   37,   24,   27,   24,   40,   34,   35,   28,   40,
        40,   40,   40,   40,   40,   40,   40,   40,   40,   32,
-       28,   33,   53,   24,   51,   38,    0,   26,   48,   47,
-       48,   25,    4,   52,    0,    4,    3,   46,   46,   28,
+       28,   33,   53,   24,   50,   38,    0,   26,   48,   47,
+       48,   25,    4,   51,    0,    4,    3,   46,   46,   28,
        40,   40,   40,   40,   40,   40,   40,   11,   40,   40,
-       40,   16,   40,   40,   40,   40,   40,   51,    0,   48,
-        5,   48,   48,   48,   48,    0,    4,    0,   52,    0,
+       40,   16,   40,   40,   40,   40,   40,   50,    0,   48,
+        5,   48,   48,   48,   48,    0,    4,    0,   51,    0,
         0,   41,    0,   41,    0,    4,    0,    0,    0,    4,
 
        40,   40,   40,   40,   40,   40,   40,   40,   15,   17,
@@ -1124,7 +1124,7 @@ YY_RULE_SETUP
     if(temp.length()==3)
     {
         fprintf(token,"<CONST_CHAR, %c>\n",temp[1]);
-        fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %s found\n",line_count,yytext);
+        fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %c found\n",line_count,yytext[1]);
     }
     else
     {
@@ -1188,7 +1188,7 @@ YY_RULE_SETUP
             }
         }
         fprintf(token,"<CONST_CHAR, %c>\n",temp_ch);
-        fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %s found\n",line_count,yytext);
+        fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %c found\n",line_count,temp_ch);
     }
        
 }
@@ -1612,21 +1612,13 @@ YY_RULE_SETUP
 #line 549 "Lexical_Analyzer.l"
 {
      error_count++;
-    fprintf(log_,"Error at line# %d: MULTICHAR_CONSTANT_CHAR %s\n",line_count,yytext);
+    fprintf(log_,"Error at line# %d: MULTICHAR_CONST_CHAR %s\n",line_count,yytext);
 }
 	YY_BREAK
 case 50:
+/* rule 50 can match eol */
 YY_RULE_SETUP
-#line 553 "Lexical_Analyzer.l"
-{
-     error_count++;
-    fprintf(log_,"Error at line# %d: UNRECOGNISED CHAR %s\n",line_count,yytext);
-}
-	YY_BREAK
-case 51:
-/* rule 51 can match eol */
-YY_RULE_SETUP
-#line 557 "Lexical_Analyzer.l"
+#line 554 "Lexical_Analyzer.l"
 {
                         string temp_s = yytext;
 
@@ -1643,10 +1635,10 @@ YY_RULE_SETUP
                         ++error_count;
                     }
 	YY_BREAK
-case 52:
-/* rule 52 can match eol */
+case 51:
+/* rule 51 can match eol */
 YY_RULE_SETUP
-#line 573 "Lexical_Analyzer.l"
+#line 570 "Lexical_Analyzer.l"
 {
                             string temp_s= yytext;
 
@@ -1663,9 +1655,17 @@ YY_RULE_SETUP
                             ++error_count;
                         } 
 	YY_BREAK
+case 52:
+YY_RULE_SETUP
+#line 585 "Lexical_Analyzer.l"
+{
+     error_count++;
+    fprintf(log_,"Error at line# %d: UNRECOGNIZED_CHAR %s\n",line_count,yytext);
+}                        
+	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 588 "Lexical_Analyzer.l"
+#line 589 "Lexical_Analyzer.l"
 ECHO;
 	YY_BREAK
 #line 1672 "lex.yy.c"
@@ -2674,7 +2674,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 588 "Lexical_Analyzer.l"
+#line 589 "Lexical_Analyzer.l"
 
 int main(int argc,char *argv[]){
 	
@@ -2693,7 +2693,7 @@ int main(int argc,char *argv[]){
 	yyin= fin;
 	yylex();
     Table.printall(log_);
-	fprintf(log_,"\nTotal Lines : %d\nTotal Errors : %d\n",line_count,error_count);
+	fprintf(log_,"Total lines: %d\nTotal errors: %d\n",line_count,error_count);
 	fclose(yyin);
 	fclose(token);
 	fclose(log_);

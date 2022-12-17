@@ -235,7 +235,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
     if(temp.length()==3)
     {
         fprintf(token,"<CONST_CHAR, %c>\n",temp[1]);
-        fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %s found\n",line_count,yytext);
+        fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %c found\n",line_count,yytext[1]);
     }
     else
     {
@@ -299,7 +299,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
             }
         }
         fprintf(token,"<CONST_CHAR, %c>\n",temp_ch);
-        fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %s found\n",line_count,yytext);
+        fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %c found\n",line_count,temp_ch);
     }
        
 }
@@ -548,12 +548,9 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 }
 {MULTI_CHAR_ERROR} {
      error_count++;
-    fprintf(log_,"Error at line# %d: MULTICHAR_CONSTANT_CHAR %s\n",line_count,yytext);
+    fprintf(log_,"Error at line# %d: MULTICHAR_CONST_CHAR %s\n",line_count,yytext);
 }
-{UNRECOGNISED_CHAR_ERROR} {
-     error_count++;
-    fprintf(log_,"Error at line# %d: UNRECOGNISED CHAR %s\n",line_count,yytext);
-}
+
 {UNFINISHED_STRING_ERROR} {
                         string temp_s = yytext;
 
@@ -585,6 +582,10 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 
                             ++error_count;
                         } 
+{UNRECOGNISED_CHAR_ERROR} {
+     error_count++;
+    fprintf(log_,"Error at line# %d: UNRECOGNIZED_CHAR %s\n",line_count,yytext);
+}                        
 %%
 int main(int argc,char *argv[]){
 	
@@ -603,7 +604,7 @@ int main(int argc,char *argv[]){
 	yyin= fin;
 	yylex();
     Table.printall(log_);
-	fprintf(log_,"\nTotal Lines : %d\nTotal Errors : %d\n",line_count,error_count);
+	fprintf(log_,"Total lines: %d\nTotal errors: %d\n",line_count,error_count);
 	fclose(yyin);
 	fclose(token);
 	fclose(log_);

@@ -141,7 +141,7 @@ class ScopeTable{
         for(long long i=0;i<str.length();i++)
         {
             hash = (str[i]) + (hash << 6) + (hash << 16) - hash;
-            hash=hash%num_of_buckets;
+           // hash=hash%num_of_buckets;
         }
         return hash;
     }
@@ -178,7 +178,7 @@ class ScopeTable{
         if(temp!=NULL)
         {
         //     cout<<'\t'<<"'"<<nm<<"' "<<"already exists in the current ScopeTable"<<endl;
-        fprintf(logfile,"\t%s already exists in current ScopeTable\n", nm.c_str());
+        fprintf(logfile,"\t%s already exisits in the current ScopeTable\n", nm.c_str());
             return false;
         }
         else
@@ -219,7 +219,7 @@ class ScopeTable{
             while(temp!=NULL)
             {
                 //cout<<"<"<<temp->get_name()<<","<<temp->get_type()<<"> ";
-                fprintf(logfile,"< %s : %s >" , temp->get_name().c_str(),temp->get_type().c_str());
+                fprintf(logfile," <%s,%s> " , temp->get_name().c_str(),temp->get_type().c_str());
                 temp=temp->get_next();
             }
           //  cout<<endl;
