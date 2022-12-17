@@ -152,8 +152,8 @@ FLOAT_TYPE_THREE (\.{DIGITS})({EXPONENTIAL})?
 FLOAT_TYPE_FOUR ({DIGITS})({EXPONENTIAL})?
 
 /*COMMENTS*/
-SINGLE_LINE_COMMENT \/\/[^\r\n]*([\r]?\n|$)
-MULTILINE_COMMENT_1 \/\/([^\r\n\\]|\\[ \t]*[\r]?\n)*([\r]?\n|$)
+SINGLE_LINE_COMMENT \/\/[^\r\n]*
+MULTILINE_COMMENT_1 \/\/([^\r\n]*\\[\r]?\n)*[^\r\n]*
 MULTILINE_COMMENT_2 \/\*([^\*]|\*[^\/])*\*\/
 
 /*CONSTANTS*/
@@ -475,7 +475,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 
                             fprintf(log_, "Line# %d: Token <SINGLE LINE COMMENT> Lexeme %s found\n", line_count, temp_s.c_str());
 
-                            ++line_count;
+                           // ++line_count;
                         }
 {MULTILINE_COMMENT_1} {
                             string temp_com = yytext;
