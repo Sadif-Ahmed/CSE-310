@@ -1532,6 +1532,7 @@ YY_RULE_SETUP
                             {
                                 temp_com.pop_back();
                             }
+                            line_count++;
 
                             fprintf(log_, "Line# %d: Token <SINGLE LINE COMMENT> Lexeme %s found\n", line_count, temp_com.c_str());
 
@@ -1544,12 +1545,13 @@ YY_RULE_SETUP
                                     ++line_count;
                                 }
                             }
+                           
                         }
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-#line 511 "Lexical_Analyzer.l"
+#line 513 "Lexical_Analyzer.l"
 {
                             std::string temp_com = yytext;
 
@@ -1566,7 +1568,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 526 "Lexical_Analyzer.l"
+#line 528 "Lexical_Analyzer.l"
 {
     error_count++;
     fprintf(log_,"Error at line# %d: TOO_MANY_DECIMAL_POINTS %s\n",line_count,yytext);
@@ -1575,7 +1577,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 531 "Lexical_Analyzer.l"
+#line 533 "Lexical_Analyzer.l"
 {
     error_count++;
     fprintf(log_,"Error at line# %d: ILLFORMED_NUMBER %s\n",line_count,yytext);
@@ -1583,7 +1585,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 535 "Lexical_Analyzer.l"
+#line 537 "Lexical_Analyzer.l"
 {
      error_count++;
     fprintf(log_,"Error at line# %d: INVALID_ID_SUFFIX_NUM_PREFIX %s\n",line_count,yytext);
@@ -1591,7 +1593,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 539 "Lexical_Analyzer.l"
+#line 541 "Lexical_Analyzer.l"
 {
      error_count++;
     fprintf(log_,"Error at line# %d: EMPTY_CONST_CHAR %s\n",line_count,yytext);
@@ -1599,7 +1601,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 543 "Lexical_Analyzer.l"
+#line 545 "Lexical_Analyzer.l"
 {
      error_count++;
     fprintf(log_,"Error at line# %d: UNFINISHED_CONST_CHAR %s\n",line_count,yytext);
@@ -1607,7 +1609,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 547 "Lexical_Analyzer.l"
+#line 549 "Lexical_Analyzer.l"
 {
      error_count++;
     fprintf(log_,"Error at line# %d: MULTICHAR_CONSTANT_CHAR %s\n",line_count,yytext);
@@ -1615,7 +1617,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 551 "Lexical_Analyzer.l"
+#line 553 "Lexical_Analyzer.l"
 {
      error_count++;
     fprintf(log_,"Error at line# %d: UNRECOGNISED CHAR %s\n",line_count,yytext);
@@ -1624,7 +1626,7 @@ YY_RULE_SETUP
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
-#line 555 "Lexical_Analyzer.l"
+#line 557 "Lexical_Analyzer.l"
 {
                         string temp_s = yytext;
 
@@ -1644,7 +1646,7 @@ YY_RULE_SETUP
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-#line 571 "Lexical_Analyzer.l"
+#line 573 "Lexical_Analyzer.l"
 {
                             string temp_s= yytext;
 
@@ -1663,10 +1665,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 586 "Lexical_Analyzer.l"
+#line 588 "Lexical_Analyzer.l"
 ECHO;
 	YY_BREAK
-#line 1670 "lex.yy.c"
+#line 1672 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(comment_state):
 	yyterminate();
@@ -2672,7 +2674,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 586 "Lexical_Analyzer.l"
+#line 588 "Lexical_Analyzer.l"
 
 int main(int argc,char *argv[]){
 	

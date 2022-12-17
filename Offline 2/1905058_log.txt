@@ -110,14 +110,14 @@ Line# 18: Token <RPAREN> Lexeme ) found
 Line# 18: Token <SEMICOLON> Lexeme ; found
 Line# 20: Token <MULTI LINE COMMENT> Lexeme /** ** CSE 310
 	*** Compiler Sessional ***/ found
-Line# 21: Token <SINGLE LINE COMMENT> Lexeme // It is a\
+Line# 22: Token <SINGLE LINE COMMENT> Lexeme // It is a\
 	fun course found
-Line# 23: Token <RETURN> Lexeme return found
-Line# 23: Token <CONST_INT> Lexeme 0 found
-Line# 23: Token <SEMICOLON> Lexeme ; found
-Line# 24: Token <RCURL> Lexeme } found
+Line# 24: Token <RETURN> Lexeme return found
+Line# 24: Token <CONST_INT> Lexeme 0 found
+Line# 24: Token <SEMICOLON> Lexeme ; found
+Line# 25: Token <RCURL> Lexeme } found
 	ScopeTable# 1
 	4-->< main : ID >
 
-Total Lines : 24
+Total Lines : 25
 Total Errors : 0

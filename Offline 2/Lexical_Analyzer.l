@@ -494,6 +494,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                             {
                                 temp_com.pop_back();
                             }
+                            line_count++;
 
                             fprintf(log_, "Line# %d: Token <SINGLE LINE COMMENT> Lexeme %s found\n", line_count, temp_com.c_str());
 
@@ -506,6 +507,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                                     ++line_count;
                                 }
                             }
+                           
                         }
 
 {MULTILINE_COMMENT_2} {
