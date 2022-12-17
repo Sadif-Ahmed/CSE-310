@@ -142,7 +142,9 @@ DIGIT [0-9]
 DIGITS {DIGIT}+
 LETTER [a-zA-Z]
 NEWLINE [\n]
-WHITESPACE [ \t\v]+
+WHITESPACE [ \t\f\r\v]
+WHITESPACES {WHITESPACE}+
+DELIM ({NEWLINE}|{WHITESPACE})
 NORMAL_CHAR '([ -~]{-}['\\])'
 SPECIAL_CHAR '(\\['nt\\afrbv0\"])'
 EXPONENTIAL ([Ee][-+]?{DIGITS})
@@ -215,59 +217,11 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 
 /*RULES SECTION*/
 %%
-{WHITESPACE} {}
-
 {NEWLINE} {line_count++;}
 
-"/*" {
-BEGIN comment_state;
-comment += yytext;
-}
-{SINGLE_LINE_COMMENT} {
-    int temp = line_count;
-    string temp_s= yytext;
-    for(int i=0;i<temp_s.length();i++)
-        {
-            if(temp_s[i]=='\n')
-            {
-                line_count++;
-            }
-        }
-        fprintf(log_,"Line# %d: Token <COMMENT> Lexeme %s found\n",temp,temp_s.c_str());
-}
-<comment_state>"*/" {
-    int temp=line_count;
-    comment += yytext;
-    string temp_s=yytext;
+{WHITESPACE} {}
 
-    for(int i=0;i<temp_s.length();i++)
-        {
-            if(temp_s[i]=='\n')
-            {
-                line_count++;
-            }
-        }
-      fprintf(log_,"Line# %d: Token <COMMENT> Lexeme %s found\n",temp,comment.c_str());
-      comment="";
-      BEGIN INITIAL;   
-}
-<comment_state>.|\n {
-    comment+=yytext;
-}
-<comment_state><<EOF>> {
-    error_count++;
-    int temp= line_count;
-    string temp_s=yytext;
-     for(int i=0;i<temp_s.length();i++)
-        {
-            if(temp_s[i]=='\n')
-            {
-                line_count++;
-            }
-        }
-        fprintf(log_,"Error at line# %d: UNFINISHED_COMMENT %s\n",temp,comment.c_str());
-        return 0;
-}
+
 {INT_TOKEN} {
     fprintf(token,"<CONST_INT, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <CONST_INT> Lexeme %s found\n",line_count,yytext);
