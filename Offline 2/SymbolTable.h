@@ -161,7 +161,7 @@ class ScopeTable{
             {   
                 if(pr)
                 {
-                    cout<<'\t'<<"'"<<searchtext<<"'"<<" found in ScopeTable# "<<unique_id<<" at position "<<hash+1<<", "<<position+1<<endl;
+                  //  cout<<'\t'<<"'"<<searchtext<<"'"<<" found in ScopeTable# "<<unique_id<<" at position "<<hash+1<<", "<<position+1<<endl;
                 }
                  return temp;
             }
@@ -208,10 +208,13 @@ class ScopeTable{
     }
     void print(FILE* logfile)
     {   //cout<<'\t'<<"ScopeTable# "<<unique_id<<endl;
-    fprintf(logfile,"ScopeTable # %d\n",unique_id);
+    fprintf(logfile,"\tScopeTable# %d\n",unique_id);
         for(int i=0;i<num_of_buckets;i++)
         {
           //  cout<<'\t'<<i+1<<"--> ";
+          if(bucketsizes[i]!=0)
+          {
+            fprintf(logfile,"\t %d-->",i+1);
             SymbolInfo *temp=scope_table[i];
             while(temp!=NULL)
             {
@@ -220,16 +223,17 @@ class ScopeTable{
                 temp=temp->get_next();
             }
           //  cout<<endl;
-          fprintf(logfile,"\n");
+           fprintf(logfile,"\n");
+          }
         }
-        fprintf(logfile,"\n");
+       // fprintf(logfile,"\n");
         
     }
     bool Delete(string nm)
     { toggle_print();
         if(!Lookup(nm))
         { 
-            cout<<'\t'<<"Not found in the current ScopeTable"<<endl;
+         //   cout<<'\t'<<"Not found in the current ScopeTable"<<endl;
             return false;
         }
         toggle_print();
@@ -240,7 +244,7 @@ class ScopeTable{
         {
             scope_table[hash]=target->get_next();
             --bucketsizes[hash];
-            cout<<'\t'<<"Deleted "<<"'"<<nm<<"' from ScopeTable# "<<unique_id<<" at position "<<hash+1<<", 1"<<endl;
+           // cout<<'\t'<<"Deleted "<<"'"<<nm<<"' from ScopeTable# "<<unique_id<<" at position "<<hash+1<<", 1"<<endl;
             return true;
         }
 
@@ -251,7 +255,7 @@ class ScopeTable{
             if(target->get_name()==nm)
             {
                 prev->set_next(target->get_next());
-                cout<<'\t'<<"Deleted "<<"'"<<nm<<"' from ScopeTable# "<<unique_id<<" at position "<<hash+1<<", "<<position+1<<endl;
+            //    cout<<'\t'<<"Deleted "<<"'"<<nm<<"' from ScopeTable# "<<unique_id<<" at position "<<hash+1<<", "<<position+1<<endl;
                 break;
             }
             prev=target;
@@ -387,7 +391,7 @@ class ScopeTable{
                 else{
                     if(temp==head)
                     {
-                        cout<<'\t'<<"'"<<name<<"' "<<"not found in any of the ScopeTables"<<endl;
+              //          cout<<'\t'<<"'"<<name<<"' "<<"not found in any of the ScopeTables"<<endl;
                     }
                     temp->toggle_print();
                     temp=temp->get_parentscope();
