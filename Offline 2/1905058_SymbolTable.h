@@ -214,12 +214,12 @@ class ScopeTable{
           //  cout<<'\t'<<i+1<<"--> ";
           if(bucketsizes[i]!=0)
           {
-            fprintf(logfile,"\t%d-->",i+1);
+            fprintf(logfile,"\t%d--> ",i+1);
             SymbolInfo *temp=scope_table[i];
             while(temp!=NULL)
             {
                 //cout<<"<"<<temp->get_name()<<","<<temp->get_type()<<"> ";
-                fprintf(logfile," <%s,%s> " , temp->get_name().c_str(),temp->get_type().c_str());
+                fprintf(logfile,"<%s,%s> " , temp->get_name().c_str(),temp->get_type().c_str());
                 temp=temp->get_next();
             }
           //  cout<<endl;

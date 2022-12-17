@@ -18,10 +18,10 @@
 
     SymbolTable Table(10);
 
-   std::string StringFormatter(const std::string str)
+   string StringFormatter(const std::string str)
 {
-    std::string temp_s = string(str);
-    std::string formatted_s = "";
+    string temp_s = string(str);
+    string formatted_s = "";
     char prev_char = 0;
 
     for(size_t i = 1; i < temp_s.size() - 1; ++i)
@@ -29,60 +29,68 @@
         if(prev_char == '\\')
         {
             prev_char = temp_s[i];
-
-            if(temp_s[i] == '\'')
+            switch(temp_s[i])
             {
-                formatted_s += '\'';
-            }
-            else if(temp_s[i] == '\"')
+                case 'n': 
             {
-                formatted_s += '\"';
+                formatted_s+='\n';
+                break;
             }
-            else if(temp_s[i] == 'n')
+            case 't':
             {
-                formatted_s += '\n';
+                formatted_s+='\t';
+                break;
             }
-            else if(temp_s[i] == 't')
+            case 'a':
             {
-                formatted_s += '\t';
+                formatted_s+='\a';
+                break;
             }
-            else if(temp_s[i] == '\\')
+            case 'f':
             {
-                formatted_s += '\\';
-                prev_char = 0;
+                formatted_s+='\f';
+                break;
             }
-            else if(temp_s[i] == 'a')
+            case 'r':
             {
-                formatted_s += '\a';
+                formatted_s+='\r';
+                break;
             }
-            else if(temp_s[i] == 'f')
+            case 'b':
             {
-                formatted_s += '\f';
+                formatted_s+='\b';
+                break;
             }
-            else if(temp_s[i] == 'r')
+            case 'v':
             {
-                formatted_s += '\r';
+                formatted_s+='\v';
+                break;
             }
-            else if(temp_s[i] == 'b')
+            case '0':
             {
-                formatted_s += '\b';
+                formatted_s+='\0';
+                break;
             }
-            else if(temp_s[i] == 'v')
+            case '\'':
             {
-                formatted_s += '\v';
+                formatted_s+='\'';
+                break;
             }
-            else if(temp_s[i] == '0')
+            case '\"':
             {
-                formatted_s += '\0';
+                formatted_s+='\"';
+                break;
             }
-            else if(temp_s[i] == '\r')
+            case '\\':
             {
-                prev_char = '\\';
+                formatted_s+='\\';
+                break;
             }
-            else if(temp_s[i] == '\n')
+            case '\n':
             {
-                
+                break;
             }
+        }
         }
         else
         {
@@ -150,11 +158,12 @@ FLOAT_TYPE_ONE ({DIGITS}\.{DIGITS})({EXPONENTIAL})?
 FLOAT_TYPE_TWO ({DIGITS})\.({EXPONENTIAL})?
 FLOAT_TYPE_THREE (\.{DIGITS})({EXPONENTIAL})?
 FLOAT_TYPE_FOUR ({DIGITS})({EXPONENTIAL})?
+CHAR_ERROR_CHECKER ([^\\\'\"\r\n]|\\n|\\t|\\\"|\\\'|\\\\|\\a|\\f|\\r|\\b|\\v|\\0|\\[\r]?\n)
 
 /*COMMENTS*/
-SINGLE_LINE_COMMENT \/\/[^\r\n]*
-MULTILINE_COMMENT_1 \/\/([^\r\n]*\\[\r]?\n)*[^\r\n]*
-MULTILINE_COMMENT_2 \/\*([^\*]|\*[^\/])*\*\/
+SINGLE_LINE_COMMENT_TYPE_ONE \/\/[^\r\n]*
+SINGLE_LINE_COMMENT_TYPE_TWO \/\/([^\r\n]*\\[\r]?\n)*[^\r\n]*
+MULTIPLE_LINE_COMMENT \/\*([^\*]|\*[^\/])*\*\/
 
 /*CONSTANTS*/
 /*CHARACTER BUILDER*/
@@ -162,8 +171,8 @@ CHAR_TOKEN {NORMAL_CHAR}|{SPECIAL_CHAR}
 /*ID BUILDER*/
 IDENTIFIER [a-zA-Z_][a-zA-Z0-9_]*
 /*STRING BUILDER*/
-SINGLELINE_STRING_LITERAL \"([^\\\'\"\n\r]|\\n|\\t|\\\"|\\\'|\\\\|\\a|\\f|\\r|\\b|\\v|\\0)*\"
-MULTILINE_STRING_LITERAL \"([^\\\'\"\n\r]|\\n|\\t|\\\"|\\\'|\\\\|\\a|\\f|\\r|\\b|\\v|\\0|\\[\r]?\n)*\"
+SINGLELINE_STRING \"([^\\\'\"\n\r]|\\n|\\t|\\\"|\\\'|\\\\|\\a|\\f|\\r|\\b|\\v|\\0)*\"
+MULTILINE_STRING \"([^\\\'\"\n\r]|\\n|\\t|\\\"|\\\'|\\\\|\\a|\\f|\\r|\\b|\\v|\\0|\\[\r]?\n)*\"
 /*INTEGER BUILDER*/
 INT_TOKEN {DIGITS}
 /*FLOAT BUILDER*/
@@ -196,7 +205,7 @@ INVALID_SUFFIX_PREFIX [0-9]*[A-Za-z_]*
 ILL_FORMED_NUMBER {ILL_TYPE_ONE}|{ILL_TYPE_TWO}|{ILL_TYPE_THREE}
 
 /*UNFINISHED CHARACTERS EXAMPLE:‘a , ‘\n or ‘\’ */
-UNFINISHED_CHAR_ERROR {UNFINISHED_CHAR_ERROR_ONE}|{FORWARD_SLASH}
+UNFINISHED_CHAR_ERROR \'{CHAR_ERROR_CHECKER}?
 
 /*UNFINISHED COMMENT*/
 UNFINISHED_COMMENT \/\*([^\*]|\*[^\/])*
@@ -431,14 +440,14 @@ UNRECOGNISED_CHAR_ERROR [^\n]
     fprintf(token,"<SEMICOLON, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <SEMICOLON> Lexeme %s found\n",line_count,yytext);
 }
-{SINGLELINE_STRING_LITERAL} {
+{SINGLELINE_STRING} {
                                
                                 string formatted_s = StringFormatter(yytext);
                                 fprintf(token, "<SINGLE LINE STRING, %s>\n", formatted_s.c_str());
                                 fprintf(log_, "Line# %d: Token <SINGLE LINE STRING> Lexeme %s found\n", line_count, yytext);
                             }
 
-{MULTILINE_STRING_LITERAL} { 
+{MULTILINE_STRING} { 
                                 string formatted_s = StringFormatter(yytext);
                                 string temp_s=string(yytext);
                                 fprintf(token, "<MULTI LINE STRING, %s>\n", formatted_s.c_str());
@@ -448,7 +457,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                                 {
                                     if(temp_s[i] == '\n')
                                     {
-                                        ++line_count;
+                                        line_count++;
                                     }
                                 }
                             }
@@ -461,7 +470,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
         Table.printall(log_);
     }
 }
-{SINGLE_LINE_COMMENT} {
+{SINGLE_LINE_COMMENT_TYPE_ONE} {
                             string temp_s = yytext;
                             if(temp_s.back() == '\n')
                             {
@@ -475,16 +484,16 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 
                             fprintf(log_, "Line# %d: Token <SINGLE LINE COMMENT> Lexeme %s found\n", line_count, temp_s.c_str());
 
-                           // ++line_count;
+                          
                         }
-{MULTILINE_COMMENT_1} {
-                            string temp_com = yytext;
+{SINGLE_LINE_COMMENT_TYPE_TWO} {
+                            string temp_com = string(yytext);
                             int additional_lines = 0;
 
                             if(temp_com.back() == '\n')
                             {
                                  temp_com.pop_back();
-                                ++additional_lines;
+                                additional_lines++;
                               
                             }
 
@@ -492,7 +501,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                             {
                                 temp_com.pop_back();
                             }
-                            line_count++;
+                            //line_count++;
 
                             fprintf(log_, "Line# %d: Token <SINGLE LINE COMMENT> Lexeme %s found\n", line_count, temp_com.c_str());
 
@@ -502,22 +511,22 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                             {
                                 if(temp_com[i] == '\n')
                                 {
-                                    ++line_count;
+                                    line_count++;
                                 }
                             }
                            
                         }
 
-{MULTILINE_COMMENT_2} {
-                            std::string temp_com = yytext;
+{MULTIPLE_LINE_COMMENT} {
+                            std::string temp_com = string(yytext);
 
                             fprintf(log_, "Line# %d: Token <MULTI LINE COMMENT> Lexeme %s found\n", line_count, temp_com.c_str());
 
-                            for(int i = 0; i < comment.size(); ++i)
+                            for(int i = 0; i < temp_com.size(); ++i)
                             {
                                 if(temp_com[i] == '\n')
                                 {
-                                    ++line_count;
+                                    line_count++;
                                 }
                             }
                         }
@@ -556,7 +565,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                         {
                             if(temp_s[i] == '\n')
                             {
-                                ++line_count;
+                                line_count++;
                             }
                         }
 
@@ -572,13 +581,19 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                             {
                                 if(temp_s[i] == '\n')
                                 {
-                                    ++line_count;
+                                    line_count++;
                                 }
                             }
+                             while(temp_s.back() == '\r' || temp_s.back() == '\n')
+                            {
+                                temp_s.pop_back();
+                            
+                            }
+                            error_count++;
 
                             fprintf(log_, "Error at line# %d: UNFINISHED_COMMENT %s\n", line_count, yytext);
 
-                            ++error_count;
+                            
                         } 
 {UNRECOGNISED_CHAR_ERROR} {
      error_count++;
