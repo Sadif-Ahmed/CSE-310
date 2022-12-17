@@ -20,83 +20,85 @@
 
     SymbolTable Table(10);
 
-    pair<string,int> string_manipulation(string str)
-    {
-        int temp_l = line_count;
-        string temp_s;
-        for(int i=0;i<str.size();i++)
-        {
-            if(str[i]=='\n')
-            {
-                line_count++;
-            }
-            if(str[i]=='\\' && str[i+1]=='\n')
-            {
-                continue;
-            }
-            int flag=0;
-            if(str[i]=='\\' && str[i+1]=='n')
-            {
-                temp_s.push_back('\n');
-            }
-            else if(str[i]=='\\' && str[i+1]=='t')
-            {
-                temp_s.push_back('\t');
-            }
-            else if(str[i]=='\\' && str[i+1]=='\\')
-            {
-                temp_s.push_back('\\');
-            }
-            else if(str[i]=='\\' && str[i+1]=='\'')
-            {
-                temp_s.push_back('\'');
-            }
-            else if(str[i]=='\\'  && str[i+1]=='\"')
-            {
-                temp_s.push_back('\"');
-            }
-            else if(str[i]=='\\' && str[i+1]=='a')
-            {
-                temp_s.push_back('\a');
-            }
-            else if(str[i]=='\\' && str[i+1]=='\0')
-            {
-                temp_s.push_back('\0');
-            }
-            else if(str[i]=='\\' && str[i+1]=='b')
-            {
-                temp_s.push_back('\b');
-            }
-            else if(str[i]=='\\' && str[i+1]=='v')
-            {
-                temp_s.push_back('\v');
-            }
-            else if(str[i]=='\\' && str[i+1]=='r')
-            {
-                temp_s.push_back('\r');
-            }
-            else if(str[i]=='\\' && str[i+1]=='f')
-            {
-                temp_s.push_back('\f');
-            }
-            else if(str[i]=='\n')
-            {
-                continue;
-            }
-            else
-            {
-                flag=1;
-                temp_s.push_back(str[i]);
-            }
-            if(flag==0)
-            {
-                i++;
-            }
-            }
-            return make_pair(temp_s,temp_l);
+   std::string StringFormatter(const std::string str)
+{
+    std::string temp_s = string(str);
+    std::string formatted_s = "";
+    char prev_char = 0;
 
+    for(size_t i = 1; i < temp_s.size() - 1; ++i)
+    {
+        if(prev_char == '\\')
+        {
+            prev_char = temp_s[i];
+
+            if(temp_s[i] == '\'')
+            {
+                formatted_s += '\'';
+            }
+            else if(temp_s[i] == '\"')
+            {
+                formatted_s += '\"';
+            }
+            else if(temp_s[i] == 'n')
+            {
+                formatted_s += '\n';
+            }
+            else if(temp_s[i] == 't')
+            {
+                formatted_s += '\t';
+            }
+            else if(temp_s[i] == '\\')
+            {
+                formatted_s += '\\';
+                prev_char = 0;
+            }
+            else if(temp_s[i] == 'a')
+            {
+                formatted_s += '\a';
+            }
+            else if(temp_s[i] == 'f')
+            {
+                formatted_s += '\f';
+            }
+            else if(temp_s[i] == 'r')
+            {
+                formatted_s += '\r';
+            }
+            else if(temp_s[i] == 'b')
+            {
+                formatted_s += '\b';
+            }
+            else if(temp_s[i] == 'v')
+            {
+                formatted_s += '\v';
+            }
+            else if(temp_s[i] == '0')
+            {
+                formatted_s += '\0';
+            }
+            else if(temp_s[i] == '\r')
+            {
+                prev_char = '\\';
+            }
+            else if(temp_s[i] == '\n')
+            {
+                
+            }
+        }
+        else
+        {
+            prev_char = temp_s[i];
+
+            if(temp_s[i] != '\\')
+            {
+                formatted_s += temp_s[i];
+            }
+        }
     }
-  
+
+    return formatted_s;
+}
 
 %}
 /*Definitions Section*/
@@ -150,9 +152,9 @@ FLOAT_TYPE_THREE (\.{DIGITS})({EXPONENTIAL})?
 FLOAT_TYPE_FOUR ({DIGITS})({EXPONENTIAL})?
 
 /*COMMENTS*/
-SINGLE_LINE_COMMENT ("//"(([\\]+([\n]))|[^\n]*)*)
-
-MULTI_LINE_COMMENT ([^*]|("*"[^\n]))*"*/"
+SINGLE_LINE_COMMENT \/\/[^\r\n]*([\r]?\n|$)
+MULTILINE_COMMENT_1 \/\/([^\r\n\\]|\\[ \t]*[\r]?\n)*([\r]?\n|$)
+MULTILINE_COMMENT_2 \/\*([^\*]|\*[^\/])*\*\/
 
 /*CONSTANTS*/
 /*CHARACTER BUILDER*/
@@ -160,7 +162,8 @@ CHAR_TOKEN {NORMAL_CHAR}|{SPECIAL_CHAR}
 /*ID BUILDER*/
 IDENTIFIER [a-zA-Z_][a-zA-Z0-9_]*
 /*STRING BUILDER*/
-STRING \"([^\n]|(\\[\n])|(\"))*\" 
+SINGLELINE_STRING_LITERAL \"([^\\\'\"\n\r]|\\n|\\t|\\\"|\\\'|\\\\|\\a|\\f|\\r|\\b|\\v|\\0)*\"
+MULTILINE_STRING_LITERAL \"([^\\\'\"\n\r]|\\n|\\t|\\\"|\\\'|\\\\|\\a|\\f|\\r|\\b|\\v|\\0|\\[\r]?\n)*\"
 /*INTEGER BUILDER*/
 INT_TOKEN {DIGITS}
 /*FLOAT BUILDER*/
@@ -196,7 +199,7 @@ ILL_FORMED_NUMBER {ILL_TYPE_ONE}|{ILL_TYPE_TWO}|{ILL_TYPE_THREE}
 UNFINISHED_CHAR_ERROR {UNFINISHED_CHAR_ERROR_ONE}|{FORWARD_SLASH}
 
 /*UNFINISHED COMMENT*/
-UNFINISHED_COMMENT "/*"({ANYTHING_EXCEPT_STAR}|{STAR_FOLLOWED_BY_ANYTHING_EXCEPT_SLASH})*
+UNFINISHED_COMMENT \/\*([^\*]|\*[^\/])*
 
 /*MULTI CHARACTER ERROR EXAMPLE:‘ab’ */
 MULTI_CHAR_ERROR '(({NORMAL_CHAR_FOR_ERR}|{SPECIAL_CHAR_FOR_ERR})+)'
@@ -205,7 +208,7 @@ MULTI_CHAR_ERROR '(({NORMAL_CHAR_FOR_ERR}|{SPECIAL_CHAR_FOR_ERR})+)'
 EMPTY_CHAR_ERROR ('')
 
 /*UNFINISHED STRING*/
-UNFINISHED_STRING_ERROR (\"([^\"\n]|(\\[\n])|(\\\"))*)
+UNFINISHED_STRING_ERROR \"([^\\\'\"\n\r]|\\n|\\t|\\\"|\\\'|\\\\|\\a|\\f|\\r|\\b|\\v|\\0|\\[\r]?\n)*
 
 /*UNRECOGNISED CHARACTER*/
 UNRECOGNISED_CHAR_ERROR [^\n]
@@ -476,6 +479,28 @@ comment += yytext;
     fprintf(token,"<SEMICOLON, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <SEMICOLON> Lexeme %s found\n",line_count,yytext);
 }
+{SINGLELINE_STRING_LITERAL} {
+                               
+                                string formatted_s = StringFormatter(yytext);
+                                fprintf(token, "<SINGLE LINE STRING, %s>\n", formatted_s.c_str());
+                                fprintf(log_, "Line# %d: Token <SINGLE LINE STRING> Lexeme %s found\n", line_count, yytext);
+                            }
+
+{MULTILINE_STRING_LITERAL} { 
+                                string formatted_s = StringFormatter(yytext);
+                                string temp_s=string(yytext);
+                                fprintf(token, "<MULTI LINE STRING, %s>\n", formatted_s.c_str());
+                                fprintf(log_, "Line# %d: Token <MULTI LINE STRING> Lexeme %s found\n", line_count, yytext);
+
+                                for(int i = 0; i < temp_s.size(); ++i)
+                                {
+                                    if(temp_s[i] == '\n')
+                                    {
+                                        ++line_count;
+                                    }
+                                }
+                            }
+
 {IDENTIFIER} {
     fprintf(token,"<ID, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <ID> Lexeme %s found\n",line_count,yytext);
@@ -484,11 +509,66 @@ comment += yytext;
         Table.printall(log_);
     }
 }
-{STRING} {
-    pair<string,int> intermediate_str = string_manipulation(yytext);
-    fprintf(token,"<STRING, %s>\n",intermediate_str.first.c_str());
-    fprintf(log_,"Line# %d: Token <STRING> Lexeme %s found\n",intermediate_str.second,yytext);   
-}
+{SINGLE_LINE_COMMENT} {
+                            string temp_s = yytext;
+                            if(temp_s.back() == '\n')
+                            {
+                                temp_s.pop_back();
+                            }
+
+                            if(temp_s.back() == '\r')
+                            {
+                                temp_s.pop_back();
+                            }
+
+                            fprintf(log_, "Line# %d: Token <SINGLE LINE COMMENT> Lexeme %s found\n", line_count, temp_s.c_str());
+
+                            ++line_count;
+                        }
+{MULTILINE_COMMENT_1} {
+                            string temp_com = yytext;
+                            int additional_lines = 0;
+
+                            if(temp_com.back() == '\n')
+                            {
+                                 temp_com.pop_back();
+                                ++additional_lines;
+                              
+                            }
+
+                            if(temp_com.back() == '\r')
+                            {
+                                temp_com.pop_back();
+                            }
+
+                            fprintf(log_, "Line# %d: Token <SINGLE LINE COMMENT> Lexeme %s found\n", line_count, temp_com.c_str());
+
+                            line_count += additional_lines;
+
+                            for(int i = 0; i < temp_com.size(); ++i)
+                            {
+                                if(temp_com[i] == '\n')
+                                {
+                                    ++line_count;
+                                }
+                            }
+                        }
+
+{MULTILINE_COMMENT_2} {
+                            std::string temp_com = yytext;
+
+                            fprintf(log_, "Line# %d: Token <MULTI LINE COMMENT> Lexeme %s found\n", line_count, temp_com.c_str());
+
+                            for(int i = 0; i < comment.size(); ++i)
+                            {
+                                if(temp_com[i] == '\n')
+                                {
+                                    ++line_count;
+                                }
+                            }
+                        }
+
+                        
 {TOO_MANY_DECIMAL_POINT_ERROR} {
     error_count++;
     fprintf(log_,"Error at line# %d: TOO_MANY_DECIMAL_POINTS %s\n",line_count,yytext);
@@ -514,16 +594,41 @@ comment += yytext;
      error_count++;
     fprintf(log_,"Error at line# %d: MULTICHAR_CONSTANT_CHAR %s\n",line_count,yytext);
 }
-{UNFINISHED_STRING_ERROR} {
-     error_count++;
-    int temp=line_count;
-    pair<string,int> temp_pair= string_manipulation(yytext);
-    fprintf(log_,"Error at line# %d: UNFINISHED_STRING %s\n",temp,yytext);
-}
 {UNRECOGNISED_CHAR_ERROR} {
      error_count++;
     fprintf(log_,"Error at line# %d: UNRECOGNISED CHAR %s\n",line_count,yytext);
 }
+{UNFINISHED_STRING_ERROR} {
+                        string temp_s = yytext;
+
+                        for(int i = 0; i < temp_s.size(); ++i)
+                        {
+                            if(temp_s[i] == '\n')
+                            {
+                                ++line_count;
+                            }
+                        }
+
+                        fprintf(log_, "Error at line# %d: UNFINISHED_STRING %s\n", line_count, yytext);
+
+                        ++error_count;
+                    }
+                    
+{UNFINISHED_COMMENT} {
+                            string temp_s= yytext;
+
+                            for(int i = 0; i < temp_s.size(); ++i)
+                            {
+                                if(temp_s[i] == '\n')
+                                {
+                                    ++line_count;
+                                }
+                            }
+
+                            fprintf(log_, "Error at line# %d: UNFINISHED_COMMENT %s\n", line_count, yytext);
+
+                            ++error_count;
+                        } 
 %%
 int main(int argc,char *argv[]){
 	

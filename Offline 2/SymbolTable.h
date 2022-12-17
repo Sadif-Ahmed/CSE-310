@@ -178,7 +178,7 @@ class ScopeTable{
         if(temp!=NULL)
         {
         //     cout<<'\t'<<"'"<<nm<<"' "<<"already exists in the current ScopeTable"<<endl;
-        fprintf(logfile,"%s already exists in current ScopeTable\n", nm.c_str());
+        fprintf(logfile,"\t%s already exists in current ScopeTable\n", nm.c_str());
             return false;
         }
         else
@@ -214,7 +214,7 @@ class ScopeTable{
           //  cout<<'\t'<<i+1<<"--> ";
           if(bucketsizes[i]!=0)
           {
-            fprintf(logfile,"\t %d-->",i+1);
+            fprintf(logfile,"\t%d-->",i+1);
             SymbolInfo *temp=scope_table[i];
             while(temp!=NULL)
             {
