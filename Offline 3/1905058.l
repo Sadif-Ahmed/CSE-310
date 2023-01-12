@@ -6,17 +6,19 @@
     #include<string>
     #include<iostream>
     #include "1905058_SymbolTable.h"
+    #include "y.tab.h"
     using namespace std;
 
     int line_count=1;
     int error_count=0;
-    string comment="";
+  //  string comment="";
 
-    FILE *log_ = fopen("1905058_log.txt","w");
-    FILE *token = fopen("1905058_token.txt","w");
+    FILE *log_ = fopen("1905058_log.txt","a");
+   // FILE *token = fopen("1905058_token.txt","w");
+    FILE *error = fopen("1905058_error.txt","a");
 
 
-    SymbolTable Table(10);
+   // SymbolTable Table(10);
 
    string StringFormatter(const std::string str)
 {
@@ -126,16 +128,19 @@ FLOAT "float"
 FOR "for"
 IF "if"
 INT "int"
+PRINTLN "printf"
+
 /*OPERATORS*/
 LPAREN ("(")
 RPAREN (")")
 LCURL ("{")
 RCURL ("}")
-LSQUARE ("[")
-RSQUARE ("]")
+LTHIRD ("[")
+RTHIRD ("]")
 ADDOP [+-]
 MULOP [*/%]
-INCOP ("++"|"--")
+INCOP ("++")
+DECOP ("--")
 RELOP (">"|">="|"<"|"<="|"=="|"!=")
 ASSIGNOP ("=")
 LOGICOP ("&&"|"||")
@@ -230,19 +235,28 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 
 
 {INT_TOKEN} {
-    fprintf(token,"<CONST_INT, %s>\n",yytext);
+    //fprint(token,"<CONST_INT, %s>\n",yytext);
+    SymbolInfo *t =  new SymbolInfo(yytext,"CONST_INT");
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <CONST_INT> Lexeme %s found\n",line_count,yytext);
+    return CONST_INT;
 }
 {FLOAT_TOKEN} {
-     fprintf(token,"<CONST_FLOAT, %s>\n",yytext);
+    //fprint(token,"<CONST_FLOAT, %s>\n",yytext);
+    SymbolInfo *t =  new SymbolInfo(yytext,"CONST_FLOAT");
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <CONST_FLOAT> Lexeme %s found\n",line_count,yytext);
+    return CONST_FLOAT;
 }
 {CHAR_TOKEN} {
     string temp= yytext;
     if(temp.length()==3)
     {
-        fprintf(token,"<CONST_CHAR, %c>\n",temp[1]);
+        //fprint(token,"<CONST_CHAR, %c>\n",temp[1]);
+        SymbolInfo *t =  new SymbolInfo(yytext,"CONST_CHAR");
+        yylval.symbol=t;
         fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %c found\n",line_count,yytext[1]);
+        return CONST_CHAR;
     }
     else
     {
@@ -305,152 +319,211 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                 break;
             }
         }
-        fprintf(token,"<CONST_CHAR, %c>\n",temp_ch);
+        //fprint(token,"<CONST_CHAR, %c>\n",temp_ch);
+        SymbolInfo *t =  new SymbolInfo(yytext,"CONST_CHAR");
+        yylval.symbol=t;
         fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %c found\n",line_count,temp_ch);
+        return CONST_CHAR;
     }
        
 }
 {BREAK} {
-    fprintf(token,"<BREAK, break>\n");
+    //fprint(token,"<BREAK, break>\n");
     fprintf(log_,"Line# %d: Token <BREAK> Lexeme %s found\n",line_count,yytext);
+    return BREAK;
+}
+{PRINTLN} {
+    fprintf(log_,"Line# %d: Token <PRINTLN> Lexeme %s found\n",line_count,yytext);
+    return PRINTLN;
 }
 {CASE} {
-    fprintf(token,"<CASE, case>\n");
+   //fprint(token,"<CASE, case>\n");
     fprintf(log_,"Line# %d: Token <CASE> Lexeme %s found\n",line_count,yytext);
+    return CASE;
 }
 {CHAR} {
-     fprintf(token,"<CHAR, char>\n");
+     //fprint(token,"<CHAR, char>\n");
     fprintf(log_,"Line# %d: Token <CHAR> Lexeme %s found\n",line_count,yytext);
+    return CHAR;
 }
 {CONTINUE} {
-    fprintf(token,"<CONTINUE, continue>\n");
+    //fprint(token,"<CONTINUE, continue>\n");
     fprintf(log_,"Line# %d: Token <CONTINUE> Lexeme %s found\n",line_count,yytext);
+    return CONTINUE;
 }
 {DEFAULT} {
-    fprintf(token,"<DEFAULT, default>\n");
+    //fprint(token,"<DEFAULT, default>\n");
     fprintf(log_,"Line# %d: Token <DEFAULT> Lexeme %s found\n",line_count,yytext);
+    return DEFAULT;
 }
 {DO} {
-    fprintf(token,"<DO, do>\n");
+    //fprint(token,"<DO, do>\n");
     fprintf(log_,"Line# %d: Token <DO> Lexeme %s found\n",line_count,yytext);
+    return DO;
 }
 {DOUBLE} {
-    fprintf(token,"<DOUBLE, double>\n");
+    //fprint(token,"<DOUBLE, double>\n");
     fprintf(log_,"Line# %d: Token <DOUBLE> Lexeme %s found\n",line_count,yytext);
+    return DOUBLE;
 }
 {ELSE} {
-    fprintf(token,"<ELSE, else>\n");
+    //fprint(token,"<ELSE, else>\n");
     fprintf(log_,"Line# %d: Token <ELSE> Lexeme %s found\n",line_count,yytext);
+    return ELSE;
 }
 {FLOAT} {
-    fprintf(token,"<FLOAT, float>\n");
+    //fprint(token,"<FLOAT, float>\n");
     fprintf(log_,"Line# %d: Token <FLOAT> Lexeme %s found\n",line_count,yytext);
+    return FLOAt;
 }
 {FOR} {
-    fprintf(token,"<FOR, for>\n");
+    //fprint(token,"<FOR, for>\n");
     fprintf(log_,"Line# %d: Token <FOR> Lexeme %s found\n",line_count,yytext);
+    return FOR;
 }
 {IF} {
-    fprintf(token,"<IF, if>\n");
+    //fprint(token,"<IF, if>\n");
     fprintf(log_,"Line# %d: Token <IF> Lexeme %s found\n",line_count,yytext);
+    return IF;
 }
 {INT} {
-    fprintf(token,"<INT, int>\n");
+    //fprint(token,"<INT, int>\n");
     fprintf(log_,"Line# %d: Token <INT> Lexeme %s found\n",line_count,yytext);
+    return INT;
 }
 {RETURN} {
-    fprintf(token,"<RETURN, return>\n");
+    //fprint(token,"<RETURN, return>\n");
     fprintf(log_,"Line# %d: Token <RETURN> Lexeme %s found\n",line_count,yytext);
+    return RETURN;
 }
 {SWITCH} {
-    fprintf(token,"<SWITCH, switch>\n");
+    //fprint(token,"<SWITCH, switch>\n");
     fprintf(log_,"Line# %d: Token <SWITCH> Lexeme %s found\n",line_count,yytext);
+    return SWITCH;
 }
 {WHILE} {
-    fprintf(token,"<WHILE, while>\n");
+    //fprint(token,"<WHILE, while>\n");
     fprintf(log_,"Line# %d: Token <WHILE> Lexeme %s found\n",line_count,yytext);
+    return WHILE;
 }
 {VOID} {
-    fprintf(token,"<VOID, void>\n");
+    //fprint(token,"<VOID, void>\n");
     fprintf(log_,"Line# %d: Token <VOID> Lexeme %s found\n",line_count,yytext);
+    return VOID;
 }
 {ADDOP} {
-    fprintf(token,"<ADDOP, %s>\n",yytext);
+    //fprint(token,"<ADDOP, %s>\n",yytext);
+    SymbolInfo *t =  new SymbolInfo(yytext,"ADDOP");
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <ADDOP> Lexeme %s found\n",line_count,yytext);
+    return ADDOP;
 }
 {MULOP} {
-    fprintf(token,"<MULOP, %s>\n",yytext);
+    //fprint(token,"<MULOP, %s>\n",yytext);
+     SymbolInfo *t =  new SymbolInfo(yytext,"MULOP");
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <MULOP> Lexeme %s found\n",line_count,yytext);
+    return MULOP;
 }
 {RELOP} {
-    fprintf(token,"<RELOP, %s>\n",yytext);
+    //fprint(token,"<RELOP, %s>\n",yytext);
+    SymbolInfo *t =  new SymbolInfo(yytext,"RELOP");
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <RELOP> Lexeme %s found\n",line_count,yytext);
+    return RELOP;
 }
 {INCOP} {
-    fprintf(token,"<INCOP, %s>\n",yytext);
+    //fprint(token,"<INCOP, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <INCOP> Lexeme %s found\n",line_count,yytext);
+    return INCOP;
+}
+{DECOP} {
+    //fprint(token,"<DECOP, %s>\n",yytext);
+    fprintf(log_,"Line# %d: Token <DECOP> Lexeme %s found\n",line_count,yytext);
+    return DECOP;
 }
 {LOGICOP} {
-    fprintf(token,"<LOGICOP, %s>\n",yytext);
+    //fprint(token,"<LOGICOP, %s>\n",yytext);
+    SymbolInfo *t =  new SymbolInfo(yytext,"LOGICOP");
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <LOGICOP> Lexeme %s found\n",line_count,yytext);
+    return LOGICOP;
 }
 {ASSIGNOP} {
-    fprintf(token,"<ASSIGNOP, %s>\n",yytext);
+    //fprint(token,"<ASSIGNOP, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <ASSIGNOP> Lexeme %s found\n",line_count,yytext);
+    return ASSIGNOP;
 }
 {BITOP} {
-    fprintf(token,"<BITOP, %s>\n",yytext);
+    //fprint(token,"<BITOP, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <BITOP> Lexeme %s found\n",line_count,yytext);
+    return BITOP;
 }
 {NOT} {
-    fprintf(token,"<NOT, %s>\n",yytext);
+    //fprint(token,"<NOT, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <NOT> Lexeme %s found\n",line_count,yytext);
+    return NOT;
 }
 {LPAREN} {
-    fprintf(token,"<LPAREN, %s>\n",yytext);
+    //fprint(token,"<LPAREN, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <LPAREN> Lexeme %s found\n",line_count,yytext);
+    return LPAREN;
 }
 {RPAREN} {
-    fprintf(token,"<RPAREN, %s>\n",yytext);
+    //fprint(token,"<RPAREN, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <RPAREN> Lexeme %s found\n",line_count,yytext);
+    return RPAREN;
 }
 {LCURL} {
-    fprintf(token,"<LCURL, %s>\n",yytext);
+    //fprint(token,"<LCURL, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <LCURL> Lexeme %s found\n",line_count,yytext);
-    Table.Enter_Scope();
+   // Table.Enter_Scope();
+   return LCURL;
 }
 {RCURL} {
-    fprintf(token,"<RCURL, %s>\n",yytext);
+    //fprint(token,"<RCURL, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <RCURL> Lexeme %s found\n",line_count,yytext);
-    Table.Exit_Scope();
+   // Table.Exit_Scope();
+   return RCURL;
 }
-{LSQUARE} {
-    fprintf(token,"<LSQUARE, %s>\n",yytext);
-    fprintf(log_,"Line# %d: Token <LSQUARE> Lexeme %s found\n",line_count,yytext);
+{LTHIRD} {
+    //fprint(token,"<LTHIRD, %s>\n",yytext);
+    fprintf(log_,"Line# %d: Token <LTHIRD> Lexeme %s found\n",line_count,yytext);
+    return LTHIRD;
 }
-{RSQUARE} {
-    fprintf(token,"<RSQUARE, %s>\n",yytext);
-    fprintf(log_,"Line# %d: Token <RSQUARE> Lexeme %s found\n",line_count,yytext);
+{RTHIRD} {
+    //fprint(token,"<RTHIRD, %s>\n",yytext);
+    fprintf(log_,"Line# %d: Token <RTHIRD> Lexeme %s found\n",line_count,yytext);
+    return RTHIRD;
 }
 {COMMA} {
-    fprintf(token,"<COMMA, %s>\n",yytext);
+    //fprint(token,"<COMMA, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <COMMA> Lexeme %s found\n",line_count,yytext);
+    return COMMA;
 }
 {SEMICOLON} {
-    fprintf(token,"<SEMICOLON, %s>\n",yytext);
+    //fprint(token,"<SEMICOLON, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <SEMICOLON> Lexeme %s found\n",line_count,yytext);
+    return SEMICOLON;
+}
+{IDENTIFIER} {
+    //fprint(token,"<ID, %s>\n",yytext);
+    fprintf(log_,"Line# %d: Token <ID> Lexeme %s found\n",line_count,yytext);
+   SymbolInfo *t =  new SymbolInfo(yytext,"ID");
+    yylval.symbol=t;
+    return ID;
 }
 {SINGLELINE_STRING} {
                                
                                 string formatted_s = StringFormatter(yytext);
-                                fprintf(token, "<SINGLE LINE STRING, %s>\n", formatted_s.c_str());
+                                //fprint(token, "<SINGLE LINE STRING, %s>\n", formatted_s.c_str());
                                 fprintf(log_, "Line# %d: Token <SINGLE LINE STRING> Lexeme %s found\n", line_count, yytext);
                             }
 
 {MULTILINE_STRING} { 
                                 string formatted_s = StringFormatter(yytext);
                                 string temp_s=string(yytext);
-                                fprintf(token, "<MULTI LINE STRING, %s>\n", formatted_s.c_str());
+                                //fprint(token, "<MULTI LINE STRING, %s>\n", formatted_s.c_str());
                                 fprintf(log_, "Line# %d: Token <MULTI LINE STRING> Lexeme %s found\n", line_count, yytext);
 
                                 for(int i = 0; i < temp_s.size(); ++i)
@@ -462,14 +535,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                                 }
                             }
 
-{IDENTIFIER} {
-    fprintf(token,"<ID, %s>\n",yytext);
-    fprintf(log_,"Line# %d: Token <ID> Lexeme %s found\n",line_count,yytext);
-    if(Table.Insert(yytext,"ID",log_))
-    {
-        Table.printall(log_);
-    }
-}
+
 {SINGLE_LINE_COMMENT_TYPE_ONE} {
                             string temp_s = yytext;
                             if(temp_s.back() == '\n')
@@ -534,28 +600,28 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                         
 {TOO_MANY_DECIMAL_POINT_ERROR} {
     error_count++;
-    fprintf(log_,"Error at line# %d: TOO_MANY_DECIMAL_POINTS %s\n",line_count,yytext);
+    fprintf(error,"Error at line# %d: TOO_MANY_DECIMAL_POINTS %s\n",line_count,yytext);
 
 }
 {ILL_FORMED_NUMBER} {
     error_count++;
-    fprintf(log_,"Error at line# %d: ILLFORMED_NUMBER %s\n",line_count,yytext);
+    fprintf(error,"Error at line# %d: ILLFORMED_NUMBER %s\n",line_count,yytext);
 }
 {INVALID_SUFFIX_PREFIX} {
      error_count++;
-    fprintf(log_,"Error at line# %d: INVALID_ID_SUFFIX_NUM_PREFIX %s\n",line_count,yytext);
+    fprintf(error,"Error at line# %d: INVALID_ID_SUFFIX_NUM_PREFIX %s\n",line_count,yytext);
 }
 {EMPTY_CHAR_ERROR} {
      error_count++;
-    fprintf(log_,"Error at line# %d: EMPTY_CONST_CHAR %s\n",line_count,yytext);
+    fprintf(error,"Error at line# %d: EMPTY_CONST_CHAR %s\n",line_count,yytext);
 }
 {UNFINISHED_CHAR_ERROR} {
      error_count++;
-    fprintf(log_,"Error at line# %d: UNFINISHED_CONST_CHAR %s\n",line_count,yytext);
+    fprintf(error,"Error at line# %d: UNFINISHED_CONST_CHAR %s\n",line_count,yytext);
 }
 {MULTI_CHAR_ERROR} {
      error_count++;
-    fprintf(log_,"Error at line# %d: MULTICHAR_CONST_CHAR %s\n",line_count,yytext);
+    fprintf(error,"Error at line# %d: MULTICHAR_CONST_CHAR %s\n",line_count,yytext);
 }
 
 {UNFINISHED_STRING_ERROR} {
@@ -569,7 +635,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                             }
                         }
 
-                        fprintf(log_, "Error at line# %d: UNFINISHED_STRING %s\n", line_count, yytext);
+                        fprintf(error, "Error at line# %d: UNFINISHED_STRING %s\n", line_count, yytext);
 
                         ++error_count;
                     }
@@ -591,35 +657,12 @@ UNRECOGNISED_CHAR_ERROR [^\n]
                             }
                             error_count++;
 
-                            fprintf(log_, "Error at line# %d: UNFINISHED_COMMENT %s\n", line_count, yytext);
+                            fprintf(error, "Error at line# %d: UNFINISHED_COMMENT %s\n", line_count, yytext);
 
                             
                         } 
 {UNRECOGNISED_CHAR_ERROR} {
      error_count++;
-    fprintf(log_,"Error at line# %d: UNRECOGNIZED_CHAR %s\n",line_count,yytext);
+    fprintf(error,"Error at line# %d: UNRECOGNIZED_CHAR %s\n",line_count,yytext);
 }                        
 %%
-int main(int argc,char *argv[]){
-	
-	if(argc!=2){
-		printf("Please provide input file name and try again\n");
-		return 0;
-	}
-	
-	FILE *fin=fopen(argv[1],"r");
-	if(fin==NULL){
-		printf("Cannot open specified file\n");
-		return 0;
-	}
-	
-	
-	yyin= fin;
-	yylex();
-    Table.printall(log_);
-	fprintf(log_,"Total lines: %d\nTotal errors: %d\n",line_count,error_count);
-	fclose(yyin);
-	fclose(token);
-	fclose(log_);
-	return 0;
-}

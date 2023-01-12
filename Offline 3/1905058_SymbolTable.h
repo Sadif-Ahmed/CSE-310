@@ -3,21 +3,69 @@
 //#include<fstream>
 //#include<string>
 using namespace std;
+struct func_param
+{
+    string name;
+    string type;
+};
+struct var
+{
+    string name;
+    string type;
+    int size;
+};
+struct argument
+{
+    string name;
+    string type;
+    int size;
+    bool error_state;
+};
 
 class SymbolInfo
 {
     string name;
     string type;
+    string ret_type;
+    string var_type;
+    string id;
+    bool param_error_state;
+    bool func_decl_state;
+    bool func_state;
     SymbolInfo *next;
     public:
+    vector<func_param> param_list;
+    vector<var> var_list;
+    vector<argument> argument_list;
     SymbolInfo(string name,string type)
     {
         this->name=name;
         this->type=type;
+        set_ret_type("");
+        set_var_type("");
+        set_id("");
+        set_func_decl_state(false);
         next=NULL;
+    }
+    SymbolInfo(string type)
+    {
+        this->name="";
+        this->type=type;
+        set_ret_type("");
+        set_var_type("");
+        set_id("");
+        set_func_decl_state(false);
+        next=NULL;
+
     }
     SymbolInfo()
     {
+        this->name="";
+        this->type="";
+        set_ret_type("");
+        set_var_type("");
+        set_id("");
+        set_func_decl_state(false);
         next=NULL;
     }
     string get_name()
@@ -47,6 +95,86 @@ class SymbolInfo
     void print()
     {
         cout<<'\t'<<" < "<<name<<" , "<<type<<" > "<<endl;
+    }
+    void set_ret_type(string temp)
+    {
+        ret_type=temp;
+    }
+    string get_ret_type()
+    {
+        return ret_type;
+    }   
+    void set_var_type(string temp)
+    {
+        var_type=temp;
+    }
+    string get_var_type()
+    {
+        return var_type;
+    }
+    void set_id(string temp)
+    {
+        id=temp;
+    }
+    string get_id()
+    {
+        return id;
+    }
+    void set_param_error_state(bool temp)
+    {
+        param_error_state=temp;
+    }
+    bool get_param_error_state()
+    {
+        return param_error_state;
+    }
+    void set_func_decl_state(bool temp)
+    {
+        func_decl_state=temp;
+    }
+    bool get_func_decl_state()
+    {
+        return func_decl_state;
+    }
+    void set_func_state(bool temp)
+    {
+        func_state=temp;
+    }
+    bool get_func_state()
+    {
+        return func_state;
+    }
+    void push_param(string name,string type)
+    {
+        func_param temp;
+        temp.name=name;
+        temp.type=type;
+        param_list.push_back(temp);
+    }
+    void pop_param()
+    {
+        param_list.pop_back();
+    }
+    void push_var(string name,string type,int size)
+    {
+        var temp;
+        temp.name=name;
+        temp.type=type;
+        temp.size=size;
+        var_list.push_back(temp);
+    }
+    void pop_var()
+    {
+        var_list.pop_back();
+    }
+    void push_argument(string name,string type,int size,bool state)
+    {
+        argument temp;
+        temp.name=name;
+        temp.type=type;
+        temp.size=size;
+        temp.error_state=state;
+        argument_list.push_back(temp);
     }
     ~SymbolInfo()
     {
@@ -178,7 +306,7 @@ class ScopeTable{
         if(temp!=NULL)
         {
         //     cout<<'\t'<<"'"<<nm<<"' "<<"already exists in the current ScopeTable"<<endl;
-        fprintf(logfile,"\t%s already exisits in the current ScopeTable\n", nm.c_str());
+       fprintf(logfile,"\t%s already exisits in the current ScopeTable\n", nm.c_str());
             return false;
         }
         else
@@ -208,7 +336,7 @@ class ScopeTable{
     }
     void print(FILE* logfile)
     {   //cout<<'\t'<<"ScopeTable# "<<unique_id<<endl;
-    fprintf(logfile,"\tScopeTable# %d\n",unique_id);
+        fprintf(logfile,"\tScopeTable# %d\n",unique_id);
         for(int i=0;i<num_of_buckets;i++)
         {
           //  cout<<'\t'<<i+1<<"--> ";
@@ -219,14 +347,14 @@ class ScopeTable{
             while(temp!=NULL)
             {
                 //cout<<"<"<<temp->get_name()<<","<<temp->get_type()<<"> ";
-                fprintf(logfile,"<%s,%s> " , temp->get_name().c_str(),temp->get_type().c_str());
+                fprintf(logfile,"<%s, %s> " , temp->get_name().c_str(),temp->get_type().c_str());
                 temp=temp->get_next();
             }
           //  cout<<endl;
            fprintf(logfile,"\n");
           }
         }
-       // fprintf(logfile,"\n");
+        fprintf(logfile,"\n");
         
     }
     bool Delete(string nm)
@@ -399,6 +527,20 @@ class ScopeTable{
             }
            return NULL;
             
+        }
+        SymbolInfo* Lookup_current_scope(string name)
+        {
+                ScopeTable *temp=current;
+                temp->toggle_print();
+                if(temp->Lookup(name))
+                {
+                    temp->toggle_print();
+                    return temp->Lookup(name);
+                }
+                else
+                {
+                    return NULL;
+                }
         }
         void print_current_scope(FILE* logfile)
         {
