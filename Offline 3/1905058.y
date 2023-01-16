@@ -478,7 +478,371 @@ type_specifier	: INT
 			$$ = x;
 			
 		}
-		 ;        
+		 ;  
+declaration_list : declaration_list COMMA ID
+		{
+			fprintf(log_,"Line# %d: declaration_list : declaration_list COMMA ID\n\n",line_count);
+			$$ = new SymbolInfo((string)$1->get_name()+(string)","+(string)$3->get_name(), "NON_TERMINAL");
+			
+			/* keeping track of identifier(variable) */
+      temp_var.name = $3->get_name();
+      temp_var.size = -1;
+      var_list.push_back(temp_var);
+
+      /* 3 args are name , type, size of variable */
+      $$->var_list = $1->var_list;
+      $$->push_var($3->get_name() , "" , 0);
+
+		}
+ 		  | declaration_list COMMA ID LSQUARE CONST_INT RSQUARE
+		{
+			fprintf(log_,"Line# %d: declaration_list : declaration_list COMMA ID LSQUARE CONST_INT RSQUARE\n\n",line_count);
+			$$ = new SymbolInfo((string)$1->get_name()+(string)","+(string)$3->get_name()+(string)"["+(string)$5->get_name()+(string)"]", "NON_TERMINAL");
+			
+			/* keeping track of identifier(array) */
+      temp_var.name = (string)$3->get_name();
+      stringstream temp_str((string) $5->get_name());
+      temp_str >> temp_var.size;
+      var_list.push_back(temp_var);
+
+      stringstream geek($5->get_name());
+      int size = 0;
+      geek >> size;
+
+      $$->var_list = $1->var_list;
+      $$->push_var($3->get_name() , "" , size);
+
+		}
+
+ 		  | ID
+		{
+			fprintf(log_,"Line# %d: declaration_list : ID\n\n",line_count);
+ 			$$ = new SymbolInfo($1->get_name() ,  "ID");
+			 /* keeping track of identifier(variable) */
+      temp_var.name = (string)$1->get_name();
+      temp_var.size = -1;
+      var_list.push_back(temp_var);
+
+      $$->push_var($1->get_name() , "" , 0);
+
+		}
+ 		| ID LSQUARE CONST_INT RSQUARE
+		{
+			fprintf(log_ , "Line# %d:  declaration_list: ID LSQUARE CONST_INT RSQUARE\n\n",line_count);
+			$$ = new SymbolInfo($1->get_name()+"["+$3->get_name()+"]", "NON_TERMINAL");
+			temp_var.name = $1->get_name();
+      stringstream temp_str($3->get_name());
+      temp_str >> temp_var.size;
+      var_list.push_back(temp_var);
+
+      stringstream geek($3->get_name());
+      int size = 0;
+      geek >> size;
+
+      $$->push_var($1->get_name() , "" , size);
+
+		}
+    | declaration_list error
+    {
+      yyclearin;
+    }
+
+ 		  ;
+statements : statement
+    {
+       $$ = $1;
+       fprintf(log_ , "Line# %d: statements : statement\n\n" , line_count);
+
+    }
+	   | statements statement
+    {
+      $$ = new SymbolInfo($1->get_name()+$2->get_name() , "NON_TERMINAL");
+      fprintf(log_ , "Line# %d: statements : statements statement\n\n" , line_count);
+
+    }
+	   ;   
+statement : var_declaration
+    {
+      fprintf(log_,"Line# %d: statement : var_declaration\n\n",line_count);
+		$1->set_name($1->get_name()+"\n");
+  		$$=$1;
+    }
+	  | expression_statement
+    {
+      fprintf(log_,"Line# %d: statement : expression_statement\n\n",line_count);
+		$1->set_name($1->get_name()+"\n");
+		$$=$1;
+    }
+	  | compound_statement
+    {
+      fprintf(log_,"Line# %d: statement : compound_statement\n\n",line_count);
+      $$=$1;
+    }
+	  | FOR LPAREN expression_statement expression_statement expression RPAREN statement
+    {
+      string str="for("+$3->get_name()+$4->get_name()+$5->get_name()+")"+$7->get_name();
+      $$ = new SymbolInfo(str , "NON_TERMINAL");
+      fprintf(log_,"Line# %d: statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement\n",line_count);
+    }
+	  | IF LPAREN expression RPAREN statement %prec LOWER_THAN_ELSE
+    {
+      string str = "if("+$3->get_name()+")"+$5->get_name();
+      $$ = new SymbolInfo(str , "statement");
+      fprintf(log_,"Line# %d: statement : IF LPAREN expression RPAREN statement\n\n",line_count);
+      
+
+    }
+	  | IF LPAREN expression RPAREN statement ELSE statement
+    {
+      string str = "if("+$3->get_name()+")"+$5->get_name()+"else"+$7->get_name();
+      $$ = new SymbolInfo(str , "statement");
+      fprintf(log_,"Line# %d: statement : IF LPAREN expression RPAREN statement ELSE statement\n\n",line_count);
+    
+
+    }
+	  | WHILE LPAREN expression RPAREN statement
+    {
+      string str = "while("+$3->get_name()+")"+$5->get_name();
+      $$ = new SymbolInfo(str , "statement");
+      fprintf(log_,"Line# %d: statement : WHILE LPAREN expression RPAREN statement\n\n",line_count);
+    
+    }
+	  | PRINTLN LPAREN ID RPAREN SEMICOLON
+    {
+      $$ = new SymbolInfo("printf("+$3->get_name()+");" , "statement");
+      fprintf(log_,"Line# %d: statement : PRINTLN LPAREN ID RPAREN SEMICOLON\n\n",line_count);
+      if($3->get_func_state()){
+        if(!table.Lookup_current_scope(func_name($3->get_name()))){
+          error_count++;
+          fprintf(error , "Line# %d:  Undeclared function %s\n\n" , line_count,func_name($3->get_name()).c_str());
+            }
+      }
+
+      else if(!table.Lookup_current_scope($3->get_name())){
+        error_count++;
+        fprintf(error , "Line %d: Undeclared Variable %s\n\n" , line_count,$3->get_name().c_str());
+      }
+    }
+	  | RETURN expression SEMICOLON
+    {
+      $$ = new SymbolInfo("return "+$2->get_name()+";" , "statement");
+      fprintf(log_,"Line %d: statement : RETURN expression SEMICOLON\n\n",line_count);
+
+      
+    }
+	  ;
+expression_statement 	: SEMICOLON
+    {
+      $$ = new SymbolInfo(";" , "expression_statement");
+      fprintf(log_,"Line %d: expression_statement : SEMICOLON\n",line_count);
+    }
+			| expression SEMICOLON
+    {
+      $$ = new SymbolInfo($1->get_name()+";" , "expression_statement");
+      fprintf(log_,"Line %d: expression_statement : expression SEMICOLON\n\n",line_count);
+    
+
+    }
+    | expression error
+    {
+      yyclearin;
+    }
+			;
+variable : ID
+    {
+      fprintf(log_,"Line %d: variable : ID\n",line_count);
+		$$ = $1;
+      //Semantic : chk if variable is declared before
+
+
+      $$->set_id("var");
+      $$->push_var($1->get_name(),"",0);
+      SymbolInfo *x=table.Lookup($1->get_name());
+      if(x)
+      {$$->set_var_type(x->get_var_type());
+      }
+
+
+
+    }
+
+	 | ID LSQUARE expression RSQUARE
+   {
+     fprintf(log_,"Line %d: variable : ID LSQUARE expression RSQUARE\n",line_count);
+     $$ = new SymbolInfo($1->get_name()+"["+$3->get_name()+"]" , "variable");
+     $$->set_id("array");
+     //array index must be integer
+
+   }
+
+	 ;       
+expression : logic_expression
+    {
+      $$ = $1;
+      fprintf(log_,"Line %d: expression : logic_expression\n\n",line_count);
+    }
+	   | variable ASSIGNOP logic_expression
+    {
+      $$ = new SymbolInfo($1->get_name()+"="+$3->get_name() , "expression");
+      fprintf(log_,"Line %d: expression : variable ASSIGNOP logic_expression\n\n",line_count);
+
+      //semantics
+      //todo
+      //assign $3's variable_type to $1 after some error chkings
+
+      ///pass arrayname if array otherwise pass varname only
+      ///suppose $1->get_name() is a[2].Now modified_name returns only a
+      string varname;
+      varname = array_name($1->get_name());
+      SymbolInfo *x=table.Lookup(varname);
+			if(x)
+			{
+				//setting type of var(int/float)
+        $1->set_var_type(x->get_var_type());
+
+        //chk if variable and written with index
+        bool isvar=true;
+        for(int i=0;i<var_list.size();i++){
+          if(var_list[i].name==x->get_name() && var_list[i].size>0){
+            isvar = false;break;
+         }
+        }
+        if(isvar){
+          if(varname != $1->get_name()){
+            error_count++;
+            fprintf(error , "Line %d: %s not an array\n\n" , line_count,varname.c_str());
+          }
+        }
+        //chk if array
+        for(int i=0;i<var_list.size();i++){
+          if(var_list[i].name==x->get_name() && var_list[i].size>0){
+            //now we're sure that it's an array
+            //let's see if ara is being used without any index
+            if(varname==$1->get_name()){
+              error_count++;
+              fprintf(error,"Line %d: Type Mismatch, %s is an array\n\n",line_count , varname.c_str());
+              break;
+
+            }
+            //now chk if wrong index is given
+
+            else if(!array_index_checker($1->get_name() , var_list[i].size)){
+              error_cnt++;
+              fprintf(error,"Line %d: Expression inside third brackets not an integer\n\n",line_count);
+              break;
+            }
+          }
+        }
+
+        //check if float is assigned to int
+        if(x->get_var_type()=="int" && $3->get_var_type()=="float"){
+					error_count++;
+          $$->set_var_type("int");
+					fprintf(error,"Line %d: Type mismatch \n\n",line_count,$3->get_var_type().c_str(),x->get_var_type().c_str());	}
+        else if(x->get_var_type()=="float" && $3->get_var_type()=="int"){
+          $$->set_var_type("float");
+        }
+        else{
+          $$->set_var_type(x->get_var_type());
+        }
+
+
+      if($3->get_func_state()){
+        ///extract function name cause $3 has name like foo(6) but we need only foo
+        string fnm = func_name($3->get_name());
+        if(check_func(fnm)){
+          func_ f = get_func(fnm);
+          ///chk if func is returning to valid type
+
+          if(f.ret_type=="void"){
+            error_count++;
+            fprintf(error , "Line %d: Void function used in expression\n\n",line_count);
+          }
+          else if(f.ret_type != $1->get_var_type()){
+            error_count++;
+            fprintf(error , "Line %d: Type Mismatch in function returning\n\n",line_count);
+          }
+        }
+      }
+
+			}
+
+			else{
+				error_count++;
+				fprintf(error,"Line %d: Undeclared variable %s\n\n",line_count,varname.c_str());
+        	}
+    }
+	   ;
+logic_expression : rel_expression
+    {
+      $$ = $1;
+      fprintf(log_,"Line %d: logic_expression : rel_expression\n\n",line_count);
+    }
+		 | rel_expression LOGICOP rel_expression
+    {
+      $$ = new SymbolInfo($1->get_name()+$2->get_name()+$3->get_name() , "logic_expression");
+      fprintf(log_,"Line %d: logic_expression : rel_expression LOGICOP rel_expression\n\n",line_count);
+      
+      /*semantic
+      both $1 and $3 must be of type non void
+      $$ must be set to type int
+      */
+      if($1->get_var_type()=="void" || $3->get_var_type()=="void"){
+ 				error_count++;
+ 				fprintf(error,"Line %d: Type Mismatch(Operands of %s can't be void)\n\n",line_count,$2->get_name().c_str());
+        	}
+
+       $$->set_var_type("int");
+    }
+		 ;
+rel_expression	: simple_expression
+   {
+     $$ = $1;
+     fprintf(log_,"Line %d: rel_expression	: simple_expression\n\n",line_count);
+     
+   }
+		| simple_expression RELOP simple_expression
+   {
+     $$ = new SymbolInfo($1->get_name()+$2->get_name()+$3->get_name() , "rel_expression");
+     fprintf(log_,"Line %d: rel_expression : simple_expression RELOP simple_expression\n\n",line_count);
+
+     /*semantic
+     both $1 and $3 must be of type non void
+     $$ must be set to type int
+     */
+     if($1->get_var_type()=="void" || $3->get_var_type()=="void"){
+				error_count++;
+				fprintf(error,"Line %d : Type Mismatch(Operands of %s can't be void)\n\n",line_count,$2->get_name().c_str());
+			}
+      $$->set_var_type("int");
+   }
+		;
+simple_expression : term
+  {
+    $$ = $1;
+    fprintf(log_,"Line %d: simple_expression : term\n\n",line_count);
+
+  }
+		  | simple_expression ADDOP term
+  {
+    $$ = new SymbolInfo($1->get_name()+$2->get_name()+$3->get_name() , "simple_expression");
+    fprintf(log_,"Line %d: simple_expression : simple_expression ADDOP term\n\n",line_count);
+
+    if($1->get_var_type()=="float" || $3->get_var_type()=="float")
+				$$->set_var_type("float");
+			else
+				$$->set_var_type("int");
+
+  }
+		  ;        
+
+
+
+
+
+
+
+
 
 
       
