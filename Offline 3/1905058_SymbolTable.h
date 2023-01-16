@@ -306,7 +306,7 @@ class ScopeTable{
         if(temp!=NULL)
         {
         //     cout<<'\t'<<"'"<<nm<<"' "<<"already exists in the current ScopeTable"<<endl;
-       fprintf(logfile,"\t%s already exisits in the current ScopeTable\n", nm.c_str());
+       //fprintf(logfile,"\t%s already exisits in the current ScopeTable\n", nm.c_str());
             return false;
         }
         else
@@ -531,10 +531,10 @@ class ScopeTable{
         SymbolInfo* Lookup_current_scope(string name)
         {
                 ScopeTable *temp=current;
-                temp->toggle_print();
+                //temp->toggle_print();
                 if(temp->Lookup(name))
                 {
-                    temp->toggle_print();
+                   // temp->toggle_print();
                     return temp->Lookup(name);
                 }
                 else

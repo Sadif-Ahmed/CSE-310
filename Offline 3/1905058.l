@@ -135,8 +135,8 @@ LPAREN ("(")
 RPAREN (")")
 LCURL ("{")
 RCURL ("}")
-LTHIRD ("[")
-RTHIRD ("]")
+LSQUARE ("[")
+RSQUARE ("]")
 ADDOP [+-]
 MULOP [*/%]
 INCOP ("++")
@@ -486,15 +486,15 @@ UNRECOGNISED_CHAR_ERROR [^\n]
    // Table.Exit_Scope();
    return RCURL;
 }
-{LTHIRD} {
-    //fprint(token,"<LTHIRD, %s>\n",yytext);
-    fprintf(log_,"Line# %d: Token <LTHIRD> Lexeme %s found\n",line_count,yytext);
-    return LTHIRD;
+{LSQUARE} {
+    //fprint(token,"<LSQUARE, %s>\n",yytext);
+    fprintf(log_,"Line# %d: Token <LSQUARE> Lexeme %s found\n",line_count,yytext);
+    return LSQUARE;
 }
-{RTHIRD} {
-    //fprint(token,"<RTHIRD, %s>\n",yytext);
-    fprintf(log_,"Line# %d: Token <RTHIRD> Lexeme %s found\n",line_count,yytext);
-    return RTHIRD;
+{RSQUARE} {
+    //fprint(token,"<RSQUARE, %s>\n",yytext);
+    fprintf(log_,"Line# %d: Token <RSQUARE> Lexeme %s found\n",line_count,yytext);
+    return RSQUARE;
 }
 {COMMA} {
     //fprint(token,"<COMMA, %s>\n",yytext);
