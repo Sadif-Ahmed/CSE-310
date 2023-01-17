@@ -67,16 +67,14 @@ Line# 6: statements : statement
 Line# 7: Token <RCURL> Lexeme } found
 Line# 7: compound_statement : LCURL statements RCURL
 	ScopeTable# 2
-	10--> <a, ID> 
-	11--> <b, ID> 
-
+	10--> <a, > 
+	11--> <b, > 
 	ScopeTable# 1
-	1--> <y, ID> 
-	2--> <z, ID> 
-	6--> <foo, FUNCTION, > <var, ID> 
-	10--> <a, ID> 
-	11--> <x, ID> 
-
+	1--> <y, int> 
+	2--> <z, int> 
+	6--> <foo, > <var, > 
+	10--> <a, float> 
+	11--> <x, int> 
 Line# 7: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
 Line# 7: unit : func_definition
 Line# 7:  program : program unit
@@ -126,14 +124,12 @@ Line# 11: statements : statements statement
 Line# 12: Token <RCURL> Lexeme } found
 Line# 12: compound_statement : LCURL statements RCURL
 	ScopeTable# 3
-
 	ScopeTable# 1
-	1--> <y, ID> 
-	2--> <z, ID> 
-	6--> <foo, FUNCTION, > <var, ID> 
-	10--> <a, ID> 
-	11--> <x, ID> 
-
+	1--> <y, int> 
+	2--> <z, int> 
+	6--> <foo, > <var, > 
+	10--> <a, float> 
+	11--> <x, int> 
 Line# 12: func_definition : type_specifier ID LPAREN RPAREN compound_statement
 Line# 12: unit : func_definition
 Line# 12:  program : program unit
@@ -396,20 +392,18 @@ Line# 22: statements : statements statement
 Line# 23: Token <RCURL> Lexeme } found
 Line# 23: compound_statement : LCURL statements RCURL
 	ScopeTable# 4
-	1--> <c, ID> 
-	2--> <d, ID> 
-	7--> <i, ID> 
-	8--> <j, ID> 
-	9--> <k, ID> 
-	10--> <a, ID> 
-
+	1--> <c, int> 
+	2--> <d, float> 
+	7--> <i, int> 
+	8--> <j, int> 
+	9--> <k, int> 
+	10--> <a, int> 
 	ScopeTable# 1
-	1--> <y, ID> 
-	2--> <z, ID> <main, ID> 
-	6--> <foo, FUNCTION, > <var, ID> 
-	10--> <a, ID> 
-	11--> <x, ID> 
-
+	1--> <y, int> 
+	2--> <z, int> <main, > 
+	6--> <foo, > <var, > 
+	10--> <a, float> 
+	11--> <x, int> 
 Line# 23: func_definition : type_specifier ID LPAREN RPAREN compound_statement
 Line# 23: unit : func_definition
 Line# 23:  program : program unit

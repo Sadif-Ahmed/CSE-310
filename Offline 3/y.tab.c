@@ -844,8 +844,8 @@ static const yytype_int16 yyrline[] =
      517,   529,   545,   551,   557,   564,   570,   576,   581,   587,
      595,   603,   610,   626,   634,   639,   646,   651,   669,   679,
      684,   776,   781,   798,   804,   820,   826,   838,   843,   879,
-     898,   909,   916,   956,  1003,  1011,  1018,  1025,  1042,  1059,
-    1065,  1069,  1090
+     898,   909,   916,   956,  1003,  1011,  1019,  1026,  1043,  1060,
+    1066,  1070,  1091
 };
 #endif
 
@@ -2571,24 +2571,25 @@ yyreduce:
       fprintf(log_,"Line %d: factor : CONST_INT\n",line_count);
 			(yyval.symbol)=(yyvsp[0].symbol);
 			(yyval.symbol)->set_var_type("int");
+      
 
     }
-#line 2577 "y.tab.c"
+#line 2578 "y.tab.c"
     break;
 
   case 66: /* factor: CONST_FLOAT  */
-#line 1019 "1905058.y"
+#line 1020 "1905058.y"
     {
       fprintf(log_,"Line %d: factor : CONST_FLOAT\n",line_count);
 			(yyval.symbol)=(yyvsp[0].symbol);
 			(yyval.symbol)->set_var_type("float");
 
     }
-#line 2588 "y.tab.c"
+#line 2589 "y.tab.c"
     break;
 
   case 67: /* factor: variable INCOP  */
-#line 1026 "1905058.y"
+#line 1027 "1905058.y"
     {
       fprintf(log_,"Line %d: factor	: variable INCOP\n",line_count);
       (yyval.symbol) = new SymbolInfo((yyvsp[-1].symbol)->get_name()+"++","factor");
@@ -2605,11 +2606,11 @@ yyreduce:
       }
 
     }
-#line 2609 "y.tab.c"
+#line 2610 "y.tab.c"
     break;
 
   case 68: /* factor: variable DECOP  */
-#line 1043 "1905058.y"
+#line 1044 "1905058.y"
     {
       fprintf(log_,"Line %d: factor	: variable DECOP\n",line_count);
       (yyval.symbol) = new SymbolInfo((yyvsp[-1].symbol)->get_name()+"--","factor");
@@ -2624,28 +2625,28 @@ yyreduce:
          (yyval.symbol)->set_id((yyvsp[-1].symbol)->get_id());
       }
     }
-#line 2628 "y.tab.c"
+#line 2629 "y.tab.c"
     break;
 
   case 69: /* argument_list: arguments  */
-#line 1060 "1905058.y"
+#line 1061 "1905058.y"
         {
           fprintf(log_,"Line %d: argument_list : arguments\n",line_count);
     			(yyval.symbol)=(yyvsp[0].symbol);
         }
-#line 2637 "y.tab.c"
+#line 2638 "y.tab.c"
     break;
 
   case 70: /* argument_list: %empty  */
-#line 1065 "1905058.y"
+#line 1066 "1905058.y"
         {
           (yyval.symbol) = new SymbolInfo("" , "argument_list");
         }
-#line 2645 "y.tab.c"
+#line 2646 "y.tab.c"
     break;
 
   case 71: /* arguments: arguments COMMA logic_expression  */
-#line 1070 "1905058.y"
+#line 1071 "1905058.y"
         {
           (yyval.symbol) = new SymbolInfo((yyvsp[-2].symbol)->get_name()+" , "+(yyvsp[0].symbol)->get_name() , "arguments");
           fprintf(log_,"Line %d: arguments : arguments COMMA logic_expression\n",line_count);
@@ -2666,11 +2667,11 @@ yyreduce:
           }
 
         }
-#line 2670 "y.tab.c"
+#line 2671 "y.tab.c"
     break;
 
   case 72: /* arguments: logic_expression  */
-#line 1091 "1905058.y"
+#line 1092 "1905058.y"
         {
           fprintf(log_,"Line %d: arguments : logic_expression\n",line_count);
     			(yyval.symbol)=(yyvsp[0].symbol);
@@ -2688,11 +2689,11 @@ yyreduce:
             (yyval.symbol)->push_argument((yyvsp[0].symbol)->get_name() , (yyvsp[0].symbol)->get_var_type() , 0,false);
           }
         }
-#line 2692 "y.tab.c"
+#line 2693 "y.tab.c"
     break;
 
 
-#line 2696 "y.tab.c"
+#line 2697 "y.tab.c"
 
       default: break;
     }
@@ -2885,7 +2886,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 1110 "1905058.y"
+#line 1111 "1905058.y"
 
 int main(int argc,char *argv[])
 {
@@ -2898,7 +2899,7 @@ int main(int argc,char *argv[])
 
 	yyin=fp;
 	yyparse();
-  
+
 	fprintf(log_,"Total Lines : %d \n",line_count);
 	fprintf(log_,"Total Errors : %d \n",error_count);
 	fprintf(error,"\nTotal Errors : %d \n",error_count);
