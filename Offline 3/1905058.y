@@ -834,7 +834,304 @@ simple_expression : term
 				$$->set_var_type("int");
 
   }
-		  ;        
+		  ;     
+term :	unary_expression
+    {
+      $$ = $1;
+      fprintf(log_,"Line %d: term :	unary_expression\n\n",line_count);
+    }
+     |  term MULOP unary_expression
+    {
+      $$ = new SymbolInfo($1->get_name()+$2->get_name()+$3->get_name() , "term");
+      fprintf(log_,"Line %d: term : term MULOP unary_expression\n\n",line_count);
+      //if $3 is void type function
+      string fn = func_name($3->get_name());
+      if(check_func(fn)){
+        func_ f = get_func(fn);
+        if(f.ret_type=="void"){
+          error_count++;
+          fprintf(error , "Line %d: Void function used in expression\n\n",line_count);        }
+      }
+      //features of mod operation
+      if($2->get_name()=="%" && ($1->get_var_type()!="int" || $3->get_var_type()!="int")){
+				error_count++;
+				fprintf(error,"Line %d: Non-Integer operand on modulus operator\n\n",line_count);
+        	}
+      //mod by zero
+      else if($2->get_name()=="%" && $3->get_name()=="0"){
+				error_count++;
+				fprintf(error,"Line %d: Modulus by Zero\n\n",line_count);
+
+			}
+			//set variable_type
+			if($2->get_name()=="%")
+				$$->set_var_type("int");
+			else
+			{
+				if($1->get_var_type()=="float" || $3->get_var_type()=="float")
+					$$->set_var_type("float");
+				else
+					$$->set_var_type("int");
+			}
+
+    }
+     ;             
+unary_expression : ADDOP unary_expression
+    {
+      //if $3 is void type function
+      string fn = func_name($2->get_name());
+      if(check_func(fn)){
+        func_ f = get_func(fn);
+        if(f.ret_type=="void"){
+          error_count++;
+          fprintf(error , "Line %d: Void function used in expression\n\n",line_count);        }
+      }
+
+      fprintf(log_,"Line %d: unary_expression : ADDOP unary_expression\n",line_count);
+
+			$$ = new SymbolInfo($1->get_name()+$2->get_name(),"unary_expression");
+
+      $$->set_var_type($2->get_var_type());
+      $$->set_id($2->get_id());
+
+    }
+		 | NOT unary_expression
+    {
+      fprintf(log_,"Line %d: unary_expression : NOT unary_expression\n",line_count);
+
+
+      $$ = new SymbolInfo("!"+$2->get_name(),"unary_expression");
+
+      $$->set_var_type($2->get_var_type());
+      $$->set_id($2->get_id());
+
+    }
+		 | factor
+     {
+       $$ = $1;
+       fprintf(log_,"Line %d: unary_expression :	factor\n\n",line_count);       
+     }
+
+		 ;
+factor	: variable
+    {
+      fprintf(log_,"Line %d: factor : variable\n\n",line_count);
+      $$ = $1;
+      ///pass arrayname if array otherwise pass varname only
+      ///suppose $1->get_name() is a[2].Now modified_name returns only a
+      string varname;
+      varname = array_name($1->get_name());
+      SymbolInfo *x=table.Lookup(varname);
+			if(!x){
+        error_count++;
+        fprintf(error,"Line %d: Undeclared variable %s\n\n",line_count,varname.c_str());
+              }
+      else{
+
+          //setting type of var(int/float) and identity(array/normal variable)
+  				$$->set_var_type(x->get_var_type());
+          $$->set_id(x->get_id());
+          //chk if array
+          for(int i=0;i<var_list.size();i++){
+            if(var_list[i].name==x->get_name() && var_list[i].size>0){
+              //now we're sure that it's an array
+              //let's see if ara is being used without any index
+              if(varname==$1->get_name()){
+                error_count++;
+                fprintf(error,"Line %d:Type Mismatch, %s is an array\n\n",line_count,varname.c_str());
+                $$->set_param_error_state(true);
+                break;
+              }
+              //now chk if wrong index is given
+              else if(!array_index_checker($1->get_name() , var_list[i].size)){
+                error_count++;
+                fprintf(error,"Line: %d Wrong array index\n\n",line_count);
+                break;
+              }
+            }
+          }
+      }
+
+    }
+	  | ID LPAREN argument_list RPAREN
+    {
+
+      $$ = new SymbolInfo($1->get_name()+"("+$3->get_name()+")" , "factor");
+      fprintf(log_,"Line %d: factor : ID LPAREN argument_list RPAREN\n\n",line_count);
+      $$->set_func_state(true);
+
+      //semantic
+      //chk if id is in func_list
+      if(!check_func($1->get_name())){
+        error_count++;
+        fprintf(error , "Error at line: %d Undeclared Function %s\n\n",line_count,$1->get_name().c_str());
+              }
+      else{
+        func_ f = get_func($1->get_name());
+        //chk args consistency
+        bool matched = true;
+        bool already_error_in_arg = false;
+        if(f.parametres.size() != $3->argument_list.size())matched = false;
+        else{
+          for(int i=0;i<f.parametres.size();i++){
+            if($3->argument_list[i].error_state){
+              already_error_in_arg = true;
+              break;
+            }
+            //cout<<f.f_name<<" "<<$3->arg_list[i].name<<" "<<$3->arg_list[i].sz<<endl;
+            if($3->argument_list[i].size>0){
+              if($3->get_name()==array_name($3->get_name())){
+                matched = false;
+                break;
+              }
+            }
+            if(f.parametres[i].first != $3->argument_list[i].type){
+              matched = false;
+              break;
+            }
+          }
+        }
+        //cout<<$1->get_name()<<" "<<already_error_in_arg<<endl;
+        if(!matched && !already_error_in_arg){
+          //
+          error_count++;
+          fprintf(error , "Line %d: Total number of arguments mismatch in function %s\n\n",line_count,$1->get_name().c_str());
+        }
+      }
+
+    }
+	| LPAREN expression RPAREN
+    {
+      $$ = new SymbolInfo("("+$2->get_name()+")" , "factor");
+      fprintf(log_,"Line %d: factor : LPAREN expression RPAREN\n\n",line_count);
+
+      $$->set_var_type($2->get_var_type());
+
+    }
+	| CONST_INT
+    {
+      fprintf(log_,"Line %d: factor : CONST_INT\n\n",line_count);
+			$$=$1;
+			$$->set_var_type("int");
+
+    }
+	| CONST_FLOAT
+    {
+      fprintf(log_,"Line %d: factor : CONST_FLOAT\n\n",line_count);
+			$$=$1;
+			$$->set_var_type("float");
+
+    }
+	| variable INCOP
+    {
+      fprintf(log_,"Line %d: factor	: variable INCOP\n\n",line_count);
+      $$ = new SymbolInfo($1->get_name()+"++","factor");
+
+      SymbolInfo *x=table.Lookup(array_name($1->get_name()));
+			if(!x){
+        error_count++;
+        fprintf(error,"Line %d: Undeclared variable %s\n\n",line_count,$1->get_name().c_str());
+              }
+      else{
+
+         $$->set_var_type($1->get_var_type());
+         $$->set_id($1->get_id());
+      }
+
+    }
+	| variable DECOP
+    {
+      fprintf(log_,"Line %d: factor	: variable DECOP\n\n",line_count);
+      $$ = new SymbolInfo($1->get_name()+"--","factor");
+
+      SymbolInfo *x=table.Lookup(modified_name($1->get_name()));
+			if(!x){
+        error_count++;
+        fprintf(error,"Line %d: Undeclared variable %s\n\n",line_count,$1->get_name().c_str());      }
+      else{
+
+         $$->set_var_type($1->get_var_type());
+         $$->set_id($1->get_id());
+      }
+    }
+
+	;   
+argument_list : arguments
+        {
+          fprintf(log_,"Line %d: argument_list : arguments\n\n",line_count);
+    			$$=$1;
+        }
+			  |
+        {
+          $$ = new SymbolInfo("" , "argument_list");
+        }
+			  ;          
+arguments : arguments COMMA logic_expression
+        {
+          $$ = new SymbolInfo($1->get_name()+" , "+$3->get_name() , "arguments");
+          fprintf(log_,"Line %d: arguments : arguments COMMA logic_expression\n\n",line_count);
+
+          $$->argument_list = $1->argument_list;
+          bool isara=false;
+          for(int i=0;i<var_list.size();i++){
+            if($3->get_name()==var_list[i].name && var_list[i].size>0){
+                isara = true;
+                if($3->get_param_error_state()){
+                  $$->push_argument($3->get_name() , $3->get_var_type() , var_list[i].size,true);break;
+                }
+                else $$->push_argument($3->get_name() , $3->get_var_type() , var_list[i].size,false);break;
+            }
+          }
+          if(!isara){
+            $$->push_argument($3->get_name() , $3->get_var_type() , 0,false);
+          }
+
+        }
+	      | logic_expression
+        {
+          fprintf(log_,"Line %d: arguments : logic_expression\n\n",line_count);
+    			$$=$1;
+          bool isara=false;
+          for(int i=0;i<var_list.size();i++){
+            if($1->get_name()==var_list[i].name && var_list[i].size>0){
+              isara = true;
+              if($1->get_param_error_state()){
+                $$->push_argument($1->get_name() , $1->get_var_type() , var_list[i].size,true);break;
+              }
+              else $$->push_argument($1->get_name() , $1->get_var_type() , var_list[i].size,false);break;
+            }
+          }
+          if(!isara){
+            $$->push_argument($1->get_name() , $1->get_var_type() , 0,false);
+          }
+        }
+
+	      ;
+%%
+int main(int argc,char *argv[])
+{
+
+	if((fp=fopen(argv[1],"r"))==NULL)
+	{
+		printf("Cannot Open Input File.\n");
+		exit(1);
+	}
+
+	yyin=fp;
+	yyparse();
+
+	fprintf(log_,"\t\tSymbol Table : \n\n");
+	table.printall(log_);
+	fprintf(log_,"Total Lines : %d \n\n",line_count);
+	fprintf(log_,"Total Errors : %d \n\n",error_count);
+	fprintf(error,"\nTotal Errors : %d \n\n",error_count);
+
+	fclose(fp);
+	fclose(log_);
+	fclose(error_);
+
+	return 0;
+}          
 
 
 
