@@ -693,9 +693,9 @@ char *yytext;
     int error_count=0;
   //  string comment="";
 
-    FILE *log_ = fopen("1905058_log.txt","a");
+    FILE *log_ = fopen("1905058_log.txt","w");
    // FILE *token = fopen("1905058_token.txt","w");
-    FILE *error = fopen("1905058_error.txt","a");
+    FILE *error = fopen("1905058_error.txt","w");
 
 
    // SymbolTable Table(10);

@@ -347,8 +347,16 @@ class ScopeTable{
             while(temp!=NULL)
             {
                 //cout<<"<"<<temp->get_name()<<","<<temp->get_type()<<"> ";
+                if(temp->get_func_decl_state())
+                {
+                    fprintf(logfile,"<%s, %s, %s> " , temp->get_name().c_str(),"FUNCTION",temp->get_ret_type().c_str());
+                    temp=temp->get_next();
+                }
+                else
+                {
                 fprintf(logfile,"<%s, %s> " , temp->get_name().c_str(),temp->get_type().c_str());
                 temp=temp->get_next();
+                }
             }
           //  cout<<endl;
            fprintf(logfile,"\n");
