@@ -374,7 +374,7 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 {FLOAT} {
     //fprint(token,"<FLOAT, float>\n");
     fprintf(log_,"Line# %d: Token <FLOAT> Lexeme %s found\n",line_count,yytext);
-    return FLOAt;
+    return FLOAT;
 }
 {FOR} {
     //fprint(token,"<FOR, for>\n");

@@ -16,14 +16,14 @@ int yylex(void);
 
 extern FILE *yyin;
 FILE *fp;
-FILE *log_ = fopen("1905058_log.txt","a");
+extern FILE *log_;
 // FILE *token = fopen("1905058_token.txt","w");
-ILE *error = fopen("1905058_error.txt","a");
+extern FILE *error;
 
 SymbolTable table(11);
 
 extern int line_count;
-extern int error_count=0;
+extern int error_count;
 
 string var_type;
 string curr_ret_type;
@@ -73,7 +73,6 @@ func_ get_func(string name){
       return func_list[i];
     }
   }
-  return NULL;
 }
 void print_funcs()
 {
@@ -158,7 +157,7 @@ void yyerror(char *s)
 
 %token IF ELSE FOR WHILE DO BREAK INT CHAR FLOAT DOUBLE
 %token VOID RETURN SWITCH CASE DEFAULT CONTINUE
-%token ASSIGNOP INCOP DECOP NOT LPAREN RPAREN LCURL RCURL LSQUARE RSQUARE COMMA SEMICOLON PRINTLN
+%token ASSIGNOP INCOP DECOP NOT LPAREN RPAREN LCURL RCURL LSQUARE RSQUARE COMMA SEMICOLON PRINTLN BITOP
 
 %token<symbol>CONST_INT
 %token<symbol>CONST_FLOAT
@@ -178,6 +177,7 @@ void yyerror(char *s)
 start : program
 	{
 		//write your code in this block in all the similar blocks below
+        fprintf(log_,"Line# %d:  start : program\n\n",line_count);
 	}
 	;
 
@@ -204,7 +204,7 @@ unit : var_declaration
 	}
      | func_definition
 	{
-        fprintf(logfile,"Line# %d: unit : func_definition\n\n",line_count);
+        fprintf(log_,"Line# %d: unit : func_definition\n\n",line_count);
 		$$ = new SymbolInfo($1->get_name(), "NON_TERMINAL");
 	}
      ;
@@ -261,7 +261,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
     //assuming we don't need to handle function overloading
     if(check_func($2->get_name())){
       func_ f = get_func($2->get_name());
-      if(f.return_type != $1->get_name()){
+      if(f.ret_type != $1->get_name()){
         error_count++;
         fprintf(error , "Line# %d: Return type mismatch with function declaration in function %s\n\n",line_count,$2->get_name().c_str());
       }
@@ -300,7 +300,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
 		}
 
 
-    table.Enter_Scope(log_);
+    table.Enter_Scope();
     for(int i=0;i<$4->param_list.size();i++){
         string name = $4->param_list[i].name;
         string type = "ID";
@@ -314,11 +314,11 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
         }
     }
 
-  } compound_statement { table.Exit_Scope(log_);var_list.clear();}
+  } compound_statement { table.Exit_Scope();var_list.clear();}
 
   {
       $$ = new SymbolInfo($1->get_name()+" "+$2->get_name()+"("+$4->get_name()+")"+$7->get_name()+"\n\n", "NON_TERMINAL");
-      fprintf(logfile , "Line# %d: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n\n" , line_count);
+      fprintf(log_ , "Line# %d: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n\n" , line_count);
 
   }  
   | type_specifier ID LPAREN RPAREN
@@ -335,10 +335,10 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
         func_insert($2->get_name() , $1->get_name());
   		}
 
-      table.Enter_Scope(log_);
+      table.Enter_Scope();
 
     }
-    compound_statement {table.Exit_Scope(log_);var_list.clear();}
+    compound_statement {table.Exit_Scope();var_list.clear();}
  	{
       $$ = new SymbolInfo($1->get_name()+" "+$2->get_name()+"()"+$6->get_name()+"\n\n", "NON_TERMINAL");
       fprintf(log_ , "Line# %d: func_definition : type_specifier ID LPAREN RPAREN compound_statement\n\n" , line_count);
@@ -727,7 +727,7 @@ expression : logic_expression
             //now chk if wrong index is given
 
             else if(!array_index_checker($1->get_name() , var_list[i].size)){
-              error_cnt++;
+              error_count++;
               fprintf(error,"Line %d: Expression inside third brackets not an integer\n\n",line_count);
               break;
             }
@@ -1044,7 +1044,7 @@ factor	: variable
       fprintf(log_,"Line %d: factor	: variable DECOP\n\n",line_count);
       $$ = new SymbolInfo($1->get_name()+"--","factor");
 
-      SymbolInfo *x=table.Lookup(modified_name($1->get_name()));
+      SymbolInfo *x=table.Lookup(array_name($1->get_name()));
 			if(!x){
         error_count++;
         fprintf(error,"Line %d: Undeclared variable %s\n\n",line_count,$1->get_name().c_str());      }
@@ -1128,7 +1128,7 @@ int main(int argc,char *argv[])
 
 	fclose(fp);
 	fclose(log_);
-	fclose(error_);
+	fclose(error);
 
 	return 0;
 }          
