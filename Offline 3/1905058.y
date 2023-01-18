@@ -1134,9 +1134,9 @@ int main(int argc,char *argv[])
 	yyin=fp;
 	yyparse();
 
-	fprintf(log_,"Total Lines : %d \n",line_count);
-	fprintf(log_,"Total Errors : %d \n",error_count);
-	fprintf(error,"\nTotal Errors : %d \n",error_count);
+	fprintf(log_,"Total Lines: %d \n",line_count);
+	fprintf(log_,"Total Errors: %d \n",error_count);
+	fprintf(error,"Total Errors: %d \n",error_count);
 
 	fclose(fp);
 	fclose(log_);
