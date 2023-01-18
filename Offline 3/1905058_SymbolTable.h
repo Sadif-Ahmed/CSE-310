@@ -32,6 +32,7 @@ class SymbolInfo
     bool param_error_state;
     bool func_decl_state;
     bool func_state;
+    bool arr_state;
     SymbolInfo *next;
     public:
     vector<func_param> param_list;
@@ -161,6 +162,14 @@ class SymbolInfo
     bool get_func_state()
     {
         return func_state;
+    }
+    void set_arr_state(bool temp)
+    {
+        arr_state=true;
+    }
+    bool get_arr_state()
+    {
+        return arr_state;
     }
     void push_param(string name,string type)
     {
@@ -368,6 +377,11 @@ class ScopeTable{
                 if(temp->get_func_state()||temp->get_func_decl_state())
                 {
                     fprintf(logfile,"<%s, %s, %s> " , temp->get_name().c_str(),"FUNCTION",temp->to_up(temp->get_ret_type()).c_str());
+                    temp=temp->get_next();
+                }
+                else if(temp->get_arr_state())
+                {
+                    fprintf(logfile,"<%s, %s, %s> " , temp->get_name().c_str(),"ARRAY",temp->to_up(temp->get_var_type()).c_str());
                     temp=temp->get_next();
                 }
                 else

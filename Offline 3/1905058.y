@@ -520,6 +520,8 @@ declaration_list : declaration_list COMMA ID
       $$->var_list = $1->var_list;
       $$->push_var($3->get_name() , "" , size);
 
+     
+
 		}
 
  		  | ID
@@ -548,6 +550,7 @@ declaration_list : declaration_list COMMA ID
       geek >> size;
 
       $$->push_var($1->get_name() , "" , size);
+    
 
 		}
     | declaration_list error
