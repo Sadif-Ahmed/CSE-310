@@ -223,6 +223,7 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
       table.Insert($2->get_name() , "ID" , log_);
       SymbolInfo *fd = table.Lookup_current_scope($2->get_name());
       fd->set_func_decl_state(true);
+      fd->set_ret_type($1->get_name());
 
       //insert in func_list
       func_insert($2->get_name() , $4->param_list , $1->get_name());
@@ -244,6 +245,7 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
       table.Insert($2->get_name() , "ID" , log_);
       SymbolInfo *fd = table.Lookup_current_scope($2->get_name());
       fd->set_func_decl_state(true);
+      fd->set_ret_type($1->get_name());
       func_insert($2->get_name() , $1->get_name());
     }
 
@@ -295,6 +297,9 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
       	}
 		else if(temp == NULL){
 			table.Insert($2->get_name() , "ID" , log_);
+      SymbolInfo *fd = table.Lookup_current_scope($2->get_name());
+      fd->set_func_decl_state(true);
+      fd->set_ret_type($1->get_name());
       //insert in func_list
       func_insert($2->get_name() , $4->param_list , $1->get_name());
 		}
@@ -332,6 +337,9 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
         }
   		else if(temp == NULL){
   			table.Insert($2->get_name() , "ID" , log_);
+      SymbolInfo *fd = table.Lookup_current_scope($2->get_name());
+      fd->set_func_decl_state(true);
+      fd->set_ret_type($1->get_name());
         func_insert($2->get_name() , $1->get_name());
   		}
 

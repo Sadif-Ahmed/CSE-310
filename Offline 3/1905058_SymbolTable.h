@@ -37,6 +37,24 @@ class SymbolInfo
     vector<func_param> param_list;
     vector<var> var_list;
     vector<argument> argument_list;
+    string to_up(string temp)
+{
+    string ret=temp;
+    for(int i=0;i<temp.size();i++)
+    {
+        if(temp[i]>='a')
+        {
+            ret[i]=ret[i]-32;
+        }
+        else
+        {
+            ret[i]=ret[i];
+        }
+    }
+    
+    return ret;
+}
+
     SymbolInfo(string name,string type)
     {
         this->name=name;
@@ -183,19 +201,19 @@ class SymbolInfo
 
 };
 class ScopeTable{
-    long long num_of_buckets;
+    unsigned long long num_of_buckets;
     int unique_id;
-    long long *bucketsizes;
+    unsigned long long *bucketsizes;
     SymbolInfo **scope_table;
     ScopeTable *parent_scope;
     int pr;
     public:
-    ScopeTable(long long num_of_buckets)
+    ScopeTable(unsigned long long num_of_buckets)
     {
         this->num_of_buckets=num_of_buckets;
         parent_scope=NULL;
         scope_table= new SymbolInfo*[num_of_buckets];
-        bucketsizes=new long long[num_of_buckets];
+        bucketsizes=new unsigned long long[num_of_buckets];
         for(int i=0;i<num_of_buckets;i++)
         {
             scope_table[i]= NULL;
@@ -204,13 +222,13 @@ class ScopeTable{
         pr=true;
 
     }
-    ScopeTable(long long num_of_buckets,long long id,ScopeTable* parent)
+    ScopeTable(unsigned long long num_of_buckets,unsigned long long id,ScopeTable* parent)
     {
         this->num_of_buckets=num_of_buckets;
         parent_scope=parent;
         unique_id=id;
         scope_table= new SymbolInfo*[num_of_buckets];
-        bucketsizes=new long long[num_of_buckets];
+        bucketsizes=new unsigned long long[num_of_buckets];
         for(int i=0;i<num_of_buckets;i++)
         {
             scope_table[i]= NULL;
@@ -219,19 +237,19 @@ class ScopeTable{
         pr=true;
 
     }
-    long long get_num_of_buckets()
+    unsigned long long get_num_of_buckets()
     {
         return num_of_buckets;
     }
-    long long get_unique_id()
+    unsigned long long get_unique_id()
     {
         return unique_id;
     }
-    void set_num_of_buckets(long long num)
+    void set_num_of_buckets(unsigned long long num)
     {
         num_of_buckets=num;
     }
-    void set_unique_id(long long id)
+    void set_unique_id(unsigned long long id)
     {
         unique_id=id;
     }
@@ -263,25 +281,25 @@ class ScopeTable{
         }
 
     }
-    long long hash_function(string str)
+     unsigned long long hash_function(string str)
     {
-        long long hash=0;
-        for(long long i=0;i<str.length();i++)
+        unsigned long long hash=0;
+        for(unsigned long long i=0;i<str.length();i++)
         {
             hash = (str[i]) + (hash << 6) + (hash << 16) - hash;
-           // hash=hash%num_of_buckets;
+           // hash=hash%num_of_buckets;r
         }
         return hash;
     }
-    long long index_gen(string str)
+    unsigned long long index_gen(string str)
     {
-        long long hash_value=hash_function(str);
+        unsigned long long hash_value=hash_function(str);
         return hash_value%num_of_buckets;
     }
     SymbolInfo* Lookup(string searchtext)
     {
-        long long hash=index_gen(searchtext);
-        long long position=0;
+        unsigned long long hash=index_gen(searchtext);
+        unsigned long long position=0;
         SymbolInfo *temp= scope_table[hash];
         while(temp!=NULL)
         {
@@ -311,7 +329,7 @@ class ScopeTable{
         }
         else
         {
-            long long hash=index_gen(nm);
+            unsigned long long hash=index_gen(nm);
             SymbolInfo *newsymbol = new SymbolInfo(nm,tp);
             if(scope_table[hash]==NULL)
             {
@@ -349,12 +367,12 @@ class ScopeTable{
                 //cout<<"<"<<temp->get_name()<<","<<temp->get_type()<<"> ";
                 if(temp->get_func_state()||temp->get_func_decl_state())
                 {
-                    fprintf(logfile,"<%s, %s, %s> " , temp->get_name().c_str(),"FUNCTION",temp->get_ret_type().c_str());
+                    fprintf(logfile,"<%s, %s, %s> " , temp->get_name().c_str(),"FUNCTION",temp->to_up(temp->get_ret_type()).c_str());
                     temp=temp->get_next();
                 }
                 else
                 {
-                fprintf(logfile,"<%s, %s> " , temp->get_name().c_str(),temp->get_var_type().c_str());
+                fprintf(logfile,"<%s, %s> " , temp->get_name().c_str(),temp->to_up(temp->get_var_type()).c_str());
                 
                 temp=temp->get_next();
                 }
@@ -386,7 +404,7 @@ class ScopeTable{
         }
 
         SymbolInfo *prev;
-        long long position=0;
+        unsigned long long position=0;
         while(target!=NULL)
         {
             if(target->get_name()==nm)
@@ -416,10 +434,10 @@ class ScopeTable{
     {
         ScopeTable *current;
         ScopeTable *head;
-        long long max_bucket_size;
-        long long current_id_gen;
+        unsigned long long max_bucket_size;
+        unsigned long long current_id_gen;
         public:
-        SymbolTable(long long bucket_size)
+        SymbolTable(unsigned long long bucket_size)
         {
             max_bucket_size=bucket_size;
             current_id_gen=1;
@@ -443,19 +461,19 @@ class ScopeTable{
         {
             head=temp;
         }
-        long long get_max_bucket_size()
+        unsigned long long get_max_bucket_size()
         {
             return max_bucket_size;
         }
-        void set_max_bucket_size(long long n)
+        void set_max_bucket_size(unsigned long long n)
         {
             max_bucket_size=n;
         }
-        long long get_current_id()
+        unsigned long long get_current_id()
         {
             return current_id_gen;
         }
-        void set_current_id_gen(long long n)
+        void set_current_id_gen(unsigned long long n)
         {
             current_id_gen=n;
         }
@@ -477,7 +495,7 @@ class ScopeTable{
             current=newtable;
 
         }
-        void Enter_Scope(long long bucket_size)
+        void Enter_Scope(unsigned long long bucket_size)
         {
             ScopeTable *newtable;
             if(head!=NULL)
