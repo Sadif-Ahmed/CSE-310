@@ -316,6 +316,8 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
         }
         else{
           table.Insert(name , type , log_);
+          SymbolInfo *par =  table.Lookup_current_scope(name);
+          par->set_var_type($4->param_list[i].type);
         }
     }
 
@@ -383,6 +385,8 @@ parameter_list  : parameter_list COMMA type_specifier ID
 				fprintf(error,"Line# %d: Variable type cannot be void\n",line_count);
       }
 			$$->push_param($2->get_name() ,$1->get_name());
+
+      
 		}
 		| type_specifier
 		{
@@ -442,6 +446,7 @@ var_declaration : type_specifier declaration_list SEMICOLON
             tmp->set_var_type($1->get_name());
             if($2->var_list[i].size>0){
               tmp->set_id("array");
+              tmp->set_arr_state(true);
             }else{
               tmp->set_id("var");
             }
@@ -519,9 +524,6 @@ declaration_list : declaration_list COMMA ID
 
       $$->var_list = $1->var_list;
       $$->push_var($3->get_name() , "" , size);
-
-     
-
 		}
 
  		  | ID

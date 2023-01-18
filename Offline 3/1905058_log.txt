@@ -67,8 +67,8 @@ statements : statement
 Line# 7: Token <RCURL> Lexeme } found
 compound_statement : LCURL statements RCURL
 	ScopeTable# 2
-	10--> <a, > 
-	11--> <b, > 
+	10--> <a, INT> 
+	11--> <b, INT> 
 	ScopeTable# 1
 	1--> <y, INT> 
 	2--> <z, INT> 
@@ -397,7 +397,7 @@ compound_statement : LCURL statements RCURL
 	7--> <i, INT> 
 	8--> <j, INT> 
 	9--> <k, INT> 
-	10--> <a, INT> 
+	10--> <a, ARRAY, INT> 
 	ScopeTable# 1
 	1--> <y, INT> 
 	2--> <z, INT> <main, FUNCTION, INT> 
