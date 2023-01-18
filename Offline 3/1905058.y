@@ -86,7 +86,7 @@ void print_funcs()
         }
     }
 }
-string int_to_str(int n)
+string to_str(int n)
 {
     string temp;
 	while(n){
@@ -557,7 +557,7 @@ statements : statement
 	   | statements statement
     {
       $$ = new SymbolInfo($1->get_name()+$2->get_name() , "NON_TERMINAL");
-      fprintf(log_ , "statements : statements statement\n" ,);
+      fprintf(log_ , "statements : statements statement\n");
 
     }
 	   ;   

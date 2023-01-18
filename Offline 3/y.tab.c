@@ -156,7 +156,7 @@ void print_funcs()
         }
     }
 }
-string int_to_str(int n)
+string to_str(int n)
 {
     string temp;
 	while(n){
@@ -1506,7 +1506,7 @@ yyreduce:
 #line 178 "1905058.y"
         {
 		//write your code in this block in all the similar blocks below
-        fprintf(log_,"Line# %d:  start : program\n",line_count);
+        fprintf(log_,"start : program\n");
 	}
 #line 1512 "y.tab.c"
     break;
@@ -1514,7 +1514,7 @@ yyreduce:
   case 3: /* program: program unit  */
 #line 185 "1905058.y"
         {
-		fprintf(log_,"Line# %d:  program : program unit\n",line_count);
+		fprintf(log_,"program : program unit\n");
 		(yyval.symbol) = new SymbolInfo((string)(yyvsp[-1].symbol)->get_name()+(string)(yyvsp[0].symbol)->get_name(), "NON_TERMINAL");
 	}
 #line 1521 "y.tab.c"
@@ -1523,7 +1523,7 @@ yyreduce:
   case 4: /* program: unit  */
 #line 190 "1905058.y"
         {
-		fprintf(log_,"Line# %d: program : unit\n",line_count);
+		fprintf(log_,"program : unit\n");
 		(yyval.symbol) = new SymbolInfo((yyvsp[0].symbol)->get_name()+"\n", "NON_TERMINAL");
 	}
 #line 1530 "y.tab.c"
@@ -1532,7 +1532,7 @@ yyreduce:
   case 5: /* unit: var_declaration  */
 #line 196 "1905058.y"
         {
-		fprintf(log_,"Line# %d: unit : var_declaration\n",line_count);
+		fprintf(log_,"unit : var_declaration\n");
 		(yyval.symbol) = new SymbolInfo((yyvsp[0].symbol)->get_name(), "NON_TERMINAL");
 	}
 #line 1539 "y.tab.c"
@@ -1541,7 +1541,7 @@ yyreduce:
   case 6: /* unit: func_declaration  */
 #line 201 "1905058.y"
         {
-		fprintf(log_,"Line# %d: unit : func_declaration\n",line_count);
+		fprintf(log_,"unit : func_declaration\n");
 		(yyval.symbol) = new SymbolInfo((yyvsp[0].symbol)->get_name(), "NON_TERMINAL");
 	}
 #line 1548 "y.tab.c"
@@ -1550,7 +1550,7 @@ yyreduce:
   case 7: /* unit: func_definition  */
 #line 206 "1905058.y"
         {
-        fprintf(log_,"Line# %d: unit : func_definition\n",line_count);
+        fprintf(log_,"unit : func_definition\n");
 		(yyval.symbol) = new SymbolInfo((yyvsp[0].symbol)->get_name(), "NON_TERMINAL");
 	}
 #line 1557 "y.tab.c"
@@ -1560,7 +1560,7 @@ yyreduce:
 #line 212 "1905058.y"
         {
     (yyval.symbol) = new SymbolInfo((yyvsp[-5].symbol)->get_name()+" "+(yyvsp[-4].symbol)->get_name()+"("+(yyvsp[-2].symbol)->get_name()+");", "NON_TERMINAL");
-    fprintf(log_ , "Line# %d: func_declaration: type_specifier ID LPAREN parameter_list RPAREN SEMICOLON\n",line_count);
+    fprintf(log_ , "func_declaration: type_specifier ID LPAREN parameter_list RPAREN SEMICOLON\n");
 
     /* checking whether already declared or not */
     SymbolInfo* temp = table.Lookup_current_scope((yyvsp[-4].symbol)->get_name());
@@ -1585,7 +1585,7 @@ yyreduce:
 #line 233 "1905058.y"
         {
 		(yyval.symbol) = new SymbolInfo((yyvsp[-4].symbol)->get_name()+" "+(yyvsp[-3].symbol)->get_name()+"();", "NON_TERMINAL");
-		fprintf(log_ , "Line# %d: func_declaration: type_specifier ID LPAREN RPAREN SEMICOLON\n",line_count);
+		fprintf(log_ , "func_declaration: type_specifier ID LPAREN RPAREN SEMICOLON\n");
 		
         /* checking whether already declared or not */
 		SymbolInfo* temp = table.Lookup_current_scope((yyvsp[-3].symbol)->get_name());
@@ -1684,7 +1684,7 @@ yyreduce:
 #line 319 "1905058.y"
   {
       (yyval.symbol) = new SymbolInfo((yyvsp[-7].symbol)->get_name()+" "+(yyvsp[-6].symbol)->get_name()+"("+(yyvsp[-4].symbol)->get_name()+")"+(yyvsp[-1].symbol)->get_name()+"\n", "NON_TERMINAL");
-      fprintf(log_ , "Line# %d: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n" , line_count);
+      fprintf(log_ , "func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n");
 
   }
 #line 1691 "y.tab.c"
@@ -1721,7 +1721,7 @@ yyreduce:
 #line 342 "1905058.y"
         {
       (yyval.symbol) = new SymbolInfo((yyvsp[-6].symbol)->get_name()+" "+(yyvsp[-5].symbol)->get_name()+"()"+(yyvsp[-1].symbol)->get_name()+"\n", "NON_TERMINAL");
-      fprintf(log_ , "Line# %d: func_definition : type_specifier ID LPAREN RPAREN compound_statement\n" , line_count);
+      fprintf(log_ , "func_definition : type_specifier ID LPAREN RPAREN compound_statement\n");
 	}
 #line 1727 "y.tab.c"
     break;
@@ -1730,14 +1730,14 @@ yyreduce:
 #line 348 "1905058.y"
                 {
 			(yyval.symbol) = new SymbolInfo((yyvsp[-3].symbol)->get_name()+","+(yyvsp[-1].symbol)->get_name()+" "+(yyvsp[0].symbol)->get_name(), "NON_TERMINAL");
-			fprintf(log_,"Line# %d: parameter_list : parameter_list COMMA type_specifier ID\n",line_count);
+			fprintf(log_,"parameter_list : parameter_list COMMA type_specifier ID\n");
 			/* adding parameter to parameter list */
       (yyval.symbol)->param_list = (yyvsp[-3].symbol)->param_list;
 			(yyval.symbol)->push_param((yyvsp[0].symbol)->get_name() , (yyvsp[-1].symbol)->get_name());
 
       if((yyvsp[-1].symbol)->get_type()=="void"){
         error_count++;
-        fprintf(log_,"Line# %d: Variable type cannot be void\n",line_count);
+        fprintf(log_,"Variable type cannot be void\n");
         }
 		}
 #line 1744 "y.tab.c"
@@ -1747,7 +1747,7 @@ yyreduce:
 #line 361 "1905058.y"
                 {
 			(yyval.symbol) = new SymbolInfo((yyvsp[-2].symbol)->get_name()+","+(yyvsp[0].symbol)->get_name(), "NON_TERMINAL");
-			fprintf(log_,"Line# %d: parameter_list  : parameter_list COMMA type_specifier\n",line_count);
+			fprintf(log_,"parameter_list  : parameter_list COMMA type_specifier\n");
 			/* adding parameter to parameter list */
       (yyval.symbol)->param_list = (yyvsp[-2].symbol)->param_list;
 			(yyval.symbol)->push_param("", (yyvsp[0].symbol)->get_name());
@@ -1759,7 +1759,7 @@ yyreduce:
 #line 369 "1905058.y"
                 {
 			(yyval.symbol) = new SymbolInfo((yyvsp[-1].symbol)->get_name()+" "+(yyvsp[0].symbol)->get_name(), "NON_TERMINAL");
-			fprintf(log_,"Line# %d: parameter_list  : type_specifier ID\n",line_count);
+			fprintf(log_,"parameter_list  : type_specifier ID\n");
 			/* adding parameter to parameter list */
       if((yyvsp[-1].symbol)->get_name()=="void"){
         error_count++;
@@ -1774,7 +1774,7 @@ yyreduce:
 #line 380 "1905058.y"
                 {
 			(yyval.symbol) = new SymbolInfo((yyvsp[0].symbol)->get_name(), "NON_TERMINAL");
-			fprintf(log_,"Line# %d: parameter_list  : type_specifier\n",line_count);
+			fprintf(log_,"parameter_list  : type_specifier\n");
 			/* adding parameter to parameter list */
 
 			(yyval.symbol)->push_param( "" , (yyvsp[0].symbol)->get_name());
@@ -1795,7 +1795,7 @@ yyreduce:
 #line 394 "1905058.y"
   {
       (yyval.symbol) = new SymbolInfo("{\n"+(yyvsp[-1].symbol)->get_name()+"\n}"+"\n", "NON_TERMINAL");
-      fprintf(log_,"Line# %d: compound_statement : LCURL statements RCURL\n",line_count);
+      fprintf(log_,"compound_statement : LCURL statements RCURL\n");
       table.printall(log_);
   }
 #line 1802 "y.tab.c"
@@ -1805,7 +1805,7 @@ yyreduce:
 #line 400 "1905058.y"
   {
     (yyval.symbol) = new SymbolInfo("{\n}", "NON_TERMINAL");
-    fprintf(log_,"Line %d: compound_statement : LCURL RCURL\n",line_count);
+    fprintf(log_,"compound_statement : LCURL RCURL\n");
     table.printall(log_);
   }
 #line 1812 "y.tab.c"
@@ -1814,7 +1814,7 @@ yyreduce:
   case 23: /* var_declaration: type_specifier declaration_list SEMICOLON  */
 #line 407 "1905058.y"
                 {
-			fprintf(log_,"Line# %d: var_declaration : type_specifier declaration_list SEMICOLON\n",line_count);
+			fprintf(log_,"var_declaration : type_specifier declaration_list SEMICOLON\n");
 			(yyval.symbol) = new SymbolInfo((yyvsp[-2].symbol)->get_name()+" "+(yyvsp[-1].symbol)->get_name()+";", "NON_TERMINAL");
 
       (yyval.symbol)->set_var_type((yyvsp[-2].symbol)->get_name());
@@ -1868,7 +1868,7 @@ yyreduce:
   case 25: /* type_specifier: INT  */
 #line 455 "1905058.y"
                 {
-			fprintf(log_,"Line# %d: type_specifier : INT \n",line_count);
+			fprintf(log_,"type_specifier : INT \n");
 			var_type = "int";
 
 			SymbolInfo *x = new SymbolInfo("int" , "int");
@@ -1881,7 +1881,7 @@ yyreduce:
   case 26: /* type_specifier: FLOAT  */
 #line 464 "1905058.y"
                 {
-			fprintf(log_,"Line# %d: type_specifier : FLOAT \n",line_count);
+			fprintf(log_,"type_specifier : FLOAT \n");
 			var_type = "float";
 
 			SymbolInfo *x = new SymbolInfo("float" , "float");
@@ -1894,7 +1894,7 @@ yyreduce:
   case 27: /* type_specifier: VOID  */
 #line 473 "1905058.y"
                 {
-			fprintf(log_,"Line# %d: type_specifier : VOID \n",line_count);
+			fprintf(log_,"type_specifier : VOID \n");
 			var_type = "void";
 
 			SymbolInfo *x = new SymbolInfo("void" , "void");
@@ -1907,7 +1907,7 @@ yyreduce:
   case 28: /* declaration_list: declaration_list COMMA ID  */
 #line 483 "1905058.y"
                 {
-			fprintf(log_,"Line# %d: declaration_list : declaration_list COMMA ID\n",line_count);
+			fprintf(log_,"declaration_list : declaration_list COMMA ID\n");
 			(yyval.symbol) = new SymbolInfo((string)(yyvsp[-2].symbol)->get_name()+(string)","+(string)(yyvsp[0].symbol)->get_name(), "NON_TERMINAL");
 			
 			/* keeping track of identifier(variable) */
@@ -1926,7 +1926,7 @@ yyreduce:
   case 29: /* declaration_list: declaration_list COMMA ID LSQUARE CONST_INT RSQUARE  */
 #line 498 "1905058.y"
                 {
-			fprintf(log_,"Line# %d: declaration_list : declaration_list COMMA ID LSQUARE CONST_INT RSQUARE\n",line_count);
+			fprintf(log_,"declaration_list : declaration_list COMMA ID LSQUARE CONST_INT RSQUARE\n");
 			(yyval.symbol) = new SymbolInfo((string)(yyvsp[-5].symbol)->get_name()+(string)","+(string)(yyvsp[-3].symbol)->get_name()+(string)"["+(string)(yyvsp[-1].symbol)->get_name()+(string)"]", "NON_TERMINAL");
 			
 			/* keeping track of identifier(array) */
@@ -1949,7 +1949,7 @@ yyreduce:
   case 30: /* declaration_list: ID  */
 #line 518 "1905058.y"
                 {
-			fprintf(log_,"Line# %d: declaration_list : ID\n",line_count);
+			fprintf(log_,"declaration_list : ID\n");
  			(yyval.symbol) = new SymbolInfo((yyvsp[0].symbol)->get_name() ,  "ID");
 			 /* keeping track of identifier(variable) */
       temp_var.name = (string)(yyvsp[0].symbol)->get_name();
@@ -1965,7 +1965,7 @@ yyreduce:
   case 31: /* declaration_list: ID LSQUARE CONST_INT RSQUARE  */
 #line 530 "1905058.y"
                 {
-			fprintf(log_ , "Line# %d:  declaration_list: ID LSQUARE CONST_INT RSQUARE\n",line_count);
+			fprintf(log_ , "declaration_list: ID LSQUARE CONST_INT RSQUARE\n");
 			(yyval.symbol) = new SymbolInfo((yyvsp[-3].symbol)->get_name()+"["+(yyvsp[-1].symbol)->get_name()+"]", "NON_TERMINAL");
 			temp_var.name = (yyvsp[-3].symbol)->get_name();
       stringstream temp_str((yyvsp[-1].symbol)->get_name());
@@ -1994,7 +1994,7 @@ yyreduce:
 #line 552 "1905058.y"
     {
        (yyval.symbol) = (yyvsp[0].symbol);
-       fprintf(log_ , "Line# %d: statements : statement\n" , line_count);
+       fprintf(log_ , "statements : statement\n");
 
     }
 #line 2001 "y.tab.c"
@@ -2004,7 +2004,7 @@ yyreduce:
 #line 558 "1905058.y"
     {
       (yyval.symbol) = new SymbolInfo((yyvsp[-1].symbol)->get_name()+(yyvsp[0].symbol)->get_name() , "NON_TERMINAL");
-      fprintf(log_ , "Line# %d: statements : statements statement\n" , line_count);
+      fprintf(log_ , "statements : statements statement\n");
 
     }
 #line 2011 "y.tab.c"
@@ -2013,7 +2013,7 @@ yyreduce:
   case 35: /* statement: var_declaration  */
 #line 565 "1905058.y"
     {
-      fprintf(log_,"Line# %d: statement : var_declaration\n",line_count);
+      fprintf(log_,"statement : var_declaration\n");
 		(yyvsp[0].symbol)->set_name((yyvsp[0].symbol)->get_name()+"\n");
   		(yyval.symbol)=(yyvsp[0].symbol);
     }
@@ -2023,7 +2023,7 @@ yyreduce:
   case 36: /* statement: expression_statement  */
 #line 571 "1905058.y"
     {
-      fprintf(log_,"Line# %d: statement : expression_statement\n",line_count);
+      fprintf(log_,"statement : expression_statement\n");
 		(yyvsp[0].symbol)->set_name((yyvsp[0].symbol)->get_name()+"\n");
 		(yyval.symbol)=(yyvsp[0].symbol);
     }
@@ -2033,7 +2033,7 @@ yyreduce:
   case 37: /* statement: compound_statement  */
 #line 577 "1905058.y"
     {
-      fprintf(log_,"Line# %d: statement : compound_statement\n",line_count);
+      fprintf(log_,"statement : compound_statement\n");
       (yyval.symbol)=(yyvsp[0].symbol);
     }
 #line 2040 "y.tab.c"
@@ -2044,7 +2044,7 @@ yyreduce:
     {
       string str="for("+(yyvsp[-4].symbol)->get_name()+(yyvsp[-3].symbol)->get_name()+(yyvsp[-2].symbol)->get_name()+")"+(yyvsp[0].symbol)->get_name();
       (yyval.symbol) = new SymbolInfo(str , "NON_TERMINAL");
-      fprintf(log_,"Line# %d: statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement\n",line_count);
+      fprintf(log_,"statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement\n");
     }
 #line 2050 "y.tab.c"
     break;
@@ -2054,7 +2054,7 @@ yyreduce:
     {
       string str = "if("+(yyvsp[-2].symbol)->get_name()+")"+(yyvsp[0].symbol)->get_name();
       (yyval.symbol) = new SymbolInfo(str , "statement");
-      fprintf(log_,"Line# %d: statement : IF LPAREN expression RPAREN statement\n",line_count);
+      fprintf(log_,"statement : IF LPAREN expression RPAREN statement\n");
       
 
     }
@@ -2066,7 +2066,7 @@ yyreduce:
     {
       string str = "if("+(yyvsp[-4].symbol)->get_name()+")"+(yyvsp[-2].symbol)->get_name()+"else"+(yyvsp[0].symbol)->get_name();
       (yyval.symbol) = new SymbolInfo(str , "statement");
-      fprintf(log_,"Line# %d: statement : IF LPAREN expression RPAREN statement ELSE statement\n",line_count);
+      fprintf(log_,"statement : IF LPAREN expression RPAREN statement ELSE statement\n");
     
 
     }
@@ -2078,7 +2078,7 @@ yyreduce:
     {
       string str = "while("+(yyvsp[-2].symbol)->get_name()+")"+(yyvsp[0].symbol)->get_name();
       (yyval.symbol) = new SymbolInfo(str , "statement");
-      fprintf(log_,"Line# %d: statement : WHILE LPAREN expression RPAREN statement\n",line_count);
+      fprintf(log_,"statement : WHILE LPAREN expression RPAREN statement\n");
     
     }
 #line 2085 "y.tab.c"
@@ -2088,7 +2088,7 @@ yyreduce:
 #line 611 "1905058.y"
     {
       (yyval.symbol) = new SymbolInfo("printf("+(yyvsp[-2].symbol)->get_name()+");" , "statement");
-      fprintf(log_,"Line# %d: statement : PRINTLN LPAREN ID RPAREN SEMICOLON\n",line_count);
+      fprintf(log_,"statement : PRINTLN LPAREN ID RPAREN SEMICOLON\n");
       if((yyvsp[-2].symbol)->get_func_state()){
         if(!table.Lookup_current_scope(func_name((yyvsp[-2].symbol)->get_name()))){
           error_count++;
@@ -2108,7 +2108,7 @@ yyreduce:
 #line 627 "1905058.y"
     {
       (yyval.symbol) = new SymbolInfo("return "+(yyvsp[-1].symbol)->get_name()+";" , "statement");
-      fprintf(log_,"Line %d: statement : RETURN expression SEMICOLON\n",line_count);
+      fprintf(log_,"statement : RETURN expression SEMICOLON\n");
 
       
     }
@@ -2119,7 +2119,7 @@ yyreduce:
 #line 635 "1905058.y"
     {
       (yyval.symbol) = new SymbolInfo(";" , "expression_statement");
-      fprintf(log_,"Line %d: expression_statement : SEMICOLON\n",line_count);
+      fprintf(log_,"expression_statement : SEMICOLON\n");
     }
 #line 2125 "y.tab.c"
     break;
@@ -2128,7 +2128,7 @@ yyreduce:
 #line 640 "1905058.y"
     {
       (yyval.symbol) = new SymbolInfo((yyvsp[-1].symbol)->get_name()+";" , "expression_statement");
-      fprintf(log_,"Line %d: expression_statement : expression SEMICOLON\n",line_count);
+      fprintf(log_,"expression_statement : expression SEMICOLON\n");
     
 
     }
@@ -2146,7 +2146,7 @@ yyreduce:
   case 47: /* variable: ID  */
 #line 652 "1905058.y"
     {
-      fprintf(log_,"Line %d: variable : ID\n",line_count);
+      fprintf(log_,"variable : ID\n");
 		(yyval.symbol) = (yyvsp[0].symbol);
       //Semantic : chk if variable is declared before
 
@@ -2167,7 +2167,7 @@ yyreduce:
   case 48: /* variable: ID LSQUARE expression RSQUARE  */
 #line 670 "1905058.y"
    {
-     fprintf(log_,"Line %d: variable : ID LSQUARE expression RSQUARE\n",line_count);
+     fprintf(log_,"variable : ID LSQUARE expression RSQUARE\n");
      (yyval.symbol) = new SymbolInfo((yyvsp[-3].symbol)->get_name()+"["+(yyvsp[-1].symbol)->get_name()+"]" , "variable");
      (yyval.symbol)->set_id("array");
      //array index must be integer
@@ -2180,7 +2180,7 @@ yyreduce:
 #line 680 "1905058.y"
     {
       (yyval.symbol) = (yyvsp[0].symbol);
-      fprintf(log_,"Line %d: expression : logic_expression\n",line_count);
+      fprintf(log_,"expression : logic_expression\n");
     }
 #line 2186 "y.tab.c"
     break;
@@ -2189,7 +2189,7 @@ yyreduce:
 #line 685 "1905058.y"
     {
       (yyval.symbol) = new SymbolInfo((yyvsp[-2].symbol)->get_name()+"="+(yyvsp[0].symbol)->get_name() , "expression");
-      fprintf(log_,"Line %d: expression : variable ASSIGNOP logic_expression\n",line_count);
+      fprintf(log_,"expression : variable ASSIGNOP logic_expression\n");
 
       //semantics
       //todo
@@ -2284,7 +2284,7 @@ yyreduce:
 #line 777 "1905058.y"
     {
       (yyval.symbol) = (yyvsp[0].symbol);
-      fprintf(log_,"Line %d: logic_expression : rel_expression\n",line_count);
+      fprintf(log_,"logic_expression : rel_expression\n");
     }
 #line 2290 "y.tab.c"
     break;
@@ -2293,7 +2293,7 @@ yyreduce:
 #line 782 "1905058.y"
     {
       (yyval.symbol) = new SymbolInfo((yyvsp[-2].symbol)->get_name()+(yyvsp[-1].symbol)->get_name()+(yyvsp[0].symbol)->get_name() , "logic_expression");
-      fprintf(log_,"Line %d: logic_expression : rel_expression LOGICOP rel_expression\n",line_count);
+      fprintf(log_,"logic_expression : rel_expression LOGICOP rel_expression\n");
       
       /*semantic
       both $1 and $3 must be of type non void
@@ -2313,7 +2313,7 @@ yyreduce:
 #line 799 "1905058.y"
    {
      (yyval.symbol) = (yyvsp[0].symbol);
-     fprintf(log_,"Line %d: rel_expression	: simple_expression\n",line_count);
+     fprintf(log_,"rel_expression	: simple_expression\n");
      
    }
 #line 2320 "y.tab.c"
@@ -2323,7 +2323,7 @@ yyreduce:
 #line 805 "1905058.y"
    {
      (yyval.symbol) = new SymbolInfo((yyvsp[-2].symbol)->get_name()+(yyvsp[-1].symbol)->get_name()+(yyvsp[0].symbol)->get_name() , "rel_expression");
-     fprintf(log_,"Line %d: rel_expression : simple_expression RELOP simple_expression\n",line_count);
+     fprintf(log_,"rel_expression : simple_expression RELOP simple_expression\n");
 
      /*semantic
      both $1 and $3 must be of type non void
@@ -2342,7 +2342,7 @@ yyreduce:
 #line 821 "1905058.y"
   {
     (yyval.symbol) = (yyvsp[0].symbol);
-    fprintf(log_,"Line %d: simple_expression : term\n",line_count);
+    fprintf(log_,"simple_expression : term\n");
 
   }
 #line 2349 "y.tab.c"
@@ -2352,7 +2352,7 @@ yyreduce:
 #line 827 "1905058.y"
   {
     (yyval.symbol) = new SymbolInfo((yyvsp[-2].symbol)->get_name()+(yyvsp[-1].symbol)->get_name()+(yyvsp[0].symbol)->get_name() , "simple_expression");
-    fprintf(log_,"Line %d: simple_expression : simple_expression ADDOP term\n",line_count);
+    fprintf(log_,"simple_expression : simple_expression ADDOP term\n");
 
     if((yyvsp[-2].symbol)->get_var_type()=="float" || (yyvsp[0].symbol)->get_var_type()=="float")
 				(yyval.symbol)->set_var_type("float");
@@ -2367,7 +2367,7 @@ yyreduce:
 #line 839 "1905058.y"
     {
       (yyval.symbol) = (yyvsp[0].symbol);
-      fprintf(log_,"Line %d: term :	unary_expression\n",line_count);
+      fprintf(log_,"term :	unary_expression\n");
     }
 #line 2373 "y.tab.c"
     break;
@@ -2376,7 +2376,7 @@ yyreduce:
 #line 844 "1905058.y"
     {
       (yyval.symbol) = new SymbolInfo((yyvsp[-2].symbol)->get_name()+(yyvsp[-1].symbol)->get_name()+(yyvsp[0].symbol)->get_name() , "term");
-      fprintf(log_,"Line %d: term : term MULOP unary_expression\n",line_count);
+      fprintf(log_,"term : term MULOP unary_expression\n");
       //if $3 is void type function
       string fn = func_name((yyvsp[0].symbol)->get_name());
       if(check_func(fn)){
@@ -2423,7 +2423,7 @@ yyreduce:
           fprintf(error , "Line %d: Void function used in expression\n",line_count);        }
       }
 
-      fprintf(log_,"Line %d: unary_expression : ADDOP unary_expression\n",line_count);
+      fprintf(log_,"unary_expression : ADDOP unary_expression\n");
 
 			(yyval.symbol) = new SymbolInfo((yyvsp[-1].symbol)->get_name()+(yyvsp[0].symbol)->get_name(),"unary_expression");
 
@@ -2437,7 +2437,7 @@ yyreduce:
   case 60: /* unary_expression: NOT unary_expression  */
 #line 899 "1905058.y"
     {
-      fprintf(log_,"Line %d: unary_expression : NOT unary_expression\n",line_count);
+      fprintf(log_,"unary_expression : NOT unary_expression\n");
 
 
       (yyval.symbol) = new SymbolInfo("!"+(yyvsp[0].symbol)->get_name(),"unary_expression");
@@ -2453,7 +2453,7 @@ yyreduce:
 #line 910 "1905058.y"
      {
        (yyval.symbol) = (yyvsp[0].symbol);
-       fprintf(log_,"Line %d: unary_expression :	factor\n",line_count);       
+       fprintf(log_,"unary_expression :	factor\n");       
      }
 #line 2459 "y.tab.c"
     break;
@@ -2461,7 +2461,7 @@ yyreduce:
   case 62: /* factor: variable  */
 #line 917 "1905058.y"
     {
-      fprintf(log_,"Line %d: factor : variable\n",line_count);
+      fprintf(log_,"factor : variable\n");
       (yyval.symbol) = (yyvsp[0].symbol);
       ///pass arrayname if array otherwise pass varname only
       ///suppose $1->get_name() is a[2].Now modified_name returns only a
@@ -2507,7 +2507,7 @@ yyreduce:
     {
 
       (yyval.symbol) = new SymbolInfo((yyvsp[-3].symbol)->get_name()+"("+(yyvsp[-1].symbol)->get_name()+")" , "factor");
-      fprintf(log_,"Line %d: factor : ID LPAREN argument_list RPAREN\n",line_count);
+      fprintf(log_,"factor : ID LPAREN argument_list RPAREN\n");
       (yyval.symbol)->set_func_state(true);
 
       //semantic
@@ -2557,7 +2557,7 @@ yyreduce:
 #line 1004 "1905058.y"
     {
       (yyval.symbol) = new SymbolInfo("("+(yyvsp[-1].symbol)->get_name()+")" , "factor");
-      fprintf(log_,"Line %d: factor : LPAREN expression RPAREN\n",line_count);
+      fprintf(log_,"factor : LPAREN expression RPAREN\n");
 
       (yyval.symbol)->set_var_type((yyvsp[-1].symbol)->get_var_type());
 
@@ -2568,7 +2568,7 @@ yyreduce:
   case 65: /* factor: CONST_INT  */
 #line 1012 "1905058.y"
     {
-      fprintf(log_,"Line %d: factor : CONST_INT\n",line_count);
+      fprintf(log_,"factor : CONST_INT\n");
 			(yyval.symbol)=(yyvsp[0].symbol);
 			(yyval.symbol)->set_var_type("int");
       
@@ -2580,7 +2580,7 @@ yyreduce:
   case 66: /* factor: CONST_FLOAT  */
 #line 1020 "1905058.y"
     {
-      fprintf(log_,"Line %d: factor : CONST_FLOAT\n",line_count);
+      fprintf(log_,"factor : CONST_FLOAT\n");
 			(yyval.symbol)=(yyvsp[0].symbol);
 			(yyval.symbol)->set_var_type("float");
 
@@ -2591,7 +2591,7 @@ yyreduce:
   case 67: /* factor: variable INCOP  */
 #line 1027 "1905058.y"
     {
-      fprintf(log_,"Line %d: factor	: variable INCOP\n",line_count);
+      fprintf(log_,"factor	: variable INCOP\n");
       (yyval.symbol) = new SymbolInfo((yyvsp[-1].symbol)->get_name()+"++","factor");
 
       SymbolInfo *x=table.Lookup(array_name((yyvsp[-1].symbol)->get_name()));
@@ -2612,7 +2612,7 @@ yyreduce:
   case 68: /* factor: variable DECOP  */
 #line 1044 "1905058.y"
     {
-      fprintf(log_,"Line %d: factor	: variable DECOP\n",line_count);
+      fprintf(log_,"factor	: variable DECOP\n");
       (yyval.symbol) = new SymbolInfo((yyvsp[-1].symbol)->get_name()+"--","factor");
 
       SymbolInfo *x=table.Lookup(array_name((yyvsp[-1].symbol)->get_name()));
@@ -2631,7 +2631,7 @@ yyreduce:
   case 69: /* argument_list: arguments  */
 #line 1061 "1905058.y"
         {
-          fprintf(log_,"Line %d: argument_list : arguments\n",line_count);
+          fprintf(log_,"argument_list : arguments\n");
     			(yyval.symbol)=(yyvsp[0].symbol);
         }
 #line 2638 "y.tab.c"
@@ -2649,7 +2649,7 @@ yyreduce:
 #line 1071 "1905058.y"
         {
           (yyval.symbol) = new SymbolInfo((yyvsp[-2].symbol)->get_name()+" , "+(yyvsp[0].symbol)->get_name() , "arguments");
-          fprintf(log_,"Line %d: arguments : arguments COMMA logic_expression\n",line_count);
+          fprintf(log_,"arguments : arguments COMMA logic_expression\n");
 
           (yyval.symbol)->argument_list = (yyvsp[-2].symbol)->argument_list;
           bool isara=false;
@@ -2673,7 +2673,7 @@ yyreduce:
   case 72: /* arguments: logic_expression  */
 #line 1092 "1905058.y"
         {
-          fprintf(log_,"Line %d: arguments : logic_expression\n",line_count);
+          fprintf(log_,"arguments : logic_expression\n");
     			(yyval.symbol)=(yyvsp[0].symbol);
           bool isara=false;
           for(int i=0;i<var_list.size();i++){

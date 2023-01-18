@@ -347,9 +347,9 @@ class ScopeTable{
             while(temp!=NULL)
             {
                 //cout<<"<"<<temp->get_name()<<","<<temp->get_type()<<"> ";
-                if(temp->get_func_state())
+                if(temp->get_func_state()||temp->get_func_decl_state())
                 {
-                    fprintf(logfile,"<%s, %s, %s> " , temp->get_name().c_str(),"FUNCTION",temp->get_var_type().c_str());
+                    fprintf(logfile,"<%s, %s, %s> " , temp->get_name().c_str(),"FUNCTION",temp->get_ret_type().c_str());
                     temp=temp->get_next();
                 }
                 else
