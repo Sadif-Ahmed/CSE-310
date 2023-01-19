@@ -128,7 +128,7 @@ FLOAT "float"
 FOR "for"
 IF "if"
 INT "int"
-PRINTLN "printf"
+PRINTLN "PRINTLN"
 
 /*OPERATORS*/
 LPAREN ("(")

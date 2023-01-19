@@ -1,2 +1,23 @@
-
-Total Errors : 0 
+Line# 20: Redefinition of parameter 'a'
+Line# 24: Conflicting types for 'foo3'
+Line# 28: 'z' redeclared as different kind of symbol
+Line# 32: Total number of arguments mismatch with declaration in function var
+Line# 42: Variable or field 'e' declared void
+Line# 43: Multiple declaration of a
+Line# 43: Multiple declaration of c
+Line 45: Total number of arguments mismatch in function func
+Line 48:Type Mismatch, c is an array
+Line 49: Total number of arguments mismatch in function correct_foo
+Line 50: Total number of arguments mismatch in function correct_foo
+Line 52: Undeclared variable k
+Line 53: b not an array
+Line 54: Expression inside third brackets not an integer
+Line 55: Void function used in expression
+Line 58: Void function used in expression
+Line 59: Type mismatch 
+Line 60: Modulus by Zero
+Line 61: Non-Integer operand on modulus operator
+Error at line: 63 Undeclared Function foo5
+Line 68: Undeclared variable h
+Error at line: 68 Undeclared Function printf
+Total Errors: 22 

@@ -1621,7 +1621,7 @@ yyreduce:
       func_ f = get_func((yyvsp[-3].symbol)->get_name());
       if(f.ret_type != (yyvsp[-4].symbol)->get_name()){
         error_count++;
-        fprintf(error , "Line# %d: Return type mismatch with function declaration in function %s\n",line_count,(yyvsp[-3].symbol)->get_name().c_str());
+        fprintf(error , "Line# %d: Conflicting types for '%s'\n",line_count,(yyvsp[-3].symbol)->get_name().c_str());
       }
       else {
         bool matched = true;
@@ -1649,7 +1649,7 @@ yyreduce:
 		SymbolInfo* temp = table.Lookup_current_scope((yyvsp[-3].symbol)->get_name());
 		if(temp != NULL and (!temp->get_func_decl_state())) {
 			error_count++;
-			fprintf(error , "Line# %d: Multiple declaration of %s\n" , line_count , (yyvsp[-3].symbol)->get_name().c_str());
+			fprintf(error , "Line# %d: '%s' redeclared as different kind of symbol\n" , line_count , (yyvsp[-3].symbol)->get_name().c_str());
       	}
 		else if(temp == NULL){
 			table.Insert((yyvsp[-3].symbol)->get_name() , "ID" , log_);
@@ -1667,7 +1667,7 @@ yyreduce:
         string type = "ID";
         SymbolInfo *tmp = table.Lookup_current_scope(name);
         if(tmp){
-          fprintf(error,"Line# %d: Multiple declaration of %s in parameter\n",line_count,name.c_str());
+          fprintf(error,"Line# %d: Redefinition of parameter '%s'\n",line_count,name.c_str());
           error_count++;
         }
         else{
@@ -1747,7 +1747,7 @@ yyreduce:
 
       if((yyvsp[-1].symbol)->get_type()=="void"){
         error_count++;
-        fprintf(log_,"Variable type cannot be void\n");
+        fprintf(error,"Line# %d: Variable or field '%s'  declared void\n",line_count,(yyvsp[-1].symbol)->get_name().c_str());
         }
 		}
 #line 1754 "y.tab.c"
@@ -1773,7 +1773,7 @@ yyreduce:
 			/* adding parameter to parameter list */
       if((yyvsp[-1].symbol)->get_name()=="void"){
         error_count++;
-				fprintf(error,"Line# %d: Variable type cannot be void\n",line_count);
+				fprintf(error,"Line# %d: Variable or field '%s' declared void\n",line_count,(yyvsp[0].symbol)->get_name().c_str());
       }
 			(yyval.symbol)->push_param((yyvsp[0].symbol)->get_name() ,(yyvsp[-1].symbol)->get_name());
 
@@ -1838,7 +1838,7 @@ yyreduce:
 			/* inserting in symboltable */
 			if((yyvsp[-2].symbol)->get_name()=="void"){
 				error_count++;
-				fprintf(error,"Line# %d: Variable type cannot be void\n",line_count);
+				fprintf(error,"Line# %d: Variable or field '%s' declared void\n",line_count,(yyvsp[-1].symbol)->get_name().c_str());
 
 			}
 			else{
@@ -2913,9 +2913,9 @@ int main(int argc,char *argv[])
 	yyin=fp;
 	yyparse();
 
-	fprintf(log_,"Total Lines : %d \n",line_count);
-	fprintf(log_,"Total Errors : %d \n",error_count);
-	fprintf(error,"\nTotal Errors : %d \n",error_count);
+	fprintf(log_,"Total Lines: %d \n",line_count);
+	fprintf(log_,"Total Errors: %d \n",error_count);
+	fprintf(error,"Total Errors: %d \n",error_count);
 
 	fclose(fp);
 	fclose(log_);

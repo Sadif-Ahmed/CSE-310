@@ -265,7 +265,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
       func_ f = get_func($2->get_name());
       if(f.ret_type != $1->get_name()){
         error_count++;
-        fprintf(error , "Line# %d: Return type mismatch with function declaration in function %s\n",line_count,$2->get_name().c_str());
+        fprintf(error , "Line# %d: Conflicting types for '%s'\n",line_count,$2->get_name().c_str());
       }
       else {
         bool matched = true;
@@ -293,7 +293,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
 		SymbolInfo* temp = table.Lookup_current_scope($2->get_name());
 		if(temp != NULL and (!temp->get_func_decl_state())) {
 			error_count++;
-			fprintf(error , "Line# %d: Multiple declaration of %s\n" , line_count , $2->get_name().c_str());
+			fprintf(error , "Line# %d: '%s' redeclared as different kind of symbol\n" , line_count , $2->get_name().c_str());
       	}
 		else if(temp == NULL){
 			table.Insert($2->get_name() , "ID" , log_);
@@ -311,7 +311,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
         string type = "ID";
         SymbolInfo *tmp = table.Lookup_current_scope(name);
         if(tmp){
-          fprintf(error,"Line# %d: Multiple declaration of %s in parameter\n",line_count,name.c_str());
+          fprintf(error,"Line# %d: Redefinition of parameter '%s'\n",line_count,name.c_str());
           error_count++;
         }
         else{
@@ -364,7 +364,7 @@ parameter_list  : parameter_list COMMA type_specifier ID
 
       if($3->get_type()=="void"){
         error_count++;
-        fprintf(log_,"Variable type cannot be void\n");
+        fprintf(error,"Line# %d: Variable or field '%s'  declared void\n",line_count,$3->get_name().c_str());
         }
 		}
 		| parameter_list COMMA type_specifier
@@ -382,7 +382,7 @@ parameter_list  : parameter_list COMMA type_specifier ID
 			/* adding parameter to parameter list */
       if($1->get_name()=="void"){
         error_count++;
-				fprintf(error,"Line# %d: Variable type cannot be void\n",line_count);
+				fprintf(error,"Line# %d: Variable or field '%s' declared void\n",line_count,$2->get_name().c_str());
       }
 			$$->push_param($2->get_name() ,$1->get_name());
 
@@ -429,7 +429,7 @@ var_declaration : type_specifier declaration_list SEMICOLON
 			/* inserting in symboltable */
 			if($1->get_name()=="void"){
 				error_count++;
-				fprintf(error,"Line# %d: Variable type cannot be void\n",line_count);
+				fprintf(error,"Line# %d: Variable or field '%s' declared void\n",line_count,$2->get_name().c_str());
 
 			}
 			else{
