@@ -1,7 +1,8 @@
-//#include<iostream>
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<vector>
 #include<bits/stdc++.h>
-//#include<fstream>
-//#include<string>
 using namespace std;
 struct func_param
 {
@@ -38,6 +39,84 @@ class SymbolInfo
     vector<func_param> param_list;
     vector<var> var_list;
     vector<argument> argument_list;
+    //parse tree building
+    vector<SymbolInfo*> children;
+    int start_line;
+    int end_line;
+    bool leafstate=false;
+    string println;
+
+    void add_child(SymbolInfo *temp)
+    {
+        children.push_back(temp);
+    }
+    void set_start(int n)
+    {
+        start_line=n;
+    }
+    int get_start()
+    {
+        return start_line;
+    }
+    void set_end(int n)
+    {
+        end_line=n;
+    }
+    int get_end()
+    {
+        return end_line;
+    }
+    void set_print(string temp)
+    {
+        println=temp;
+    }
+    string get_print()
+    {
+        return println;
+    }
+    void set_leaf_state(bool temp)
+    {
+        leafstate=temp;
+    }
+    bool get_leaf_state()
+    {
+        return leafstate;
+    }
+    vector<SymbolInfo*> get_children()
+    {
+        return children;
+    }
+    void print_tree(SymbolInfo *head,int depth,FILE *fp)
+    {
+        for(int i=0;i<depth;i++)
+        {
+            fprintf(fp," ");
+        }
+        if(head->get_leaf_state())
+        {
+            fprintf(fp,"%s",head->get_print().c_str());
+            fprintf(fp,"\t<Line: %d>\n",head->get_start());
+        }
+        else
+        {
+            fprintf(fp,"%s",head->get_print().c_str());
+            fprintf(fp,"\t<Line: %d-%d>\n",head->get_start(),head->get_end());
+        }
+        vector<SymbolInfo*> temp = head->get_children();
+        for(int i=0;i<temp.size();i++)
+        {
+            print_tree(temp[i],depth+1,fp);
+        }
+    }
+    void delete_tree(SymbolInfo *head)
+    {
+        vector<SymbolInfo*> temp = head->get_children();
+        for(int i=0;i<temp.size();i++)
+        {
+            delete_tree(temp[i]);
+        }
+        delete head;
+    }
     string to_up(string temp)
 {
     string ret=temp;
