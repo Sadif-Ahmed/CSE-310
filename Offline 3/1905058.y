@@ -147,7 +147,7 @@ void yyerror(char *s)
 {
 	//write your code
   error_count++;
-  fprintf(error,"Line# %d: %s\n",line_count,s);
+  fprintf(error,"Line# %d: '%s'\n",line_count,s);
 }
 %}
 
@@ -217,7 +217,7 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
     SymbolInfo* temp = table.Lookup_current_scope($2->get_name());
     if(temp != NULL) {
 			error_count++;
-			fprintf(error , "Line# %d: Multiple declaration of %s\n" , line_count , $2->get_name().c_str());
+			fprintf(error , "Line# %d: Multiple declaration of '%s'\n" , line_count , $2->get_name().c_str());
 		}
     else{
       table.Insert($2->get_name() , "ID" , log_);
@@ -239,7 +239,7 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
 		SymbolInfo* temp = table.Lookup_current_scope($2->get_name());
 		if(temp != NULL) {
 			error_count++;
-			fprintf(error , "Line# %d: Multiple declaration of %s\n" , line_count , $2->get_name().c_str());
+			fprintf(error , "Line# %d: Multiple declaration of '%s'\n" , line_count , $2->get_name().c_str());
 		}
     else{
       table.Insert($2->get_name() , "ID" , log_);
@@ -256,7 +256,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
     //chking if invalid params given
     if($4->get_name()=="int" or $4->get_name()=="float"){
       error_count++;
-      fprintf(error , "Line# %d: 1st parameter's name not given in function definition of %s\n" , line_count, $2->get_name().c_str());
+      fprintf(error , "Line# %d: 1st parameter's name not given in function definition of '%s'\n" , line_count, $2->get_name().c_str());
     }
     //chking if declared previously and now being defined
     //param types,return type must be matched
@@ -278,15 +278,10 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
             }
           }
         }
-        else if(n < f.parametres.size())
-        {
-          error_count++;
-          fprintf(error , "Line# %d: Too few arguments to function '%s'\n",line_count , $2->get_name().c_str());
-        }
         else
         {
           error_count++;
-          fprintf(error , "Line# %d: Too many arguments to function '%s'\n",line_count , $2->get_name().c_str());
+          fprintf(error , "Line# %d: Conflicting types for '%s'\n",line_count , $2->get_name().c_str());
           
         }
         
@@ -340,7 +335,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
   		SymbolInfo* temp = table.Lookup_current_scope($2->get_name());
       if(temp != NULL and (!temp->get_func_decl_state())) {
   			error_count++;
-  			fprintf(error , "Line# %d: Multiple declaration of %s\n" , line_count , $2->get_name().c_str());
+  			fprintf(error , "Line# %d: Multiple declaration of '%s'\n" , line_count , $2->get_name().c_str());
         }
   		else if(temp == NULL){
   			table.Insert($2->get_name() , "ID" , log_);
@@ -443,7 +438,7 @@ var_declaration : type_specifier declaration_list SEMICOLON
 					SymbolInfo* temp = table.Lookup_current_scope($2->var_list[i].name);
 					if(temp != NULL) {
 						error_count++;
-						fprintf(error , "Line# %d: Multiple declaration of %s\n" , line_count , $2->var_list[i].name.c_str());
+						fprintf(error , "Line# %d: Multiple declaration of '%s'\n" , line_count , $2->var_list[i].name.c_str());
 					}
 					else{
 						table.Insert($2->var_list[i].name , "ID" , log_);
@@ -638,7 +633,7 @@ statement : var_declaration
 
       else if(!table.Lookup_current_scope($3->get_name())){
         error_count++;
-        fprintf(error , "Line %d: Undeclared variable '%s'\n" , line_count,$3->get_name().c_str());
+        fprintf(error , "Line# %d: Undeclared variable '%s'\n" , line_count,$3->get_name().c_str());
       }
     }
 	  | RETURN expression SEMICOLON
@@ -728,7 +723,7 @@ expression : logic_expression
         if(isvar){
           if(varname != $1->get_name()){
             error_count++;
-            fprintf(error , "Line %d: '%s' is not an array\n" , line_count,varname.c_str());
+            fprintf(error , "Line# %d: '%s' is not an array\n" , line_count,varname.c_str());
           }
         }
         //chk if array
@@ -738,7 +733,7 @@ expression : logic_expression
             //let's see if ara is being used without any index
             if(varname==$1->get_name()){
               error_count++;
-              fprintf(error,"Line %d: Type Mismatch, %s is an array\n",line_count , varname.c_str());
+              fprintf(error,"Line# %d: Type mismatch, '%s' is an array\n",line_count , varname.c_str());
               break;
 
             }
@@ -746,7 +741,7 @@ expression : logic_expression
 
             else if(!array_index_checker($1->get_name() , var_list[i].size)){
               error_count++;
-              fprintf(error,"Line %d: Array subscript is not an integer\n",line_count);
+              fprintf(error,"Line# %d: Array subscript is not an integer\n",line_count);
               break;
             }
           }
@@ -756,7 +751,7 @@ expression : logic_expression
         if(x->get_var_type()=="int" && $3->get_var_type()=="float"){
 					error_count++;
           $$->set_var_type("int");
-					fprintf(error,"Line %d: Warning: possible loss of data in assignment of FLOAT to INT \n",line_count,$3->get_var_type().c_str(),x->get_var_type().c_str());	}
+					fprintf(error,"Line# %d: Warning: possible loss of data in assignment of FLOAT to INT \n",line_count,$3->get_var_type().c_str(),x->get_var_type().c_str());	}
         else if(x->get_var_type()=="float" && $3->get_var_type()=="int"){
           $$->set_var_type("float");
         }
@@ -774,11 +769,11 @@ expression : logic_expression
 
           if(f.ret_type=="void"){
             error_count++;
-            fprintf(error , "Line %d: Void cannot be used in expression\n",line_count);
+            fprintf(error , "Line# %d: Void cannot be used in expression\n",line_count);
           }
           else if(f.ret_type != $1->get_var_type()){
             error_count++;
-            fprintf(error , "Line %d: Type Mismatch in function returning\n",line_count);
+            fprintf(error , "Line# %d: Type mismatch in function returning\n",line_count);
           }
         }
       }
@@ -787,7 +782,7 @@ expression : logic_expression
 
 			else{
 				error_count++;
-				fprintf(error,"Line %d: Undeclared variable '%s'\n",line_count,varname.c_str());
+				fprintf(error,"Line# %d: Undeclared variable '%s'\n",line_count,varname.c_str());
         	}
     }
 	   ;
@@ -807,7 +802,7 @@ logic_expression : rel_expression
       */
       if($1->get_var_type()=="void" || $3->get_var_type()=="void"){
  				error_count++;
- 				fprintf(error,"Line %d: Type Mismatch(Operands of %s can't be void)\n",line_count,$2->get_name().c_str());
+ 				fprintf(error,"Line# %d: Type mismatch(Operands of '%s' can't be void)\n",line_count,$2->get_name().c_str());
         	}
 
        $$->set_var_type("int");
@@ -830,7 +825,7 @@ rel_expression	: simple_expression
      */
      if($1->get_var_type()=="void" || $3->get_var_type()=="void"){
 				error_count++;
-				fprintf(error,"Line %d : Type Mismatch(Operands of %s can't be void)\n",line_count,$2->get_name().c_str());
+				fprintf(error,"Line# %d : Type mismatch(Operands of '%s' can't be void)\n",line_count,$2->get_name().c_str());
 			}
       $$->set_var_type("int");
    }
@@ -868,17 +863,17 @@ term :	unary_expression
         func_ f = get_func(fn);
         if(f.ret_type=="void"){
           error_count++;
-          fprintf(error , "Line %d: Void cannot be used in expression\n",line_count);        }
+          fprintf(error , "Line# %d: Void cannot be used in expression\n",line_count);        }
       }
       //features of mod operation
       if($2->get_name()=="%" && ($1->get_var_type()!="int" || $3->get_var_type()!="int")){
 				error_count++;
-				fprintf(error,"Line %d: Operands of modulus must be integers\n",line_count);
+				fprintf(error,"Line# %d: Operands of modulus must be integers\n",line_count);
         	}
       //mod by zero
       else if($2->get_name()=="%" && $3->get_name()=="0"){
 				error_count++;
-				fprintf(error,"Line %d: Warning: division by zero \n",line_count);
+				fprintf(error,"Line# %d: Warning: division by zero \n",line_count);
 
 			}
 			//set variable_type
@@ -902,7 +897,7 @@ unary_expression : ADDOP unary_expression
         func_ f = get_func(fn);
         if(f.ret_type=="void"){
           error_count++;
-          fprintf(error , "Line %d: Void cannot be used in expression\n",line_count);        }
+          fprintf(error , "Line# %d: Void cannot be used in expression\n",line_count);        }
       }
 
       fprintf(log_,"unary_expression : ADDOP unary_expression\n");
@@ -942,7 +937,7 @@ factor	: variable
       SymbolInfo *x=table.Lookup(varname);
 			if(!x){
         error_count++;
-        fprintf(error,"Line %d: Undeclared variable '%s'\n",line_count,varname.c_str());
+        fprintf(error,"Line# %d: Undeclared variable '%s'\n",line_count,varname.c_str());
               }
       else{
 
@@ -956,14 +951,14 @@ factor	: variable
               //let's see if ara is being used without any index
               if(varname==$1->get_name()){
                 error_count++;
-                fprintf(error,"Line %d:Type Mismatch, %s is an array\n",line_count,varname.c_str());
+                fprintf(error,"Line# %d:Type mismatch, '%s' is an array\n",line_count,varname.c_str());
                 $$->set_param_error_state(true);
                 break;
               }
               //now chk if wrong index is given
               else if(!array_index_checker($1->get_name() , var_list[i].size)){
                 error_count++;
-                fprintf(error,"Line: %d Wrong array index\n",line_count);
+                fprintf(error,"Line# %d: Wrong array index\n",line_count);
                 break;
               }
             }
@@ -982,7 +977,7 @@ factor	: variable
       //chk if id is in func_list
       if(!check_func($1->get_name())){
         error_count++;
-        fprintf(error , "Line: %d Undeclared function '%s'\n",line_count,$1->get_name().c_str());
+        fprintf(error , "Line# %d: Undeclared function '%s'\n",line_count,$1->get_name().c_str());
               }
       else{
         func_ f = get_func($1->get_name());
@@ -1004,21 +999,23 @@ factor	: variable
           for(int i=0;i<f.parametres.size();i++){
             if($3->argument_list[i].error_state){
               error_count++;
-              fprintf(error , "Line %d: Type mismatch for argument %d of '%s'\n",line_count,i+1,$1->get_name().c_str());
+              fprintf(error , "Line# %d: Type mismatch for argument %d of '%s'\n",line_count,i+1,$1->get_name().c_str());
               continue;
             }
             //cout<<f.f_name<<" "<<$3->arg_list[i].name<<" "<<$3->arg_list[i].sz<<endl;
+            
             if($3->argument_list[i].size>0){
               if($3->get_name()==array_name($3->get_name())){
                  error_count++;
-              fprintf(error , "Line %d: Type mismatch for argument %d of '%s'\n",line_count,i+1,$1->get_name().c_str());
+              fprintf(error , "Line# %d: Type mismatch for argument %d of '%s'\n",line_count,i+1,$1->get_name().c_str());
               continue;
 
               }
             }
+          
             if(f.parametres[i].first != $3->argument_list[i].type){
                error_count++;
-              fprintf(error , "Line %d: Type mismatch for argument %d of '%s'\n",line_count,i+1,$1->get_name().c_str());
+              fprintf(error , "Line# %d: Type mismatch for argument %d of '%s'\n",line_count,i+1,$1->get_name().c_str());
               continue;
             }
           }
@@ -1059,7 +1056,7 @@ factor	: variable
       SymbolInfo *x=table.Lookup(array_name($1->get_name()));
 			if(!x){
         error_count++;
-        fprintf(error,"Line %d: Undeclared variable '%s'\n",line_count,$1->get_name().c_str());
+        fprintf(error,"Line# %d: Undeclared variable '%s'\n",line_count,$1->get_name().c_str());
               }
       else{
 
@@ -1076,7 +1073,7 @@ factor	: variable
       SymbolInfo *x=table.Lookup(array_name($1->get_name()));
 			if(!x){
         error_count++;
-        fprintf(error,"Line %d: Undeclared variable '%s'\n",line_count,$1->get_name().c_str());      }
+        fprintf(error,"Line# %d: Undeclared variable '%s'\n",line_count,$1->get_name().c_str());      }
       else{
 
          $$->set_var_type($1->get_var_type());
