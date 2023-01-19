@@ -16,6 +16,7 @@
     FILE *log_ = fopen("1905058_log.txt","w");
    // FILE *token = fopen("1905058_token.txt","w");
     FILE *error = fopen("1905058_error.txt","w");
+    FILE *parse = fopen("1905058_parse_tree.txt","w");
 
 
    // SymbolTable Table(10);
@@ -237,6 +238,8 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 {INT_TOKEN} {
     //fprint(token,"<CONST_INT, %s>\n",yytext);
     SymbolInfo *t =  new SymbolInfo(yytext,"CONST_INT");
+    t->set_start(line_count);
+    t->set_end(line_count);
     yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <CONST_INT> Lexeme %s found\n",line_count,yytext);
     return CONST_INT;
@@ -244,6 +247,8 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 {FLOAT_TOKEN} {
     //fprint(token,"<CONST_FLOAT, %s>\n",yytext);
     SymbolInfo *t =  new SymbolInfo(yytext,"CONST_FLOAT");
+    t->set_start(line_count);
+    t->set_end(line_count);
     yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <CONST_FLOAT> Lexeme %s found\n",line_count,yytext);
     return CONST_FLOAT;
@@ -254,6 +259,8 @@ UNRECOGNISED_CHAR_ERROR [^\n]
     {
         //fprint(token,"<CONST_CHAR, %c>\n",temp[1]);
         SymbolInfo *t =  new SymbolInfo(yytext,"CONST_CHAR");
+        t->set_start(line_count);
+        t->set_end(line_count);
         yylval.symbol=t;
         fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %c found\n",line_count,yytext[1]);
         return CONST_CHAR;
@@ -321,6 +328,8 @@ UNRECOGNISED_CHAR_ERROR [^\n]
         }
         //fprint(token,"<CONST_CHAR, %c>\n",temp_ch);
         SymbolInfo *t =  new SymbolInfo(yytext,"CONST_CHAR");
+        t->set_start(line_count);
+        t->set_end(line_count);
         yylval.symbol=t;
         fprintf(log_,"Line# %d: Token <CONST_CHAR> Lexeme %c found\n",line_count,temp_ch);
         return CONST_CHAR;
@@ -330,90 +339,160 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 {BREAK} {
     //fprint(token,"<BREAK, break>\n");
     fprintf(log_,"Line# %d: Token <BREAK> Lexeme %s found\n",line_count,yytext);
+    SymbolInfo *t =  new SymbolInfo(yytext,"BREAK");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     return BREAK;
 }
 {PRINTLN} {
     fprintf(log_,"Line# %d: Token <PRINTLN> Lexeme %s found\n",line_count,yytext);
+    SymbolInfo *t =  new SymbolInfo(yytext,"PRINTLN");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;    
     return PRINTLN;
 }
 {CASE} {
    //fprint(token,"<CASE, case>\n");
     fprintf(log_,"Line# %d: Token <CASE> Lexeme %s found\n",line_count,yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"CASE");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     return CASE;
 }
 {CHAR} {
      //fprint(token,"<CHAR, char>\n");
     fprintf(log_,"Line# %d: Token <CHAR> Lexeme %s found\n",line_count,yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"CHAR");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     return CHAR;
 }
 {CONTINUE} {
     //fprint(token,"<CONTINUE, continue>\n");
     fprintf(log_,"Line# %d: Token <CONTINUE> Lexeme %s found\n",line_count,yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"CONTINUE");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     return CONTINUE;
 }
 {DEFAULT} {
     //fprint(token,"<DEFAULT, default>\n");
     fprintf(log_,"Line# %d: Token <DEFAULT> Lexeme %s found\n",line_count,yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"DEFAULT");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     return DEFAULT;
 }
 {DO} {
     //fprint(token,"<DO, do>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"DO");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <DO> Lexeme %s found\n",line_count,yytext);
     return DO;
 }
 {DOUBLE} {
     //fprint(token,"<DOUBLE, double>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"DOUBLE");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <DOUBLE> Lexeme %s found\n",line_count,yytext);
     return DOUBLE;
 }
 {ELSE} {
     //fprint(token,"<ELSE, else>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"ELSE");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <ELSE> Lexeme %s found\n",line_count,yytext);
     return ELSE;
 }
 {FLOAT} {
     //fprint(token,"<FLOAT, float>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"FLOAT");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <FLOAT> Lexeme %s found\n",line_count,yytext);
     return FLOAT;
 }
 {FOR} {
     //fprint(token,"<FOR, for>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"FOR");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <FOR> Lexeme %s found\n",line_count,yytext);
     return FOR;
 }
 {IF} {
     //fprint(token,"<IF, if>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"IF");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <IF> Lexeme %s found\n",line_count,yytext);
     return IF;
 }
 {INT} {
     //fprint(token,"<INT, int>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"INT");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <INT> Lexeme %s found\n",line_count,yytext);
     return INT;
 }
 {RETURN} {
     //fprint(token,"<RETURN, return>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"RETURN");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <RETURN> Lexeme %s found\n",line_count,yytext);
     return RETURN;
 }
 {SWITCH} {
     //fprint(token,"<SWITCH, switch>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"SWITCH");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <SWITCH> Lexeme %s found\n",line_count,yytext);
     return SWITCH;
 }
 {WHILE} {
     //fprint(token,"<WHILE, while>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"WHILE");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <WHILE> Lexeme %s found\n",line_count,yytext);
     return WHILE;
 }
 {VOID} {
     //fprint(token,"<VOID, void>\n");
+        SymbolInfo *t =  new SymbolInfo(yytext,"VOID");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <VOID> Lexeme %s found\n",line_count,yytext);
     return VOID;
 }
 {ADDOP} {
     //fprint(token,"<ADDOP, %s>\n",yytext);
     SymbolInfo *t =  new SymbolInfo(yytext,"ADDOP");
+    t->set_start(line_count);
+    t->set_end(line_count);
     yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <ADDOP> Lexeme %s found\n",line_count,yytext);
     return ADDOP;
@@ -421,6 +500,8 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 {MULOP} {
     //fprint(token,"<MULOP, %s>\n",yytext);
      SymbolInfo *t =  new SymbolInfo(yytext,"MULOP");
+     t->set_start(line_count);
+    t->set_end(line_count);
     yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <MULOP> Lexeme %s found\n",line_count,yytext);
     return MULOP;
@@ -428,6 +509,8 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 {RELOP} {
     //fprint(token,"<RELOP, %s>\n",yytext);
     SymbolInfo *t =  new SymbolInfo(yytext,"RELOP");
+    t->set_start(line_count);
+    t->set_end(line_count);
     yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <RELOP> Lexeme %s found\n",line_count,yytext);
     return RELOP;
@@ -435,74 +518,128 @@ UNRECOGNISED_CHAR_ERROR [^\n]
 {INCOP} {
     //fprint(token,"<INCOP, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <INCOP> Lexeme %s found\n",line_count,yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"INCOP");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     return INCOP;
 }
 {DECOP} {
     //fprint(token,"<DECOP, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"DECOP");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <DECOP> Lexeme %s found\n",line_count,yytext);
     return DECOP;
 }
 {LOGICOP} {
     //fprint(token,"<LOGICOP, %s>\n",yytext);
     SymbolInfo *t =  new SymbolInfo(yytext,"LOGICOP");
+    t->set_start(line_count);
+    t->set_end(line_count);
     yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <LOGICOP> Lexeme %s found\n",line_count,yytext);
     return LOGICOP;
 }
 {ASSIGNOP} {
     //fprint(token,"<ASSIGNOP, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"ASSIGNOP");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <ASSIGNOP> Lexeme %s found\n",line_count,yytext);
     return ASSIGNOP;
 }
 {BITOP} {
     //fprint(token,"<BITOP, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"BITOP");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <BITOP> Lexeme %s found\n",line_count,yytext);
     return BITOP;
 }
 {NOT} {
     //fprint(token,"<NOT, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"NOT");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <NOT> Lexeme %s found\n",line_count,yytext);
     return NOT;
 }
 {LPAREN} {
     //fprint(token,"<LPAREN, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"LPAREN");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <LPAREN> Lexeme %s found\n",line_count,yytext);
     return LPAREN;
 }
 {RPAREN} {
     //fprint(token,"<RPAREN, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"RPAREN");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <RPAREN> Lexeme %s found\n",line_count,yytext);
     return RPAREN;
 }
 {LCURL} {
     //fprint(token,"<LCURL, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"LCURL");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <LCURL> Lexeme %s found\n",line_count,yytext);
    // Table.Enter_Scope();
    return LCURL;
 }
 {RCURL} {
     //fprint(token,"<RCURL, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"RCURL");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <RCURL> Lexeme %s found\n",line_count,yytext);
    // Table.Exit_Scope();
    return RCURL;
 }
 {LSQUARE} {
     //fprint(token,"<LSQUARE, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"LSQUARE");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <LSQUARE> Lexeme %s found\n",line_count,yytext);
     return LSQUARE;
 }
 {RSQUARE} {
     //fprint(token,"<RSQUARE, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"RSQUARE");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <RSQUARE> Lexeme %s found\n",line_count,yytext);
     return RSQUARE;
 }
 {COMMA} {
     //fprint(token,"<COMMA, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"COMMA");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <COMMA> Lexeme %s found\n",line_count,yytext);
     return COMMA;
 }
 {SEMICOLON} {
     //fprint(token,"<SEMICOLON, %s>\n",yytext);
+        SymbolInfo *t =  new SymbolInfo(yytext,"SEMICOLON");
+    t->set_start(line_count);
+    t->set_end(line_count);
+    yylval.symbol=t;
     fprintf(log_,"Line# %d: Token <SEMICOLON> Lexeme %s found\n",line_count,yytext);
     return SEMICOLON;
 }
@@ -510,6 +647,8 @@ UNRECOGNISED_CHAR_ERROR [^\n]
     //fprint(token,"<ID, %s>\n",yytext);
     fprintf(log_,"Line# %d: Token <ID> Lexeme %s found\n",line_count,yytext);
    SymbolInfo *t =  new SymbolInfo(yytext,"ID");
+   t->set_start(line_count);
+    t->set_end(line_count);
     yylval.symbol=t;
     return ID;
 }

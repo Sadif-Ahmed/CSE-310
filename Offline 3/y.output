@@ -165,7 +165,7 @@ Nonterminals, with rules where they appear
 
     $accept (42)
         on left: 0
-    start (43)
+    start <symbol> (43)
         on left: 1
         on right: 0
     program <symbol> (44)

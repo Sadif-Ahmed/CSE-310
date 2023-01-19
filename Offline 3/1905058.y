@@ -19,6 +19,7 @@ FILE *fp;
 extern FILE *log_;
 // FILE *token = fopen("1905058_token.txt","w");
 extern FILE *error;
+extern FILE *parse;
 
 SymbolTable table(11);
 
@@ -168,7 +169,7 @@ void yyerror(char *s)
 %token<symbol>RELOP
 %token<symbol>LOGICOP
 
-%type<symbol>compound_statement type_specifier parameter_list declaration_list var_declaration unit func_declaration statement statements variable expression factor arguments argument_list expression_statement unary_expression simple_expression logic_expression rel_expression term func_definition program
+%type<symbol>start compound_statement type_specifier parameter_list declaration_list var_declaration unit func_declaration statement statements variable expression factor arguments argument_list expression_statement unary_expression simple_expression logic_expression rel_expression term func_definition program
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
@@ -178,6 +179,13 @@ start : program
 	{
 		//write your code in this block in all the similar blocks below
         fprintf(log_,"start : program\n");
+        $$=new SymbolInfo("start","ROOT");
+        $$->set_print("start : program");
+        $$->add_child($1);
+        $$->set_start($1->get_start());
+        $$->set_start($1->get_end());
+        $$->print_tree($$,0,parse);
+        $$->delete_tree($$);
 	}
 	;
 
@@ -185,27 +193,48 @@ program : program unit
 	{
 		fprintf(log_,"program : program unit\n");
 		$$ = new SymbolInfo((string)$1->get_name()+(string)$2->get_name(), "NON_TERMINAL");
+    $$->set_print("program : program unit");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->set_start($1->get_start());
+    $$->set_end($2->get_end());
 	}
 	| unit
 	{
 		fprintf(log_,"program : unit\n");
 		$$ = new SymbolInfo($1->get_name()+"\n", "NON_TERMINAL");
+    $$->set_print("program : unit");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 	}
 	;
 unit : var_declaration
 	{
 		fprintf(log_,"unit : var_declaration\n");
 		$$ = new SymbolInfo($1->get_name(), "NON_TERMINAL");
+    $$->set_print("unit : var_declaration");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 	}
      | func_declaration
 	{
 		fprintf(log_,"unit : func_declaration\n");
 		$$ = new SymbolInfo($1->get_name(), "NON_TERMINAL");
+    $$->set_print("unit : func_declaration");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 	}
      | func_definition
 	{
         fprintf(log_,"unit : func_definition\n");
 		$$ = new SymbolInfo($1->get_name(), "NON_TERMINAL");
+    $$->set_print("unit : func_definition");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 	}
      ;
 func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
