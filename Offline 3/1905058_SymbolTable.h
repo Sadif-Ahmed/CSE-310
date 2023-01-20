@@ -86,6 +86,11 @@ class SymbolInfo
     {
         return children;
     }
+    void clear_children()
+    {
+        children.clear();
+        set_leaf_state(false);
+    }
     void print_tree(SymbolInfo *head,int depth,FILE *fp)
     {
         for(int i=0;i<depth;i++)
@@ -100,7 +105,7 @@ class SymbolInfo
         else
         {
             fprintf(fp,"%s",head->get_print().c_str());
-            fprintf(fp,"\t<Line: %d-%d>\n",head->get_start(),head->get_end());
+            fprintf(fp," \t<Line: %d-%d>\n",head->get_start(),head->get_end());
         }
         vector<SymbolInfo*> temp = head->get_children();
         for(int i=0;i<temp.size();i++)

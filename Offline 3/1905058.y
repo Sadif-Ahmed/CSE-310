@@ -156,9 +156,9 @@ void yyerror(char *s)
     SymbolInfo *symbol;
 }
 
-%token IF ELSE FOR WHILE DO BREAK INT CHAR FLOAT DOUBLE
-%token VOID RETURN SWITCH CASE DEFAULT CONTINUE
-%token ASSIGNOP INCOP DECOP NOT LPAREN RPAREN LCURL RCURL LSQUARE RSQUARE COMMA SEMICOLON PRINTLN BITOP
+%token<symbol> IF ELSE FOR WHILE DO BREAK INT CHAR FLOAT DOUBLE
+%token<symbol> VOID RETURN SWITCH CASE DEFAULT CONTINUE
+%token<symbol> ASSIGNOP INCOP DECOP NOT LPAREN RPAREN LCURL RCURL LSQUARE RSQUARE COMMA SEMICOLON PRINTLN BITOP
 
 %token<symbol>CONST_INT
 %token<symbol>CONST_FLOAT
@@ -241,6 +241,16 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
 	{
     $$ = new SymbolInfo($1->get_name()+" "+$2->get_name()+"("+$4->get_name()+");", "NON_TERMINAL");
     fprintf(log_ , "func_declaration: type_specifier ID LPAREN parameter_list RPAREN SEMICOLON\n");
+    $$->set_print("func_declaration: type_specifier ID LPAREN parameter_list RPAREN SEMICOLON");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->add_child($5);
+    $$->add_child($6);
+    $$->set_start($1->get_start());
+    $$->set_end($6->get_end());
+
 
     /* checking whether already declared or not */
     SymbolInfo* temp = table.Lookup_current_scope($2->get_name());
@@ -263,6 +273,14 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
 	{
 		$$ = new SymbolInfo($1->get_name()+" "+$2->get_name()+"();", "NON_TERMINAL");
 		fprintf(log_ , "func_declaration: type_specifier ID LPAREN RPAREN SEMICOLON\n");
+    $$->set_print("func_declaration: type_specifier ID LPAREN RPAREN SEMICOLON");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->add_child($5);
+    $$->set_start($1->get_start());
+    $$->set_end($5->get_end());
 		
         /* checking whether already declared or not */
 		SymbolInfo* temp = table.Lookup_current_scope($2->get_name());
@@ -354,7 +372,16 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
 
   {
       $$ = new SymbolInfo($1->get_name()+" "+$2->get_name()+"("+$4->get_name()+")"+$7->get_name()+"\n", "NON_TERMINAL");
-      fprintf(log_ , "func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n");
+    fprintf(log_ , "func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n");
+    $$->set_print("func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->add_child($5);
+    $$->add_child($7);
+    $$->set_start($1->get_start());
+    $$->set_end($7->get_end());
 
   }  
   | type_specifier ID LPAREN RPAREN
@@ -381,12 +408,27 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
  	{
       $$ = new SymbolInfo($1->get_name()+" "+$2->get_name()+"()"+$6->get_name()+"\n", "NON_TERMINAL");
       fprintf(log_ , "func_definition : type_specifier ID LPAREN RPAREN compound_statement\n");
+    $$->set_print("func_definition : type_specifier ID LPAREN RPAREN compound_statement");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->add_child($6);
+    $$->set_start($1->get_start());
+    $$->set_end($6->get_end());
 	}
 	 	;
 parameter_list  : parameter_list COMMA type_specifier ID
 		{
 			$$ = new SymbolInfo($1->get_name()+","+$3->get_name()+" "+$4->get_name(), "NON_TERMINAL");
 			fprintf(log_,"parameter_list : parameter_list COMMA type_specifier ID\n");
+      $$->set_print("parameter_list : parameter_list COMMA type_specifier ID");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->set_start($1->get_start());
+    $$->set_end($4->get_end());
 			/* adding parameter to parameter list */
       $$->param_list = $1->param_list;
 			$$->push_param($4->get_name() , $3->get_name());
@@ -400,6 +442,12 @@ parameter_list  : parameter_list COMMA type_specifier ID
 		{
 			$$ = new SymbolInfo($1->get_name()+","+$3->get_name(), "NON_TERMINAL");
 			fprintf(log_,"parameter_list  : parameter_list COMMA type_specifier\n");
+      $$->set_print("parameter_list  : parameter_list COMMA type_specifier");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end());
 			/* adding parameter to parameter list */
       $$->param_list = $1->param_list;
 			$$->push_param("", $3->get_name());
@@ -408,6 +456,11 @@ parameter_list  : parameter_list COMMA type_specifier ID
 		{
 			$$ = new SymbolInfo($1->get_name()+" "+$2->get_name(), "NON_TERMINAL");
 			fprintf(log_,"parameter_list  : type_specifier ID\n");
+      $$->set_print("parameter_list  : type_specifier ID");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->set_start($1->get_start());
+    $$->set_end($2->get_end());
 			/* adding parameter to parameter list */
       if($1->get_name()=="void"){
         error_count++;
@@ -421,6 +474,10 @@ parameter_list  : parameter_list COMMA type_specifier ID
 		{
 			$$ = new SymbolInfo($1->get_name(), "NON_TERMINAL");
 			fprintf(log_,"parameter_list  : type_specifier\n");
+      $$->set_print("parameter_list  : type_specifier");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 			/* adding parameter to parameter list */
 
 			$$->push_param( "" , $1->get_name());
@@ -435,12 +492,23 @@ compound_statement : LCURL statements RCURL
   {
       $$ = new SymbolInfo("{\n"+$2->get_name()+"\n}"+"\n", "NON_TERMINAL");
       fprintf(log_,"compound_statement : LCURL statements RCURL\n");
+      $$->set_print("compound_statement : LCURL statements RCURL");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end());
       table.printall(log_);
   }
  		    | LCURL RCURL
   {
     $$ = new SymbolInfo("{\n}", "NON_TERMINAL");
     fprintf(log_,"compound_statement : LCURL RCURL\n");
+    $$->set_print("compound_statement : LCURL statements RCURL");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->set_start($1->get_start());
+    $$->set_end($2->get_end());
     table.printall(log_);
   }
  		    ;
@@ -448,6 +516,12 @@ var_declaration : type_specifier declaration_list SEMICOLON
 		{
 			fprintf(log_,"var_declaration : type_specifier declaration_list SEMICOLON\n");
 			$$ = new SymbolInfo($1->get_name()+" "+$2->get_name()+";", "NON_TERMINAL");
+          $$->set_print("var_declaration : type_specifier declaration_list SEMICOLON");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end());
 
       $$->set_var_type($1->get_name());
 
@@ -500,6 +574,10 @@ type_specifier	: INT
 
 			SymbolInfo *x = new SymbolInfo("int" , "int");
 			$$ = x;
+      $$->set_print("type_specifier : INT");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 			
 		}
  		| FLOAT
@@ -509,6 +587,10 @@ type_specifier	: INT
 
 			SymbolInfo *x = new SymbolInfo("float" , "float");
 			$$ = x;
+       $$->set_print("type_specifier : FLOAT");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 			
 		}
  		| VOID
@@ -518,6 +600,10 @@ type_specifier	: INT
 
 			SymbolInfo *x = new SymbolInfo("void" , "void");
 			$$ = x;
+      $$->set_print("type_specifier : VOID");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 			
 		}
 		 ;  
@@ -525,6 +611,12 @@ declaration_list : declaration_list COMMA ID
 		{
 			fprintf(log_,"declaration_list : declaration_list COMMA ID\n");
 			$$ = new SymbolInfo((string)$1->get_name()+(string)","+(string)$3->get_name(), "NON_TERMINAL");
+       $$->set_print("declaration_list : declaration_list COMMA ID");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end());
 			
 			/* keeping track of identifier(variable) */
       temp_var.name = $3->get_name();
@@ -540,7 +632,15 @@ declaration_list : declaration_list COMMA ID
 		{
 			fprintf(log_,"declaration_list : declaration_list COMMA ID LSQUARE CONST_INT RSQUARE\n");
 			$$ = new SymbolInfo((string)$1->get_name()+(string)","+(string)$3->get_name()+(string)"["+(string)$5->get_name()+(string)"]", "NON_TERMINAL");
-			
+			 $$->set_print("declaration_list : declaration_list COMMA ID LSQUARE CONST_INT RSQUARE");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->add_child($5);
+    $$->add_child($6);
+    $$->set_start($1->get_start());
+    $$->set_end($6->get_end());
 			/* keeping track of identifier(array) */
       temp_var.name = (string)$3->get_name();
       stringstream temp_str((string) $5->get_name());
@@ -559,6 +659,10 @@ declaration_list : declaration_list COMMA ID
 		{
 			fprintf(log_,"declaration_list : ID\n");
  			$$ = new SymbolInfo($1->get_name() ,  "ID");
+    $$->set_print("declaration_list : ID");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 			 /* keeping track of identifier(variable) */
       temp_var.name = (string)$1->get_name();
       temp_var.size = -1;
@@ -571,6 +675,13 @@ declaration_list : declaration_list COMMA ID
 		{
 			fprintf(log_ , "declaration_list: ID LSQUARE CONST_INT RSQUARE\n");
 			$$ = new SymbolInfo($1->get_name()+"["+$3->get_name()+"]", "NON_TERMINAL");
+      $$->set_print("declaration_list: ID LSQUARE CONST_INT RSQUARE");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->set_start($1->get_start());
+    $$->set_end($4->get_end());
 			temp_var.name = $1->get_name();
       stringstream temp_str($3->get_name());
       temp_str >> temp_var.size;
@@ -594,12 +705,23 @@ statements : statement
     {
        $$ = $1;
        fprintf(log_ , "statements : statement\n");
+       $$->clear_children();
+    $$->set_print("statements : statement");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 
     }
 	   | statements statement
     {
       $$ = new SymbolInfo($1->get_name()+$2->get_name() , "NON_TERMINAL");
       fprintf(log_ , "statements : statements statement\n");
+      $$->set_print("statements : statements statement");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->set_start($1->get_start());
+    $$->set_end($2->get_end());
+
 
     }
 	   ;   
@@ -608,29 +730,62 @@ statement : var_declaration
       fprintf(log_,"statement : var_declaration\n");
 		$1->set_name($1->get_name()+"\n");
   		$$=$1;
+      $$->clear_children();
+      $$->set_print("statement : var_declaration");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
     }
 	  | expression_statement
     {
       fprintf(log_,"statement : expression_statement\n");
 		$1->set_name($1->get_name()+"\n");
 		$$=$1;
+    $$->clear_children();
+    $$->set_print("statement : expression_statement");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
     }
 	  | compound_statement
     {
       fprintf(log_,"statement : compound_statement\n");
       $$=$1;
+      $$->clear_children();
+      $$->set_print("statement : compound_statement");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
     }
 	  | FOR LPAREN expression_statement expression_statement expression RPAREN statement
     {
       string str="for("+$3->get_name()+$4->get_name()+$5->get_name()+")"+$7->get_name();
       $$ = new SymbolInfo(str , "NON_TERMINAL");
       fprintf(log_,"statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement\n");
+    $$->set_print("statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->add_child($5);
+    $$->add_child($6);
+    $$->add_child($7);
+    $$->set_start($1->get_start());
+    $$->set_end($7->get_end());
     }
 	  | IF LPAREN expression RPAREN statement %prec LOWER_THAN_ELSE
     {
       string str = "if("+$3->get_name()+")"+$5->get_name();
       $$ = new SymbolInfo(str , "statement");
       fprintf(log_,"statement : IF LPAREN expression RPAREN statement\n");
+      $$->set_print("statement : IF LPAREN expression RPAREN statement");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->add_child($5);
+    $$->set_start($1->get_start());
+    $$->set_end($5->get_end());
       
 
     }
@@ -639,6 +794,16 @@ statement : var_declaration
       string str = "if("+$3->get_name()+")"+$5->get_name()+"else"+$7->get_name();
       $$ = new SymbolInfo(str , "statement");
       fprintf(log_,"statement : IF LPAREN expression RPAREN statement ELSE statement\n");
+      $$->set_print("statement : IF LPAREN expression RPAREN statement ELSE statement");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->add_child($5);
+    $$->add_child($6);
+    $$->add_child($7);
+    $$->set_start($1->get_start());
+    $$->set_end($7->get_end());
     
 
     }
@@ -647,12 +812,28 @@ statement : var_declaration
       string str = "while("+$3->get_name()+")"+$5->get_name();
       $$ = new SymbolInfo(str , "statement");
       fprintf(log_,"statement : WHILE LPAREN expression RPAREN statement\n");
+      $$->set_print("statement : WHILE LPAREN expression RPAREN statement");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->add_child($5);
+    $$->set_start($1->get_start());
+    $$->set_end($5->get_end());
     
     }
 	  | PRINTLN LPAREN ID RPAREN SEMICOLON
     {
       $$ = new SymbolInfo("printf("+$3->get_name()+");" , "statement");
       fprintf(log_,"statement : PRINTLN LPAREN ID RPAREN SEMICOLON\n");
+      $$->set_print("statement : PRINTLN LPAREN ID RPAREN SEMICOLON");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->add_child($5);
+    $$->set_start($1->get_start());
+    $$->set_end($5->get_end());
       if($3->get_func_state()){
         if(!table.Lookup_current_scope(func_name($3->get_name()))){
           error_count++;
@@ -669,6 +850,12 @@ statement : var_declaration
     {
       $$ = new SymbolInfo("return "+$2->get_name()+";" , "statement");
       fprintf(log_,"statement : RETURN expression SEMICOLON\n");
+      $$->set_print("statement : RETURN expression SEMICOLON");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end());
 
       
     }
@@ -677,11 +864,20 @@ expression_statement 	: SEMICOLON
     {
       $$ = new SymbolInfo(";" , "expression_statement");
       fprintf(log_,"expression_statement : SEMICOLON\n");
+       $$->set_print("expression_statement : SEMICOLON");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
     }
 			| expression SEMICOLON
     {
       $$ = new SymbolInfo($1->get_name()+";" , "expression_statement");
       fprintf(log_,"expression_statement : expression SEMICOLON\n");
+       $$->set_print("expression_statement : expression SEMICOLON");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->set_start($1->get_start());
+    $$->set_end($2->get_end());
     
 
     }
@@ -694,6 +890,12 @@ variable : ID
     {
       fprintf(log_,"variable : ID\n");
 		$$ = $1;
+    $$->clear_children();
+    $$->set_print("variable : ID");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
+
       //Semantic : chk if variable is declared before
 
 
@@ -712,6 +914,13 @@ variable : ID
    {
      fprintf(log_,"variable : ID LSQUARE expression RSQUARE\n");
      $$ = new SymbolInfo($1->get_name()+"["+$3->get_name()+"]" , "variable");
+     $$->set_print("variable : ID LSQUARE expression RSQUARE");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->set_start($1->get_start());
+    $$->set_end($4->get_end());
      $$->set_id("array");
      //array index must be integer
 
@@ -721,12 +930,23 @@ variable : ID
 expression : logic_expression
     {
       $$ = $1;
+      $$->clear_children();
       fprintf(log_,"expression : logic_expression\n");
+      $$->set_print("expression : logic_expression");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
     }
 	   | variable ASSIGNOP logic_expression
     {
       $$ = new SymbolInfo($1->get_name()+"="+$3->get_name() , "expression");
       fprintf(log_,"expression : variable ASSIGNOP logic_expression\n");
+      $$->set_print("expression : variable ASSIGNOP logic_expression");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end());
 
       //semantics
       //todo
@@ -818,12 +1038,24 @@ expression : logic_expression
 logic_expression : rel_expression
     {
       $$ = $1;
+      $$->clear_children();
       fprintf(log_,"logic_expression : rel_expression\n");
+      $$->set_print("logic_expression : rel_expression");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
+
     }
 		 | rel_expression LOGICOP rel_expression
     {
       $$ = new SymbolInfo($1->get_name()+$2->get_name()+$3->get_name() , "logic_expression");
       fprintf(log_,"logic_expression : rel_expression LOGICOP rel_expression\n");
+      $$->set_print("logic_expression : rel_expression LOGICOP rel_expression");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end());
       
       /*semantic
       both $1 and $3 must be of type non void
@@ -840,13 +1072,24 @@ logic_expression : rel_expression
 rel_expression	: simple_expression
    {
      $$ = $1;
+     $$->clear_children();
      fprintf(log_,"rel_expression	: simple_expression\n");
+     $$->set_print("rel_expression	: simple_expression");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
      
    }
 		| simple_expression RELOP simple_expression
    {
      $$ = new SymbolInfo($1->get_name()+$2->get_name()+$3->get_name() , "rel_expression");
      fprintf(log_,"rel_expression : simple_expression RELOP simple_expression\n");
+     $$->set_print("rel_expression : simple_expression RELOP simple_expression");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end());
 
      /*semantic
      both $1 and $3 must be of type non void
@@ -862,13 +1105,24 @@ rel_expression	: simple_expression
 simple_expression : term
   {
     $$ = $1;
+    $$->clear_children();
     fprintf(log_,"simple_expression : term\n");
+    $$->set_print("simple_expression : term");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
 
   }
 		  | simple_expression ADDOP term
   {
     $$ = new SymbolInfo($1->get_name()+$2->get_name()+$3->get_name() , "simple_expression");
     fprintf(log_,"simple_expression : simple_expression ADDOP term\n");
+    $$->set_print("simple_expression : simple_expression ADDOP term");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end());
 
     if($1->get_var_type()=="float" || $3->get_var_type()=="float")
 				$$->set_var_type("float");
@@ -880,12 +1134,23 @@ simple_expression : term
 term :	unary_expression
     {
       $$ = $1;
+      $$->clear_children();
       fprintf(log_,"term :	unary_expression\n");
+      $$->set_print("term :	unary_expression");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
     }
      |  term MULOP unary_expression
     {
       $$ = new SymbolInfo($1->get_name()+$2->get_name()+$3->get_name() , "term");
       fprintf(log_,"term : term MULOP unary_expression\n");
+       $$->set_print("term : term MULOP unary_expression");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end());
       //if $3 is void type function
       string fn = func_name($3->get_name());
       if(check_func(fn)){
@@ -932,6 +1197,11 @@ unary_expression : ADDOP unary_expression
       fprintf(log_,"unary_expression : ADDOP unary_expression\n");
 
 			$$ = new SymbolInfo($1->get_name()+$2->get_name(),"unary_expression");
+      $$->set_print("unary_expression : ADDOP unary_expression");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->set_start($1->get_start());
+    $$->set_end($2->get_end());
 
       $$->set_var_type($2->get_var_type());
       $$->set_id($2->get_id());
@@ -943,6 +1213,11 @@ unary_expression : ADDOP unary_expression
 
 
       $$ = new SymbolInfo("!"+$2->get_name(),"unary_expression");
+      $$->set_print("unary_expression : NOT unary_expression");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->set_start($1->get_start());
+    $$->set_end($2->get_end());
 
       $$->set_var_type($2->get_var_type());
       $$->set_id($2->get_id());
@@ -951,7 +1226,12 @@ unary_expression : ADDOP unary_expression
 		 | factor
      {
        $$ = $1;
-       fprintf(log_,"unary_expression :	factor\n");       
+       $$->clear_children();
+       fprintf(log_,"unary_expression :	factor\n");  
+       $$->set_print("unary_expression :	factor");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());     
      }
 
 		 ;
@@ -959,6 +1239,11 @@ factor	: variable
     {
       fprintf(log_,"factor : variable\n");
       $$ = $1;
+      $$->clear_children();
+       $$->set_print("factor : variable");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());     
       ///pass arrayname if array otherwise pass varname only
       ///suppose $1->get_name() is a[2].Now modified_name returns only a
       string varname;
@@ -1000,6 +1285,13 @@ factor	: variable
 
       $$ = new SymbolInfo($1->get_name()+"("+$3->get_name()+")" , "factor");
       fprintf(log_,"factor : ID LPAREN argument_list RPAREN\n");
+      $$->set_print("factor : ID LPAREN argument_list RPAREN");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->add_child($4);
+    $$->set_start($1->get_start());
+    $$->set_end($4->get_end());     
       $$->set_func_state(true);
 
       //semantic
@@ -1058,6 +1350,12 @@ factor	: variable
     {
       $$ = new SymbolInfo("("+$2->get_name()+")" , "factor");
       fprintf(log_,"factor : LPAREN expression RPAREN\n");
+      $$->set_print("factor : LPAREN expression RPAREN");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end()); 
 
       $$->set_var_type($2->get_var_type());
 
@@ -1066,6 +1364,11 @@ factor	: variable
     {
       fprintf(log_,"factor : CONST_INT\n");
 			$$=$1;
+      $$->clear_children();
+      $$->set_print("factor : CONST_INT");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end()); 
 			$$->set_var_type("int");
       
 
@@ -1074,6 +1377,11 @@ factor	: variable
     {
       fprintf(log_,"factor : CONST_FLOAT\n");
 			$$=$1;
+      $$->clear_children();
+      $$->set_print("factor : CONST_FLOAT");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end()); 
 			$$->set_var_type("float");
 
     }
@@ -1081,6 +1389,11 @@ factor	: variable
     {
       fprintf(log_,"factor	: variable INCOP\n");
       $$ = new SymbolInfo($1->get_name()+"++","factor");
+      $$->set_print("factor	: variable INCOP");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->set_start($1->get_start());
+    $$->set_end($2->get_end()); 
 
       SymbolInfo *x=table.Lookup(array_name($1->get_name()));
 			if(!x){
@@ -1098,6 +1411,11 @@ factor	: variable
     {
       fprintf(log_,"factor	: variable DECOP\n");
       $$ = new SymbolInfo($1->get_name()+"--","factor");
+       $$->set_print("factor	: variable DECOP");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->set_start($1->get_start());
+    $$->set_end($2->get_end()); 
 
       SymbolInfo *x=table.Lookup(array_name($1->get_name()));
 			if(!x){
@@ -1115,16 +1433,28 @@ argument_list : arguments
         {
           fprintf(log_,"argument_list : arguments\n");
     			$$=$1;
+          $$->clear_children();
+           $$->set_print("argument_list : arguments");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end()); 
         }
 			  |
         {
           $$ = new SymbolInfo("" , "argument_list");
+
         }
 			  ;          
 arguments : arguments COMMA logic_expression
         {
           $$ = new SymbolInfo($1->get_name()+" , "+$3->get_name() , "arguments");
           fprintf(log_,"arguments : arguments COMMA logic_expression\n");
+            $$->set_print("arguments : arguments COMMA logic_expression");
+    $$->add_child($1);
+    $$->add_child($2);
+    $$->add_child($3);
+    $$->set_start($1->get_start());
+    $$->set_end($3->get_end()); 
 
           $$->argument_list = $1->argument_list;
           bool isara=false;
@@ -1146,6 +1476,11 @@ arguments : arguments COMMA logic_expression
         {
           fprintf(log_,"arguments : logic_expression\n");
     			$$=$1;
+          $$->clear_children();
+          $$->set_print("arguments : logic_expression");
+    $$->add_child($1);
+    $$->set_start($1->get_start());
+    $$->set_end($1->get_end());
           bool isara=false;
           for(int i=0;i<var_list.size();i++){
             if($1->get_name()==var_list[i].name && var_list[i].size>0){
