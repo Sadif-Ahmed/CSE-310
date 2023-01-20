@@ -89,7 +89,22 @@ class SymbolInfo
     void clear_children()
     {
         children.clear();
-        set_leaf_state(false);
+    }
+    void make_copy(SymbolInfo *temp)
+    {
+    this->name=temp->get_name();
+    this->type=temp->get_type();
+    this->ret_type=temp->get_ret_type();
+    this->var_type=temp->get_var_type();
+    this->id=temp->get_id();
+    this->param_error_state=temp->get_param_error_state();
+    this->func_decl_state=temp->get_func_decl_state();
+    this->func_state=temp->get_func_state();
+    this->arr_state=temp->get_arr_state();
+    this->next=temp->get_next();
+    this->param_list=temp->get_param_list();
+    this->var_list=temp->get_var_list();
+    this->argument_list=temp->get_argument_list();
     }
     void print_tree(SymbolInfo *head,int depth,FILE *fp)
     {
@@ -287,6 +302,18 @@ class SymbolInfo
         temp.error_state=state;
         argument_list.push_back(temp);
     }
+    vector<func_param> get_param_list()
+    {
+        return param_list;
+    };
+    vector<var> get_var_list()
+    {
+        return var_list;
+    };
+    vector<argument> get_argument_list()
+    {
+        return argument_list;
+    };
     ~SymbolInfo()
     {
 

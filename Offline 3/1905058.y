@@ -183,7 +183,7 @@ start : program
         $$->set_print("start : program");
         $$->add_child($1);
         $$->set_start($1->get_start());
-        $$->set_start($1->get_end());
+        $$->set_end($1->get_end());
         $$->print_tree($$,0,parse);
         $$->delete_tree($$);
 	}
@@ -703,7 +703,8 @@ declaration_list : declaration_list COMMA ID
  		  ;
 statements : statement
     {
-       $$ = $1;
+       $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);
        fprintf(log_ , "statements : statement\n");
        $$->clear_children();
     $$->set_print("statements : statement");
@@ -729,7 +730,8 @@ statement : var_declaration
     {
       fprintf(log_,"statement : var_declaration\n");
 		$1->set_name($1->get_name()+"\n");
-  		$$=$1;
+  		$$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);
       $$->clear_children();
       $$->set_print("statement : var_declaration");
     $$->add_child($1);
@@ -740,7 +742,8 @@ statement : var_declaration
     {
       fprintf(log_,"statement : expression_statement\n");
 		$1->set_name($1->get_name()+"\n");
-		$$=$1;
+		$$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);;
     $$->clear_children();
     $$->set_print("statement : expression_statement");
     $$->add_child($1);
@@ -750,7 +753,8 @@ statement : var_declaration
 	  | compound_statement
     {
       fprintf(log_,"statement : compound_statement\n");
-      $$=$1;
+      $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);;
       $$->clear_children();
       $$->set_print("statement : compound_statement");
     $$->add_child($1);
@@ -889,7 +893,8 @@ expression_statement 	: SEMICOLON
 variable : ID
     {
       fprintf(log_,"variable : ID\n");
-		$$ = $1;
+		$$=new SymbolInfo($1->get_name(),"TERMINAL");
+      $$->make_copy($1);
     $$->clear_children();
     $$->set_print("variable : ID");
     $$->add_child($1);
@@ -929,7 +934,8 @@ variable : ID
 	 ;       
 expression : logic_expression
     {
-      $$ = $1;
+      $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);
       $$->clear_children();
       fprintf(log_,"expression : logic_expression\n");
       $$->set_print("expression : logic_expression");
@@ -1037,7 +1043,8 @@ expression : logic_expression
 	   ;
 logic_expression : rel_expression
     {
-      $$ = $1;
+      $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);
       $$->clear_children();
       fprintf(log_,"logic_expression : rel_expression\n");
       $$->set_print("logic_expression : rel_expression");
@@ -1071,7 +1078,8 @@ logic_expression : rel_expression
 		 ;
 rel_expression	: simple_expression
    {
-     $$ = $1;
+     $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);
      $$->clear_children();
      fprintf(log_,"rel_expression	: simple_expression\n");
      $$->set_print("rel_expression	: simple_expression");
@@ -1104,7 +1112,8 @@ rel_expression	: simple_expression
 		;
 simple_expression : term
   {
-    $$ = $1;
+    $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);
     $$->clear_children();
     fprintf(log_,"simple_expression : term\n");
     $$->set_print("simple_expression : term");
@@ -1133,7 +1142,8 @@ simple_expression : term
 		  ;     
 term :	unary_expression
     {
-      $$ = $1;
+      $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);
       $$->clear_children();
       fprintf(log_,"term :	unary_expression\n");
       $$->set_print("term :	unary_expression");
@@ -1225,7 +1235,8 @@ unary_expression : ADDOP unary_expression
     }
 		 | factor
      {
-       $$ = $1;
+       $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);
        $$->clear_children();
        fprintf(log_,"unary_expression :	factor\n");  
        $$->set_print("unary_expression :	factor");
@@ -1238,7 +1249,8 @@ unary_expression : ADDOP unary_expression
 factor	: variable
     {
       fprintf(log_,"factor : variable\n");
-      $$ = $1;
+     $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);
       $$->clear_children();
        $$->set_print("factor : variable");
     $$->add_child($1);
@@ -1363,7 +1375,8 @@ factor	: variable
 	| CONST_INT
     {
       fprintf(log_,"factor : CONST_INT\n");
-			$$=$1;
+			$$=new SymbolInfo($1->get_name(),"TERMINAL");
+      $$->make_copy($1);;
       $$->clear_children();
       $$->set_print("factor : CONST_INT");
     $$->add_child($1);
@@ -1376,7 +1389,8 @@ factor	: variable
 	| CONST_FLOAT
     {
       fprintf(log_,"factor : CONST_FLOAT\n");
-			$$=$1;
+			$$=new SymbolInfo($1->get_name(),"TERMINAL");
+      $$->make_copy($1);;
       $$->clear_children();
       $$->set_print("factor : CONST_FLOAT");
     $$->add_child($1);
@@ -1432,7 +1446,8 @@ factor	: variable
 argument_list : arguments
         {
           fprintf(log_,"argument_list : arguments\n");
-    			$$=$1;
+    			$$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
+      $$->make_copy($1);;
           $$->clear_children();
            $$->set_print("argument_list : arguments");
     $$->add_child($1);
@@ -1475,7 +1490,8 @@ arguments : arguments COMMA logic_expression
 	      | logic_expression
         {
           fprintf(log_,"arguments : logic_expression\n");
-    			$$=$1;
+    			$$=new SymbolInfo($1->get_name(),"TERMINAL");
+      $$->make_copy($1);;
           $$->clear_children();
           $$->set_print("arguments : logic_expression");
     $$->add_child($1);
