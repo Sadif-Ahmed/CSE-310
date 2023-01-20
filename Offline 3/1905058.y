@@ -75,18 +75,6 @@ func_ get_func(string name){
     }
   }
 }
-void print_funcs()
-{
-    for(int i=0;i<func_list.size();i++)
-    {
-        cout<<func_list[i].name;
-        cout<<func_list[i].ret_type;
-        for(int i=0;i<func_list[i].parametres.size();i++)
-        {
-            cout<<func_list[i].parametres[i].first<<"  "<<func_list[i].parametres[i].second<<endl;
-        }
-    }
-}
 string to_str(int n)
 {
     string temp;
@@ -148,7 +136,7 @@ void yyerror(char *s)
 {
 	//write your code
   error_count++;
-  fprintf(error,"Line# %d: '%s'\n",line_count,s);
+  fprintf(error,"Line# %d: %s\n",line_count,s);
 }
 %}
 
