@@ -693,6 +693,12 @@ char *yytext;
     #include "y.tab.h"
     using namespace std;
 
+
+    //When a lexeme is matched print in logfile
+    //Making the token a symbol and setting it with yylval.symbol
+    //Setting Parse Tree Attributes of Token Symbol
+    //Returning token
+
     int line_count=1;
     int error_count=0;
   //  string comment="";
@@ -793,7 +799,7 @@ char *yytext;
     return formatted_s;
 }
 
-#line 797 "lex.yy.c"
+#line 803 "lex.yy.c"
 /*Definitions Section*/
 /*KEYWORD TOKENS*/
 /*OPERATORS*/
@@ -817,7 +823,7 @@ char *yytext;
 /*UNFINISHED STRING*/
 /*UNRECOGNISED CHARACTER*/
 /*RULES SECTION*/
-#line 821 "lex.yy.c"
+#line 827 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -1034,9 +1040,9 @@ YY_DECL
 		}
 
 	{
-#line 232 "1905058.l"
+#line 238 "1905058.l"
 
-#line 1040 "lex.yy.c"
+#line 1046 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1096,17 +1102,17 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 233 "1905058.l"
+#line 239 "1905058.l"
 {line_count++;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 235 "1905058.l"
+#line 241 "1905058.l"
 {}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 238 "1905058.l"
+#line 244 "1905058.l"
 {
     //fprint(token,"<CONST_INT, %s>\n",(string)yytext);
     SymbolInfo *t =  new SymbolInfo((string)yytext,"CONST_INT");
@@ -1121,7 +1127,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 249 "1905058.l"
+#line 255 "1905058.l"
 {
     //fprint(token,"<CONST_FLOAT, %s>\n",(string)yytext);
     SymbolInfo *t =  new SymbolInfo((string)yytext,"CONST_FLOAT");
@@ -1136,7 +1142,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 260 "1905058.l"
+#line 266 "1905058.l"
 {
     string temp= (string)yytext;
     if(temp.length()==3)
@@ -1227,7 +1233,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 347 "1905058.l"
+#line 353 "1905058.l"
 {
     //fprint(token,"<BREAK, break>\n");
     fprintf(log_,"Line# %d: Token <BREAK> Lexeme %s found\n",line_count,yytext);
@@ -1242,7 +1248,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 358 "1905058.l"
+#line 364 "1905058.l"
 {
     fprintf(log_,"Line# %d: Token <PRINTLN> Lexeme %s found\n",line_count,yytext);
     SymbolInfo *t =  new SymbolInfo((string)yytext,"PRINTLN");
@@ -1256,7 +1262,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 368 "1905058.l"
+#line 374 "1905058.l"
 {
    //fprint(token,"<CASE, case>\n");
     fprintf(log_,"Line# %d: Token <CASE> Lexeme %s found\n",line_count,yytext);
@@ -1271,7 +1277,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 379 "1905058.l"
+#line 385 "1905058.l"
 {
      //fprint(token,"<CHAR, char>\n");
     fprintf(log_,"Line# %d: Token <CHAR> Lexeme %s found\n",line_count,yytext);
@@ -1286,7 +1292,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 390 "1905058.l"
+#line 396 "1905058.l"
 {
     //fprint(token,"<CONTINUE, continue>\n");
     fprintf(log_,"Line# %d: Token <CONTINUE> Lexeme %s found\n",line_count,yytext);
@@ -1299,7 +1305,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 399 "1905058.l"
+#line 405 "1905058.l"
 {
     //fprint(token,"<DEFAULT, default>\n");
     fprintf(log_,"Line# %d: Token <DEFAULT> Lexeme %s found\n",line_count,yytext);
@@ -1314,7 +1320,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 410 "1905058.l"
+#line 416 "1905058.l"
 {
     //fprint(token,"<DO, do>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"DO");
@@ -1329,7 +1335,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 421 "1905058.l"
+#line 427 "1905058.l"
 {
     //fprint(token,"<DOUBLE, double>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"DOUBLE");
@@ -1344,7 +1350,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 432 "1905058.l"
+#line 438 "1905058.l"
 {
     //fprint(token,"<ELSE, else>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"ELSE");
@@ -1359,7 +1365,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 443 "1905058.l"
+#line 449 "1905058.l"
 {
     //fprint(token,"<FLOAT, float>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"FLOAT");
@@ -1374,7 +1380,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 454 "1905058.l"
+#line 460 "1905058.l"
 {
     //fprint(token,"<FOR, for>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"FOR");
@@ -1389,7 +1395,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 465 "1905058.l"
+#line 471 "1905058.l"
 {
     //fprint(token,"<IF, if>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"IF");
@@ -1404,7 +1410,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 476 "1905058.l"
+#line 482 "1905058.l"
 {
     //fprint(token,"<INT, int>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"INT");
@@ -1419,7 +1425,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 487 "1905058.l"
+#line 493 "1905058.l"
 {
     //fprint(token,"<RETURN, return>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"RETURN");
@@ -1434,7 +1440,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 498 "1905058.l"
+#line 504 "1905058.l"
 {
     //fprint(token,"<SWITCH, switch>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"SWITCH");
@@ -1449,7 +1455,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 509 "1905058.l"
+#line 515 "1905058.l"
 {
     //fprint(token,"<WHILE, while>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"WHILE");
@@ -1464,7 +1470,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 520 "1905058.l"
+#line 526 "1905058.l"
 {
     //fprint(token,"<VOID, void>\n");
         SymbolInfo *t =  new SymbolInfo((string)yytext,"VOID");
@@ -1479,7 +1485,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 531 "1905058.l"
+#line 537 "1905058.l"
 {
     //fprint(token,"<ADDOP, %s>\n",(string)yytext);
     SymbolInfo *t =  new SymbolInfo((string)yytext,"ADDOP");
@@ -1494,7 +1500,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 542 "1905058.l"
+#line 548 "1905058.l"
 {
     //fprint(token,"<MULOP, %s>\n",(string)yytext);
      SymbolInfo *t =  new SymbolInfo((string)yytext,"MULOP");
@@ -1509,7 +1515,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 553 "1905058.l"
+#line 559 "1905058.l"
 {
     //fprint(token,"<RELOP, %s>\n",(string)yytext);
     SymbolInfo *t =  new SymbolInfo((string)yytext,"RELOP");
@@ -1524,7 +1530,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 564 "1905058.l"
+#line 570 "1905058.l"
 {
     //fprint(token,"<INCOP, %s>\n",(string)yytext);
     fprintf(log_,"Line# %d: Token <INCOP> Lexeme %s found\n",line_count,yytext);
@@ -1539,7 +1545,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 575 "1905058.l"
+#line 581 "1905058.l"
 {
     //fprint(token,"<DECOP, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"DECOP");
@@ -1554,7 +1560,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 586 "1905058.l"
+#line 592 "1905058.l"
 {
     //fprint(token,"<LOGICOP, %s>\n",(string)yytext);
     SymbolInfo *t =  new SymbolInfo((string)yytext,"LOGICOP");
@@ -1569,7 +1575,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 597 "1905058.l"
+#line 603 "1905058.l"
 {
     //fprint(token,"<ASSIGNOP, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"ASSIGNOP");
@@ -1584,7 +1590,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 608 "1905058.l"
+#line 614 "1905058.l"
 {
     //fprint(token,"<BITOP, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"BITOP");
@@ -1599,7 +1605,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 619 "1905058.l"
+#line 625 "1905058.l"
 {
     //fprint(token,"<NOT, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"NOT");
@@ -1614,7 +1620,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 630 "1905058.l"
+#line 636 "1905058.l"
 {
     //fprint(token,"<LPAREN, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"LPAREN");
@@ -1629,7 +1635,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 641 "1905058.l"
+#line 647 "1905058.l"
 {
     //fprint(token,"<RPAREN, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"RPAREN");
@@ -1644,7 +1650,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 652 "1905058.l"
+#line 658 "1905058.l"
 {
     //fprint(token,"<LCURL, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"LCURL");
@@ -1660,7 +1666,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 664 "1905058.l"
+#line 670 "1905058.l"
 {
     //fprint(token,"<RCURL, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"RCURL");
@@ -1676,7 +1682,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 676 "1905058.l"
+#line 682 "1905058.l"
 {
     //fprint(token,"<LSQUARE, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"LSQUARE");
@@ -1691,7 +1697,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 687 "1905058.l"
+#line 693 "1905058.l"
 {
     //fprint(token,"<RSQUARE, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"RSQUARE");
@@ -1706,7 +1712,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 698 "1905058.l"
+#line 704 "1905058.l"
 {
     //fprint(token,"<COMMA, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"COMMA");
@@ -1721,7 +1727,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 709 "1905058.l"
+#line 715 "1905058.l"
 {
     //fprint(token,"<SEMICOLON, %s>\n",(string)yytext);
         SymbolInfo *t =  new SymbolInfo((string)yytext,"SEMICOLON");
@@ -1736,7 +1742,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 720 "1905058.l"
+#line 726 "1905058.l"
 {
     //fprint(token,"<ID, %s>\n",(string)yytext);
     fprintf(log_,"Line# %d: Token <ID> Lexeme %s found\n",line_count,yytext);
@@ -1751,7 +1757,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 731 "1905058.l"
+#line 737 "1905058.l"
 {
                                
                                 string formatted_s = StringFormatter((string)yytext);
@@ -1762,7 +1768,7 @@ YY_RULE_SETUP
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 738 "1905058.l"
+#line 744 "1905058.l"
 { 
                                 string formatted_s = StringFormatter((string)yytext);
                                 string temp_s=string((string)yytext);
@@ -1780,7 +1786,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 754 "1905058.l"
+#line 760 "1905058.l"
 {
                             string temp_s = (string)yytext;
                             if(temp_s.back() == '\n')
@@ -1801,7 +1807,7 @@ YY_RULE_SETUP
 case 44:
 /* rule 44 can match eol */
 YY_RULE_SETUP
-#line 770 "1905058.l"
+#line 776 "1905058.l"
 {
                             string temp_com = string((string)yytext);
                             int additional_lines = 0;
@@ -1836,7 +1842,7 @@ YY_RULE_SETUP
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 801 "1905058.l"
+#line 807 "1905058.l"
 {
                             std::string temp_com = string((string)yytext);
 
@@ -1853,7 +1859,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 816 "1905058.l"
+#line 822 "1905058.l"
 {
     error_count++;
     fprintf(error,"Error at line# %d: TOO_MANY_DECIMAL_POINTS %s\n",line_count,yytext);
@@ -1862,7 +1868,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 821 "1905058.l"
+#line 827 "1905058.l"
 {
     error_count++;
     fprintf(error,"Error at line# %d: ILLFORMED_NUMBER %s\n",line_count,yytext);
@@ -1870,7 +1876,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 825 "1905058.l"
+#line 831 "1905058.l"
 {
      error_count++;
     fprintf(error,"Error at line# %d: INVALID_ID_SUFFIX_NUM_PREFIX %s\n",line_count,yytext);
@@ -1878,7 +1884,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 829 "1905058.l"
+#line 835 "1905058.l"
 {
      error_count++;
     fprintf(error,"Error at line# %d: EMPTY_CONST_CHAR %s\n",line_count,yytext);
@@ -1887,7 +1893,7 @@ YY_RULE_SETUP
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
-#line 833 "1905058.l"
+#line 839 "1905058.l"
 {
      error_count++;
     fprintf(error,"Error at line# %d: UNFINISHED_CONST_CHAR %s\n",line_count,yytext);
@@ -1895,7 +1901,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 837 "1905058.l"
+#line 843 "1905058.l"
 {
      error_count++;
     fprintf(error,"Error at line# %d: MULTICHAR_CONST_CHAR %s\n",line_count,yytext);
@@ -1904,7 +1910,7 @@ YY_RULE_SETUP
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-#line 842 "1905058.l"
+#line 848 "1905058.l"
 {
                         string temp_s = (string)yytext;
 
@@ -1924,7 +1930,7 @@ YY_RULE_SETUP
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
-#line 858 "1905058.l"
+#line 864 "1905058.l"
 {
                             string temp_s= (string)yytext;
 
@@ -1949,7 +1955,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 879 "1905058.l"
+#line 885 "1905058.l"
 {
      error_count++;
     fprintf(error,"Error at line# %d: UNRECOGNIZED_CHAR %s\n",line_count,yytext);
@@ -1957,10 +1963,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 883 "1905058.l"
+#line 889 "1905058.l"
 ECHO;
 	YY_BREAK
-#line 1964 "lex.yy.c"
+#line 1970 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2965,6 +2971,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 883 "1905058.l"
+#line 889 "1905058.l"
 
 

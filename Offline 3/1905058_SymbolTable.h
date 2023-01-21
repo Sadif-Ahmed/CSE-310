@@ -4,11 +4,13 @@
 #include<vector>
 #include<bits/stdc++.h>
 using namespace std;
+//mainly for function parameters when $$ holds a function.Details in  parameter_list in parser.y
 struct func_param
 {
-    string name;
+    string name; //set to empty string "" for function declaration
     string type;
 };
+//when $$ is a declaration_list,vector<var>var holds the variables
 struct var
 {
     string name;
@@ -19,7 +21,8 @@ struct argument
 {
     string name;
     string type;
-    int size;
+    ///to check if its array.if size>0 its array
+    int size; 
     bool error_state;
 };
 
@@ -30,16 +33,17 @@ class SymbolInfo
     string ret_type;
     string var_type;
     string id;
-    bool param_error_state;
-    bool func_decl_state;
-    bool func_state;
-    bool arr_state;
+    bool param_error_state;//only if $$ is parameter_list.It is set if parameter_list has some error .
+    bool func_decl_state;// to keep track of declared function and verify if they are defined later
+    bool func_state;//to check (at time of function calling) if $$ is really a function(see 2nd rule of factor)
+    bool arr_state;//to check  if $$ is really an array
     SymbolInfo *next;
     public:
+    //List of Parametres,Variable and Arguments
     vector<func_param> param_list;
     vector<var> var_list;
     vector<argument> argument_list;
-    //parse tree building
+    //Parse Tree Building Block
     vector<SymbolInfo*> children;
     int start_line;
     int end_line;
@@ -683,16 +687,13 @@ class ScopeTable{
         SymbolInfo* Lookup_current_scope(string name)
         {
                 ScopeTable *temp=current;
-                //temp->toggle_print();
+                temp->toggle_print();
                 if(temp->Lookup(name))
                 {
-                   // temp->toggle_print();
+                    temp->toggle_print();
                     return temp->Lookup(name);
                 }
-                else
-                {
                     return NULL;
-                }
         }
         void print_current_scope(FILE* logfile)
         {

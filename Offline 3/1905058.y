@@ -28,13 +28,13 @@ extern int error_count;
 
 string var_type;
 string curr_ret_type;
-
+//Unit of list of variables
 struct var_
 {
     string name;
-    int size;
+    int size; //set -1 for variables and corresponding size for arrays
 } temp_var;
-
+//Unit of list of functions
 struct func_
 {
     string name;
@@ -42,9 +42,9 @@ struct func_
     string ret_type;
 } temp_func;
 
-vector<var_> var_list;
-vector<func_> func_list;
-
+vector<var_> var_list; // For identifier(variable, array) insertion into symboltable and error checking
+vector<func_> func_list; //For function related error checking 
+//Function list insertion with parametres
 void func_insert(string name , vector<func_param>& params , string ret_type){
     temp_func.name = name;
     temp_func.ret_type = ret_type;
@@ -54,12 +54,13 @@ void func_insert(string name , vector<func_param>& params , string ret_type){
     func_list.push_back(temp_func);
     temp_func.parametres.clear();
 }
-
+//Function list insertion without parametres
 void func_insert(string name , string ret_type){
     temp_func.name = name;
     temp_func.ret_type = ret_type;
     func_list.push_back(temp_func);
 }
+//Checking if new function is already in list of functions
 bool check_func(string name){
   for(int i=0;i<func_list.size();i++){
     if(func_list[i].name==name){
@@ -75,6 +76,7 @@ func_ get_func(string name){
     }
   }
 }
+//Changing string to integer
 string to_str(int n)
 {
     string temp;
@@ -87,6 +89,7 @@ string to_str(int n)
 	reverse(temp.begin(),temp.end());
 	return temp;
 }
+//Extracting array name from a[]
 string array_name(string str){
   string done="";
   for(int i=0;i<str.size();i++){
@@ -99,6 +102,7 @@ string array_name(string str){
   }
   return str;
 }
+//Extracting function name for foo()
 string func_name(string str){
  
   string done="";
@@ -112,6 +116,7 @@ string func_name(string str){
   }
   return str;
 }
+//Checking if array index(integer) is valid or not.a[4] calling in size 5 array 'a'
 bool array_index_checker(string name,int size)
 {
     string idx="";
@@ -162,7 +167,8 @@ void yyerror(char *s)
 %nonassoc ELSE
 
 %%
-
+//In Each Action initialize $$ then set parse tree attributes
+//Then do action
 start : program
 	{
 		//write your code in this block in all the similar blocks below
@@ -240,7 +246,7 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
     $$->set_end($6->get_end());
 
 
-    /* checking whether already declared or not */
+    /* Checking whether function is already declared or not */
     SymbolInfo* temp = table.Lookup_current_scope($2->get_name());
     if(temp != NULL) {
 			error_count++;
@@ -270,7 +276,7 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
     $$->set_start($1->get_start());
     $$->set_end($5->get_end());
 		
-        /* checking whether already declared or not */
+        /*Checking whether function is  already declared or not */
 		SymbolInfo* temp = table.Lookup_current_scope($2->get_name());
 		if(temp != NULL) {
 			error_count++;
@@ -288,13 +294,13 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
 		;
 func_definition : type_specifier ID LPAREN parameter_list RPAREN
   {
-    //chking if invalid params given
+    //Checking Valadity of Parametres
     if($4->get_name()=="int" or $4->get_name()=="float"){
       error_count++;
       fprintf(error , "Line# %d: 1st parameter's name not given in function definition of '%s'\n" , line_count, $2->get_name().c_str());
     }
-    //chking if declared previously and now being defined
-    //param types,return type must be matched
+    //Checking if function was declared previously and now being defined
+    //parameter types,return type must be matched
     //assuming we don't need to handle function overloading
     if(check_func($2->get_name())){
       func_ f = get_func($2->get_name());
@@ -530,6 +536,7 @@ var_declaration : type_specifier declaration_list SEMICOLON
 					if(temp != NULL) {
             if(temp->get_var_type()==$2->var_list[i].type)
             {
+              error_count++;
               fprintf(error , "Line# %d: Warning Multiple declaration of '%s'\n" , line_count , $2->var_list[i].name.c_str());
             }
             else
@@ -552,8 +559,6 @@ var_declaration : type_specifier declaration_list SEMICOLON
 				}
 
 			}
-
-			//var_list.clear();
 		}
     |
    error SEMICOLON
@@ -618,7 +623,7 @@ declaration_list : declaration_list COMMA ID
       temp_var.size = -1;
       var_list.push_back(temp_var);
 
-      /* 3 args are name , type, size of variable */
+      /* 3 arguments are name , type, size of variable */
       $$->var_list = $1->var_list;
       $$->push_var($3->get_name() , "" , 0);
 
@@ -896,7 +901,7 @@ variable : ID
     $$->set_start($1->get_start());
     $$->set_end($1->get_end());
 
-      //Semantic : chk if variable is declared before
+      //Semantic : check if variable is declared before
 
 
       $$->set_id("var");
@@ -951,10 +956,9 @@ expression : logic_expression
 
       //semantics
       //todo
-      //assign $3's variable_type to $1 after some error chkings
-
-      ///pass arrayname if array otherwise pass varname only
-      ///suppose $1->get_name() is a[2].Now modified_name returns only a
+      //assign $3's variable_type to $1 after some error checkings
+      //pass arrayname if array otherwise pass varname only
+      //suppose $1->get_name() is a[2].Now array_name returns only a
       string varname;
       varname = array_name($1->get_name());
       SymbolInfo *x=table.Lookup(varname);
@@ -963,7 +967,7 @@ expression : logic_expression
 				//setting type of var(int/float)
         $1->set_var_type(x->get_var_type());
 
-        //chk if variable and written with index
+        //check if variable and written with index
         bool isvar=true;
         for(int i=0;i<var_list.size();i++){
           if(var_list[i].name==x->get_name() && var_list[i].size>0){
@@ -976,18 +980,18 @@ expression : logic_expression
             fprintf(error , "Line# %d: '%s' is not an array\n" , line_count,varname.c_str());
           }
         }
-        //chk if array
+        //check if array
         for(int i=0;i<var_list.size();i++){
           if(var_list[i].name==x->get_name() && var_list[i].size>0){
             //now we're sure that it's an array
-            //let's see if ara is being used without any index
+            //let's see if array is being used without any index
             if(varname==$1->get_name()){
               error_count++;
               fprintf(error,"Line# %d: Type mismatch, '%s' is an array\n",line_count , varname.c_str());
               break;
 
             }
-            //now chk if wrong index is given
+            //now check if wrong index is given
 
             else if(!array_index_checker($1->get_name() , var_list[i].size)){
               error_count++;
@@ -1015,7 +1019,7 @@ expression : logic_expression
         string fnm = func_name($3->get_name());
         if(check_func(fnm)){
           func_ f = get_func(fnm);
-          ///chk if func is returning to valid type
+          ///check if func is returning to valid type
 
           if(f.ret_type=="void"){
             error_count++;
@@ -1167,7 +1171,7 @@ term :	unary_expression
       //features of mod operation
       if($2->get_name()=="%" && ($1->get_var_type()!="int" || $3->get_var_type()!="int")){
 				error_count++;
-				fprintf(error,"Line# %d: Operands of modulus must be integers\n",line_count);
+				fprintf(error,"Line# %d: Operands of modulus must be integers \n",line_count);
         	}
       //mod by zero
       else if($2->get_name()=="%" && $3->get_name()=="0"){
@@ -1252,7 +1256,7 @@ factor	: variable
     $$->set_start($1->get_start());
     $$->set_end($1->get_end());     
       ///pass arrayname if array otherwise pass varname only
-      ///suppose $1->get_name() is a[2].Now modified_name returns only a
+      ///suppose $1->get_name() is a[2].Now array_name returns only a
       string varname;
       varname = array_name($1->get_name());
       SymbolInfo *x=table.Lookup(varname);
@@ -1265,11 +1269,11 @@ factor	: variable
           //setting type of var(int/float) and identity(array/normal variable)
   				$$->set_var_type(x->get_var_type());
           $$->set_id(x->get_id());
-          //chk if array
+          //check if array
           for(int i=0;i<var_list.size();i++){
             if(var_list[i].name==x->get_name() && var_list[i].size>0){
               //now we're sure that it's an array
-              //let's see if ara is being used without any index
+              //let's see if array is being used without any index
               if(varname==$1->get_name()){
                 /*
                 error_count++;
@@ -1279,7 +1283,7 @@ factor	: variable
                 */
                 
               }
-              //now chk if wrong index is given
+              //now check if wrong index is given
               else if(!array_index_checker($1->get_name() , var_list[i].size)){
                 error_count++;
                 fprintf(error,"Line# %d: Wrong array index\n",line_count);
@@ -1305,14 +1309,14 @@ factor	: variable
       $$->set_func_state(true);
 
       //semantic
-      //chk if id is in func_list
+      //check if id is in func_list
       if(!check_func($1->get_name())){
         error_count++;
         fprintf(error , "Line# %d: Undeclared function '%s'\n",line_count,$1->get_name().c_str());
               }
       else{
         func_ f = get_func($1->get_name());
-        //chk args consistency
+        //check arguments consistency
         if(f.parametres.size() != $3->argument_list.size())
         {
           if(f.parametres.size() > $3->argument_list.size())

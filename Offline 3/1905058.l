@@ -9,6 +9,12 @@
     #include "y.tab.h"
     using namespace std;
 
+
+    //When a lexeme is matched print in logfile
+    //Making the token a symbol and setting it with yylval.symbol
+    //Setting Parse Tree Attributes of Token Symbol
+    //Returning token
+
     int line_count=1;
     int error_count=0;
   //  string comment="";
