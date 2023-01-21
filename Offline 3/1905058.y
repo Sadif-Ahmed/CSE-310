@@ -528,8 +528,15 @@ var_declaration : type_specifier declaration_list SEMICOLON
 				for(int i=0;i<$2->var_list.size();i++){
 					SymbolInfo* temp = table.Lookup_current_scope($2->var_list[i].name);
 					if(temp != NULL) {
+            if(temp->get_var_type()==$2->var_list[i].type)
+            {
+              fprintf(error , "Line# %d: Warning Multiple declaration of '%s'\n" , line_count , $2->var_list[i].name.c_str());
+            }
+            else
+            {
 						error_count++;
-						fprintf(error , "Line# %d: Multiple declaration of '%s'\n" , line_count , $2->var_list[i].name.c_str());
+						fprintf(error , "Line# %d: Conflicting types for'%s'\n" , line_count , $2->var_list[i].name.c_str());
+            }
 					}
 					else{
 						table.Insert($2->var_list[i].name , "ID" , log_);
@@ -994,7 +1001,7 @@ expression : logic_expression
         if(x->get_var_type()=="int" && $3->get_var_type()=="float"){
 					error_count++;
           $$->set_var_type("int");
-					fprintf(error,"Line# %d: Warning: possible loss of data in assignment of FLOAT to INT \n",line_count,$3->get_var_type().c_str(),x->get_var_type().c_str());	}
+					fprintf(error,"Line# %d: Warning: possible loss of data in assignment of FLOAT to INT\n",line_count,$3->get_var_type().c_str(),x->get_var_type().c_str());	}
         else if(x->get_var_type()=="float" && $3->get_var_type()=="int"){
           $$->set_var_type("float");
         }
@@ -1012,7 +1019,7 @@ expression : logic_expression
 
           if(f.ret_type=="void"){
             error_count++;
-            fprintf(error , "Line# %d: Void cannot be used in expression\n",line_count);
+            fprintf(error , "Line# %d: Void cannot be used in expression \n",line_count);
           }
           else if(f.ret_type != $1->get_var_type()){
             error_count++;
@@ -1155,7 +1162,7 @@ term :	unary_expression
         func_ f = get_func(fn);
         if(f.ret_type=="void"){
           error_count++;
-          fprintf(error , "Line# %d: Void cannot be used in expression\n",line_count);        }
+          fprintf(error , "Line# %d: Void cannot be used in expression \n",line_count);        }
       }
       //features of mod operation
       if($2->get_name()=="%" && ($1->get_var_type()!="int" || $3->get_var_type()!="int")){
@@ -1189,7 +1196,7 @@ unary_expression : ADDOP unary_expression
         func_ f = get_func(fn);
         if(f.ret_type=="void"){
           error_count++;
-          fprintf(error , "Line# %d: Void cannot be used in expression\n",line_count);        }
+          fprintf(error , "Line# %d: Void cannot be used in expression \n",line_count);        }
       }
 
       fprintf(log_,"unary_expression : ADDOP unary_expression\n");
@@ -1264,10 +1271,13 @@ factor	: variable
               //now we're sure that it's an array
               //let's see if ara is being used without any index
               if(varname==$1->get_name()){
+                /*
                 error_count++;
                 fprintf(error,"Line# %d:Type mismatch, '%s' is an array\n",line_count,varname.c_str());
                 $$->set_param_error_state(true);
                 break;
+                */
+                
               }
               //now chk if wrong index is given
               else if(!array_index_checker($1->get_name() , var_list[i].size)){
