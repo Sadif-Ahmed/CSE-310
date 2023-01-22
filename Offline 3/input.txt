@@ -1,59 +1,68 @@
-int x,y,z; 
-float ab;
+int a, b;
 
-void foo();
-int var(int a, int b);
+float x, y;
 
-int var(int a, int b){
-	a = a + y * 2;
-	return a+b;
+int add_int(int, int);
+
+float mul_float(float, float, float);
+
+void print_global();
+
+int main() {
+    int list[5], another_list[5], i;
+
+    a - 1+2-3}4;  // Syntax Error
+    x = 2.3,4.7;  // Syntax Error
+
+    x = 1+2*3-4/2+(7.1%3);  // Type mismatch (Error/Warning): float = int, Operand of modulus is float (Error)
+    a = 2.3*4.7;  // Type mismatch (Error/Warning): int = float
+
+    list[1] = a+list[0.4]+another_list[0];  // Index of an array is not an integer (Error)
+
+    {
+        int i, j;
+        int i;  // Same name of variables declared in the same scope (Error)
+    }
+
+    j = 7.5;  // Undeclared variable in this scope (Error)
+
+    for(i=0; i<5; i++) {
+        list[]++;  // No index provided for array (Error)
+    }
+
+  /*  while(a<=0) [  // Syntax Error
+        a--;
+    ]
+  */
+    i();  // Undeclared (or undefined) function called with an existing variable name (Error)
+
+    if(list[4]>10 || another_list[4]>=10) {
+        i = !0;
+    }
+
+    if(a==0 && x!=3.9) {
+        y = mul_float(1.2, 2.5*2.0);  // Function called with improper number of arguments (Error)
+        b = mul_float(1.2, 2.5, 2.0);  // Type mismatch (Error/Warning): float = return(int)
+    } else {
+        b = -add_int(4.1, 7);  // Argument type inconsistent with function declaration (Error)
+    }
+
+    list[2] = print_global();  // Void function calling is part of an assignment expression (Error)
+
+    return 0;
 }
 
-void foo(){
-	x=2;
-	y=x-5;
+int add_int(int a, int b, int c) {  // Inconsistent function definition with its declaration (Error)
+    return a+b;
 }
 
-int main(){
-	int c,i,a[2],j ; float d;
-	c = 4;
-	d = 9.5;
-	j = 9;
-	
-	{
-		a[0]=1;
-		a[1]=var(c,j);
-	}
-	i= a[0]+a[1];
-	
-	if(c<a[0]){
-		c = 7;
-	}
-	
-	
-	if(c<d){
-		a[1] = -a[1];;
-	}
-	else if(c<2*d){
-		a[0] = !(7<5);
-	}
-	else{
-		d = 2;
-	}
-	
-	for(c=0;c<2*d+3;c++){
-		a[0] = a[0] * 4;
-	}
-	
-	while(a[0]--){
-		c = c - 2;
-	}
-	
-	printf(c);
-	
-	
-	
-	j= 2*3+(5%3 < 4 && 8) || 2 ;
-	d=var(1,2*3)+3.5*2;
-	return 0;
+float mul_float(float x, float y, float z) {
+    return x*y*z;
+}
+
+void print_global() {
+    print(a);
+    print(b);
+    print(x);
+    print(y);
 }

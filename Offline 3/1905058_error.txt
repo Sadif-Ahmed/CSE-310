@@ -1,1 +1,19 @@
-Line# 52: Undeclared function 'printf'
+Line# 14: syntax error
+Line# 15: syntax error
+Line# 17: Operands of modulus must be integers 
+Line# 18: Warning: possible loss of data in assignment of FLOAT to INT
+Line# 20: Wrong array index
+Line# 23: Warning Multiple declaration of 'i'
+Line# 24: Warning Multiple declaration of 'i'
+Line# 27: Warning: possible loss of data in assignment of FLOAT to INT
+Line# 30: syntax error
+Line# 37: Undeclared function 'i'
+Line# 44: Too few arguments to function 'mul_float'
+Line# 45: Type mismatch in function returning
+Line# 47: Type mismatch for argument 1 of 'add_int'
+Line# 50: Void cannot be used in expression 
+Line# 55: Conflicting types for 'add_int'
+Line# 64: Undeclared function 'print'
+Line# 65: Undeclared function 'print'
+Line# 66: Undeclared function 'print'
+Line# 67: Undeclared function 'print'
