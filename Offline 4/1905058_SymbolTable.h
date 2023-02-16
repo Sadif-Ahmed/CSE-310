@@ -37,6 +37,12 @@ class SymbolInfo
     bool func_decl_state;// to keep track of declared function and verify if they are defined later
     bool func_state;//to check (at time of function calling) if $$ is really a function(see 2nd rule of factor)
     bool arr_state;//to check  if $$ is really an array
+    //ICG Components
+    string code;
+    string assembly_value;
+    int stack_offset;
+    bool global_flag;
+    
     SymbolInfo *next;
     public:
     //List of Parametres,Variable and Arguments
@@ -49,6 +55,45 @@ class SymbolInfo
     int end_line;
     bool leafstate=false;
     string println;
+
+    
+
+    voi set_assembly_value(string temp)
+    {
+        assembly_value=temp;
+    }
+    string get_assembly_value()
+    {
+        return assembly_value;
+    }
+    void set_code(string temp)
+    {
+        code=temp;
+    }
+    string get_code()
+    {
+        return code;
+    }
+    void add_code(string temp)
+    {
+        code += temp;
+    }
+    void set_stack_offset(int n)
+    {
+        stack_offset=n;
+    }
+    int get_stack_offset()
+    {
+        return stack_offset;
+    }
+    void set_global_flag(bool flag)
+    {
+        global_flag=flag;
+    }
+    bool get_global_flag()
+    {
+        return global_flag;
+    }
 
     void add_child(SymbolInfo *temp)
     {
@@ -166,6 +211,8 @@ class SymbolInfo
         set_ret_type("");
         set_var_type("");
         set_id("");
+        code="";
+        global_flag=false;
         set_func_decl_state(false);
         next=NULL;
     }
@@ -177,6 +224,8 @@ class SymbolInfo
         set_var_type("");
         set_id("");
         set_func_decl_state(false);
+        code="";
+        global_flag=false;
         next=NULL;
 
     }
@@ -188,6 +237,8 @@ class SymbolInfo
         set_var_type("");
         set_id("");
         set_func_decl_state(false);
+        code="";
+        global_flag=false;
         next=NULL;
     }
     string get_name()
@@ -708,7 +759,10 @@ class ScopeTable{
                 temp=temp->get_parentscope();
             }
         }
-        
+        int get_current_scopeid()
+        {
+            return current->get_unique_id();
+        }
         ~SymbolTable()
         {
            ScopeTable *temp=current;
