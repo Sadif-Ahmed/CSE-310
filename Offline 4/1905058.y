@@ -20,8 +20,11 @@ extern FILE *log_;
 // FILE *token = fopen("1905058_token.txt","w");
 extern FILE *error;
 extern FILE *parse;
-
+//ICG Components
+FILE *tempasmCode,*asmCode,*optimized_asmCode;
 SymbolTable table(11);
+vector<pair<string,string>> variableList_to_be_Initialized;
+string assembly_codes;
 
 extern int line_count;
 extern int error_count;
@@ -40,14 +43,16 @@ struct func_
     string name;
     vector<pair<string,string>> parametres;
     string ret_type;
+    int return_reg_no;
 } temp_func;
 
 vector<var_> var_list; // For identifier(variable, array) insertion into symboltable and error checking
 vector<func_> func_list; //For function related error checking 
 //Function list insertion with parametres
-void func_insert(string name , vector<func_param>& params , string ret_type){
+void func_insert(string name , vector<func_param>& params , string ret_type, int return_reg_number){
     temp_func.name = name;
     temp_func.ret_type = ret_type;
+    temp_func.return_reg_no = return_reg_number;
     for(int i=0;i<params.size();i++){
         temp_func.parametres.push_back(make_pair(params[i].type , params[i].name));
     }
@@ -116,6 +121,23 @@ string func_name(string str){
   }
   return str;
 }
+int get_index(string str)
+{
+  //str is a[2]
+  //we need to return 2
+  string idx="";
+  int i=0;
+  while(str[i]!='[')i++;
+  i++;
+  while(str[i]!=']' and i<str.size())
+  {
+    idx+=str[i];i++;
+  }
+  stringstream geek(idx);
+  int x = 0;
+  geek >> x;
+  return x;
+}
 //Checking if array index(integer) is valid or not.a[4] calling in size 5 array 'a'
 bool array_index_checker(string name,int size)
 {
@@ -143,6 +165,208 @@ void yyerror(char *s)
   error_count++;
   fprintf(error,"Line# %d: %s\n",line_count,s);
 }
+
+int labelcnt=1,tempcnt=1,stack_offset=0;
+
+string print_function(){
+    string func=";------printing procedure----\n";
+ 		func+="PRINT_ID PROC\n\n";
+ 		func+="\t;SAVE IN STACK\n";
+ 		func+="\tPUSH AX\n";
+ 		func+="\tPUSH BX\n";
+ 		func+="\tPUSH CX\n";
+ 		func+="\tPUSH DX\n\n";
+
+ 		func+="\t;CHECK IF NEGATIVE\n";
+ 		func+="\tOR AX, AX\n";
+ 		func+="\tJGE PRINT_NUMBER\n\n";
+ 		func+="\t;PRINT MINUS SIGN\n";
+ 		func+="\tPUSH AX\n";
+ 		func+="\tMOV AH, 2\n";
+ 		func+="\tMOV DL, '-'\n";
+ 		func+="\tINT 21H\n";
+ 		func+="\tPOP AX\n\n";
+ 		func+="\tNEG AX\n\n";
+ 		func+="\tPRINT_NUMBER:\n";
+ 		func+="\tXOR CX, CX\n";
+ 		func+="\tMOV BX, 10D\n\n";
+ 		func+="\tREPEAT_CALC:\n\n";
+ 		func+="\t\t;AX:DX- QUOTIENT:REMAINDER\n";
+ 		func+="\t\tXOR DX, DX\n";
+ 		func+="\t\tDIV BX  ;DIVIDE BY 10\n";
+ 		func+="\t\tPUSH DX ;PUSH THE REMAINDER IN STACK\n\n";
+ 		func+="\t\tINC CX\n\n";
+ 		func+="\t\tOR AX, AX\n";
+ 		func+="\t\tJNZ REPEAT_CALC\n\n";
+
+ 		func+="\tMOV AH, 2\n\n";
+ 		func+="\tPRINT_LOOP:\n";
+ 		func+="\t\tPOP DX\n";
+ 		func+="\t\tADD DL, 30H\n";
+ 		func+="\t\tINT 21H\n";
+ 		func+="\t\tLOOP PRINT_LOOP\n";
+
+ 		func+="\n\t;NEWLINE\n";
+ 		func+="\tMOV AH, 2\n";
+ 		func+="\tMOV DL, 0AH\n";
+ 		func+="\tINT 21H\n";
+ 		func+="\tMOV DL, 0DH\n";
+ 		func+="\tINT 21H\n\n";
+
+ 		func+="\tPOP DX\n";
+ 		func+="\tPOP CX\n";
+ 		func+="\tPOP BX\n";
+ 		func+="\tPOP AX\n\n";
+ 		func+="\tRET\n";
+ 		func+="PRINT_ID ENDP\n\n";
+
+    return func;
+}
+string pushCode(){
+  return "\tPUSH AX\n\tPUSH BX\n\tPUSH CX\n\tPUSH DX\n";
+}
+
+string popCode(){
+    return "\tPOP DX\n\tPOP CX\n\tPOP BX\n\tPOP AX\n";
+}
+
+string main_proc_start_code(){
+  return "\t;INITIALIZE DATA SEGMENT\n\tMOV AX, @DATA\n\tMOV DS, AX\n\n";
+}
+
+string main_proc_ending_code(){
+  return "\n\tMOV AX, 4CH\n\tINT 21H\nMAIN ENDP\n\nEND MAIN";
+}
+//following 2 methos are helper function.get_first_index returns the first position of the forbidden part
+//of proc_code.get_last_Index returns the neding position of forbidden part.We then generate a valid new_proc_code
+//inside the modify_proc method and return it.
+int get_first_index(string str, string s)
+{
+    
+    for (int i = 0; i < str.length(); i++) {
+        if (str.substr(i, s.length()) == s) {
+            return i+s.length();
+        }
+    }
+}
+int get_last_Index(string str, string s)
+{
+
+    
+    for (int i = 0; i < str.length(); i++) {
+        if (str.substr(i, s.length()) == s) {
+            return i;
+        }
+    }
+}
+//removes anything from the procedure body if written after return statement
+string modify_proc(string fnm , string proc_code)
+{
+  func_ f = get_func(fnm);
+  string ret_reg = "T" + to_string(f.return_reg_no);
+  int start_idx = get_first_index(proc_code , "MOV "+ret_reg+", AX");
+  int end_idx = get_last_Index(proc_code , "POP DX");
+  if(start_idx==0)return proc_code;//no return statement
+  string new_proc_code="";
+  for(int i=0;i<proc_code.length();i++){
+    if(i<=start_idx || i>=end_idx-2){
+      new_proc_code+=proc_code[i];
+    }
+  }
+  return new_proc_code;
+}
+///return true for cases:
+///s1 := MOV AX, a1
+///s2 := MOV a1, AX
+bool check_if_equivalent_command(string s1 , string s2)
+{
+  int len1 = s1.size();
+  int len2 = s2.size();
+
+  int i=0;
+  //getting the first M from s1 cause s1 might contain \t at the beginning too.
+  for(;i<len1;i++){
+    if(s1[i]=='M')break;
+  }
+  if(i==len1)return false;
+  if(s1.substr(i , 3)!="MOV")return false;
+  int i1 = i;
+
+  i=0;
+  for(;i<len2;i++){
+    if(s2[i]=='M')break;
+  }
+  if(i==len2)return false;
+  if(s2.substr(i , 3)!="MOV")return false;
+  int i2 = i;
+
+  string src1="",dest1="",src2="",dest2="";
+
+  dest1 = s1.substr(i1+4 , 2);
+  src1 = s1.substr(i1+8 , 2);
+
+  dest2 = s2.substr(i2+4 , 2);
+  src2 = s2.substr(i2+8 , 2);
+
+  //cout<<src1<<" "<<dest1<<" "<<src2<<" "<<dest2<<endl;
+
+  if(src1==dest2 and src2==dest1)return true;
+  else return false;
+}
+
+string assembly_procs="";
+
+bool doesnt_affect(string s1 , string s2){
+  if(s2.size()<=1)return true;
+  else if(s2[0]==';' or s2[1]==';')return true;
+  else if(s2[1]=='I' and s2[2]=='N' and s2[3]=='C')return false;
+  else if(s2[1]=='D' and s2[2]=='E' and s2[3]=='C')return false;
+
+
+  else return false;
+
+}
+void optimize_code(FILE *basecode){
+   optimized_asmCode=fopen("optimized_code.asm","w");
+   char *line = NULL;
+   size_t n = 0;
+   ssize_t if_read;
+	 vector<string>v;
+   while ((if_read = getline(&line, &n, basecode)) != -1) {
+     v.push_back(string(line));
+   }
+   int sz = v.size();
+   int to_be_removed[sz];
+   for(int i=0;i<sz;i++){
+     to_be_removed[i] = 0;
+   }
+
+   for(int i=0;i<sz-3;i++){
+     if(check_if_equivalent_command(v[i] ,v[i+1])){
+       to_be_removed[i+1] = 1;
+     }
+     else if (doesnt_affect(v[i] , v[i+1])){
+
+
+       if(check_if_equivalent_command(v[i] ,v[i+2])){
+         to_be_removed[i+2] = 1;
+       }
+       else if(check_if_equivalent_command(v[i] ,v[i+3])){
+         to_be_removed[i+3] = 1;
+       }
+     }
+
+   }
+
+   for(int i=0;i<sz;i++){
+     if(to_be_removed[i]==0){
+       fprintf(optimized_asmCode , "%s" , v[i].c_str());
+     }
+   }
+   fclose(optimized_asmCode);
+}
+
+
 %}
 
 %union {
