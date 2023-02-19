@@ -1,0 +1,2 @@
+Line# 7: Undeclared variable 'i'
+Line# 9: Undeclared variable 'j'

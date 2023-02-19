@@ -771,9 +771,9 @@ class ScopeTable{
                 temp=temp->get_parentscope();
             }
         }
-        int get_current_scopeid()
+        unsigned long long get_current_scopeid()
         {
-            return current->get_unique_id();
+            return current_id_gen;
         }
         ~SymbolTable()
         {

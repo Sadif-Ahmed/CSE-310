@@ -315,7 +315,7 @@ bool check_if_equivalent_command(string s1 , string s2)
 }
 
 string assembly_procs="";
-
+//INC && DEC Ignored While Optimization
 bool doesnt_affect(string s1 , string s2){
   if(s2.size()<=1)return true;
   else if(s2[0]==';' or s2[1]==';')return true;
@@ -377,7 +377,6 @@ string newTemp()
 {
 	string temp="T"+to_string(tempcnt);
 	tempcnt++;
-
 	variableList_to_be_Initialized.push_back({temp,"0"});
 	return temp;
 }
@@ -490,6 +489,7 @@ start : program
         //cout<<remove_unused_label(starting)<<endl;
 
         starting = remove_unused_label(starting);
+
         fprintf(asmCode,"%s",starting.c_str());
 		 		fprintf(asmCode,"%s",$$->get_code().c_str());
         fclose(asmCode);
@@ -874,7 +874,7 @@ parameter_list  : parameter_list COMMA type_specifier ID
 compound_statement : LCURL statements RCURL
   {
       $$ = new SymbolInfo("{\n"+$2->get_name()+"\n}"+"\n", "NON_TERMINAL");
-      $$-
+      $$->make_copy($2);
       fprintf(log_,"compound_statement : LCURL statements RCURL\n");
       $$->set_print("compound_statement : LCURL statements RCURL");
     $$->add_child($1);
@@ -1170,6 +1170,8 @@ statement : var_declaration
     {
       string l1=newLabel();
       string l2=newLabel();
+      $$ = new SymbolInfo("FOR LPAREN expression_statement expression_statement expression RPAREN statement", "NON_TERMINAL");
+      $$->make_copy($3);
 
       $$->add_code(";-------for loop starts--------\n\t");
 			$$->add_code(l1+":\n");
@@ -1187,8 +1189,7 @@ statement : var_declaration
 			$$->add_code("\t"+l2+":\n");
 
       string str="for("+$3->get_name()+$4->get_name()+$5->get_name()+")"+$7->get_name();
-      $$ = new SymbolInfo(str , "NON_TERMINAL");
-      $$->make_copy($3);
+      
       fprintf(log_,"statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement\n");
     $$->set_print("statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement");
     $$->add_child($1);
@@ -1394,9 +1395,9 @@ variable : ID
       $$->push_var($1->get_name(),"",0);
       SymbolInfo *x=table.Lookup($1->get_name());
       if(x)
-      {$$->set_var_type(x->get_var_type());
+      {$$->set_var_type(x->get_var_type());}
       $$->set_assembly_value($$->get_name()+to_string(table.get_current_scopeid()));
-      }
+      
 
 
 
@@ -1558,6 +1559,7 @@ logic_expression : rel_expression
     {
       $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
       $$->make_copy($1);
+      $$->set_var_type("int");
       $$->clear_children();
       fprintf(log_,"logic_expression : rel_expression\n");
       $$->set_print("logic_expression : rel_expression");
@@ -1643,6 +1645,7 @@ rel_expression	: simple_expression
    {
      $$=new SymbolInfo($1->get_name(),"NON-TERMINAL");
       $$->make_copy($1);
+      $$->set_var_type("int");
      $$->clear_children();
      fprintf(log_,"rel_expression	: simple_expression\n");
      $$->set_print("rel_expression	: simple_expression");
