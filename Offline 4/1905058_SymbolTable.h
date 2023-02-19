@@ -42,6 +42,7 @@ class SymbolInfo
     string assembly_value;
     int stack_offset;
     bool global_flag;
+    int idx;
     
     SymbolInfo *next;
     public:
@@ -56,9 +57,16 @@ class SymbolInfo
     bool leafstate=false;
     string println;
 
-    
+    void set_idx(int n)
+    {
+        idx=n;
+    }
+    int get_idx()
+    {
+        return idx;
+    }
 
-    voi set_assembly_value(string temp)
+    void set_assembly_value(string temp)
     {
         assembly_value=temp;
     }
@@ -154,6 +162,10 @@ class SymbolInfo
     this->param_list=temp->get_param_list();
     this->var_list=temp->get_var_list();
     this->argument_list=temp->get_argument_list();
+    this->code=temp->get_code();
+    this->assembly_value=temp->get_assembly_value();
+    this->stack_offset=temp->get_stack_offset();
+    this->global_flag=temp->get_global_flag();
     }
     void print_tree(SymbolInfo *head,int depth,FILE *fp)
     {
