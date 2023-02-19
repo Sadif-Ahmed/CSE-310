@@ -2802,7 +2802,7 @@ yyreduce:
             }
       }
 
-      else if(!table.Lookup_current_scope((yyvsp[-2].symbol)->get_name())){
+      else if(!table.Lookup((yyvsp[-2].symbol)->get_name())){
         error_count++;
         fprintf(error , "Line# %d: Undeclared variable '%s'\n" , line_count,(yyvsp[-2].symbol)->get_name().c_str());
       }

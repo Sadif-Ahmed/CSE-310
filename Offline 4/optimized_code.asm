@@ -91,18 +91,15 @@ MAIN PROC
 	MOV i3, AX
  ;--------print function called---------
 
-	MOV AX, i3
 	CALL PRINT_ID
  
 	MOV AX, 5
 	ADD AX, 8
 	MOV T1, AX
 
-	MOV AX, T1
 	MOV j3, AX
  ;--------print function called---------
 
-	MOV AX, j3
 	CALL PRINT_ID
  
 	MOV AX, 2
@@ -114,11 +111,9 @@ MAIN PROC
 	ADD AX, T2
 	MOV T3, AX
 
-	MOV AX, T3
 	MOV k3, AX
  ;--------print function called---------
 
-	MOV AX, k3
 	CALL PRINT_ID
  
 	MOV AX, k3
@@ -131,7 +126,6 @@ MAIN PROC
 	MOV m3, AX
  ;--------print function called---------
 
-	MOV AX, m3
 	CALL PRINT_ID
  
 	MOV AX, m3
@@ -150,7 +144,6 @@ MAIN PROC
 	MOV n3, AX
  ;--------print function called---------
 
-	MOV AX, n3
 	CALL PRINT_ID
  
 	MOV AX, i3
@@ -169,7 +162,6 @@ MAIN PROC
 	MOV o3, AX
  ;--------print function called---------
 
-	MOV AX, o3
 	CALL PRINT_ID
  
 	MOV AX, n3
@@ -192,7 +184,6 @@ MAIN PROC
 	MOV p3, AX
  ;--------print function called---------
 
-	MOV AX, p3
 	CALL PRINT_ID
  
 	MOV AX, n3
@@ -215,25 +206,21 @@ MAIN PROC
 	MOV p3, AX
  ;--------print function called---------
 
-	MOV AX, p3
 	CALL PRINT_ID
  	MOV AX, p3
 	INC AX
 	MOV p3, AX
  ;--------print function called---------
 
-	MOV AX, p3
 	CALL PRINT_ID
  
 	MOV AX, p3
 	NEG AX
 	MOV T9, AX
 
-	MOV AX, T9
 	MOV k3, AX
  ;--------print function called---------
 
-	MOV AX, k3
 	CALL PRINT_ID
  
 	MOV AX, 4CH

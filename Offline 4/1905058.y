@@ -1325,7 +1325,7 @@ statement : var_declaration
             }
       }
 
-      else if(!table.Lookup_current_scope($3->get_name())){
+      else if(!table.Lookup($3->get_name())){
         error_count++;
         fprintf(error , "Line# %d: Undeclared variable '%s'\n" , line_count,$3->get_name().c_str());
       }
