@@ -43,7 +43,7 @@ class SymbolInfo
     int stack_offset;
     bool global_flag;
     int idx;
-    
+    string assembly_valuev2;  
     SymbolInfo *next;
     public:
     //List of Parametres,Variable and Arguments
@@ -73,6 +73,14 @@ class SymbolInfo
     string get_assembly_value()
     {
         return assembly_value;
+    }
+    void set_assembly_valuev2(string temp)
+    {
+        assembly_valuev2=temp;
+    }
+    string get_assembly_valuev2()
+    {
+        return assembly_valuev2;
     }
     void set_code(string temp)
     {
@@ -710,6 +718,7 @@ class ScopeTable{
             {
             //    cout<<'\t'<<"ScopeTable# "<<current->get_unique_id()<<" removed"<<endl;
                 current=current->get_parentscope();
+
             }
             else
             {
@@ -773,7 +782,7 @@ class ScopeTable{
         }
         unsigned long long get_current_scopeid()
         {
-            return current_id_gen;
+            return current->get_unique_id();
         }
         ~SymbolTable()
         {

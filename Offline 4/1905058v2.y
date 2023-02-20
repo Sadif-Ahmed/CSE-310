@@ -25,6 +25,7 @@ FILE *asmCode,*optimized_asmCode;
 FILE *tempasm,*asmCodev2;
 SymbolTable table(11);
 vector<pair<string,string>> variableList_to_be_Initialized;
+vector<pair<string,string>> variableList_to_be_Initializedv2;
 string assembly_codes;
 
 extern int line_count;
@@ -230,13 +231,20 @@ string pushCode(){
 string popCode(){
     return "\tPOP DX\n\tPOP CX\n\tPOP BX\n\tPOP AX\n";
 }
-
+string proc_stack_start_code()
+{
+  return "\tPUSH BP\n\tMOV BP , SP\n\n";
+}
+string proc_stack_end_code()
+{
+  return "\tADD SP, "+to_string(stack_offset)+"\n\tPOP BP\n\n";
+}
 string main_proc_start_code(){
   return "\t;INITIALIZE DATA SEGMENT\n\tMOV AX, @DATA\n\tMOV DS, AX\n\n";
 }
 
 string main_proc_ending_code(){
-  return "\n\tMOV AX, 4CH\n\tINT 21H\nMAIN ENDP\n\nEND MAIN";
+  return "\n\tMOV AX, 4CH\n\tINT 21H\nMAIN ENDP\n\nEND MAIN\n\n";
 }
 //following 2 methos are helper function.get_first_index returns the first position of the forbidden part
 //of proc_code.get_last_Index returns the neding position of forbidden part.We then generate a valid new_proc_code
@@ -379,7 +387,9 @@ string newTemp()
 	string temp="T"+to_string(tempcnt);
 	tempcnt++;
 	variableList_to_be_Initialized.push_back({temp,"0"});
-	return temp;
+  variableList_to_be_Initializedv2.push_back({temp,"0"});
+	
+  return temp;
 }
 
 string remove_unused_label(string s){
@@ -494,7 +504,27 @@ start : program
         fprintf(asmCode,"%s",starting.c_str());
 		 		fprintf(asmCode,"%s",$$->get_code().c_str());
         fclose(asmCode);
-        ///write optimized code
+         //assemblyv2
+         string startingv2=".MODEL SMALL\n.STACK 100H\n.DATA\n";
+         map<string, int>alreay_declaredv2;
+         for(int i=0;i<variableList_to_be_Initializedv2.size();i++){
+           alreay_declaredv2[variableList_to_be_Initializedv2[i].first]=0;
+         }
+		 		 for(int i=0;i<variableList_to_be_Initializedv2.size();i++){
+           if(alreay_declaredv2[variableList_to_be_Initializedv2[i].first]>0)continue;
+		 		 	if(variableList_to_be_Initializedv2[i].second=="0"){
+             startingv2+=("\t"+variableList_to_be_Initializedv2[i].first+" DW ?\n");
+             alreay_declaredv2[variableList_to_be_Initializedv2[i].first]++;
+           }
+
+		 		 	else
+		 		 		startingv2+=("\t"+variableList_to_be_Initializedv2[i].first+" DW "+variableList_to_be_Initializedv2[i].second+" DUP(?)\n");
+		 		 }
+         startingv2+=".CODE\n";
+         ///adding print function
+         startingv2+=print_function();
+         fprintf(tempasm,"%s",startingv2.c_str());
+        //write optimized code
         FILE *basecode = fopen("code.asm" , "r");
         optimize_code(basecode);
         fclose(basecode);
@@ -689,8 +719,33 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
 
     //Resetting Stack Offset
     stack_offset=0;
+    if($2->get_name()=="main"){
+        //assembly_codes="MAIN PROC\n\n";
+        string x= "MAIN PROC\n\n";
+        fprintf(tempasm,"%s",x.c_str());
+      }
+			else{
+        //assembly_codes=$2->get_name()+" PROC\n\n";
+        string x= $2->get_name()+" PROC\n\n";
+        fprintf(tempasm,"%s",x.c_str());
+      }
 
-  } compound_statement { table.Exit_Scope();var_list.clear();}
+			if($2->get_name()=="main"){
+				//assembly_codes+=main_proc_start_code();
+        string x= main_proc_start_code()+proc_stack_start_code();
+        fprintf(tempasm,"%s",x.c_str());
+			}
+			else{
+			  //assembly_codes+=pushCode();
+        string x= pushCode()+proc_stack_start_code();
+        fprintf(tempasm,"%s",x.c_str());
+			}
+
+			//assembly_codes+=($7->get_code());
+
+			
+  } compound_statement { table.Exit_Scope();var_list.clear();
+  }
 
   {
       $$ = new SymbolInfo($1->get_name()+" "+$2->get_name()+"("+$4->get_name()+")"+$7->get_name()+"\n", "NON_TERMINAL");
@@ -711,30 +766,55 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
       //cout<<$2->get_name()<<" "<<f.return_reg_no<<endl;
       if($2->get_name()=="main"){
         assembly_codes="MAIN PROC\n\n";
+       // string x= "MAIN PROC\n\n";
+       // fprintf(tempasm,"%s",x.c_str());
       }
 			else{
         assembly_codes=$2->get_name()+" PROC\n\n";
+       // string x= $2->get_name()+" PROC\n\n";
+       // fprintf(tempasm,"%s",x.c_str());
       }
 
 			if($2->get_name()=="main"){
 				assembly_codes+=main_proc_start_code();
+       // string x= main_proc_start_code()+proc_stack_start_code();
+      //  fprintf(tempasm,"%s",x.c_str());
 			}
 			else{
 			  assembly_codes+=pushCode();
+       // string x= pushCode()+proc_stack_start_code();
+       // fprintf(tempasm,"%s",x.c_str());
 			}
 
 			assembly_codes+=($7->get_code());
 
 			if($2->get_name()=="main") {
 				assembly_codes+=main_proc_ending_code();
+       // string x= proc_stack_end_code()+main_proc_ending_code();
+       // fprintf(tempasm,"%s",x.c_str());
 			}
 			else{
 				assembly_codes+=popCode();
+        //string x= proc_stack_end_code()+popCode()+"RET\n"+$2->get_name()+" ENDP\n\n";
+        //fprintf(tempasm,"%s",x.c_str());
 				assembly_codes+=("RET\n");
 				assembly_codes+=($2->get_name()+" ENDP\n\n");
 			}
       string final = modify_proc($2->get_name() , assembly_codes);
       if($2->get_name()!="main")assembly_procs += final;
+
+      if($2->get_name()=="main") {
+				//assembly_codes+=main_proc_ending_code();
+        string x= proc_stack_end_code()+main_proc_ending_code();
+        fprintf(tempasm,"%s",x.c_str());
+			}
+			else{
+				//assembly_codes+=popCode();
+        string x= proc_stack_end_code()+popCode()+"RET\n"+$2->get_name()+" ENDP\n\n";
+        fprintf(tempasm,"%s",x.c_str());
+				//assembly_codes+=("RET\n");
+				//assembly_codes+=($2->get_name()+" ENDP\n\n");
+			}
 
   }  
   | type_specifier ID LPAREN RPAREN
@@ -757,9 +837,34 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
       table.Enter_Scope();
       //Resetting Stack Offset
       stack_offset=0;
+      if($2->get_name()=="main"){
+        //assembly_codes="MAIN PROC\n\n";
+        string x= "MAIN PROC\n\n";
+        fprintf(tempasm,"%s",x.c_str());
+      }
+			else{
+        //assembly_codes=$2->get_name()+" PROC\n\n";
+        string x= $2->get_name()+" PROC\n\n";
+        fprintf(tempasm,"%s",x.c_str());
+      }
 
+			if($2->get_name()=="main"){
+				//assembly_codes+=main_proc_start_code();
+        string x= main_proc_start_code()+proc_stack_start_code();
+        fprintf(tempasm,"%s",x.c_str());
+			}
+			else{
+			  //assembly_codes+=pushCode();
+        string x= pushCode()+proc_stack_start_code();
+        fprintf(tempasm,"%s",x.c_str());
+			}
+
+			//assembly_codes+=($7->get_code());
+
+			
     }
-    compound_statement {table.Exit_Scope();var_list.clear();}
+    compound_statement {table.Exit_Scope();var_list.clear();
+    }
  	{
       $$ = new SymbolInfo($1->get_name()+" "+$2->get_name()+"()"+$6->get_name()+"\n", "NON_TERMINAL");
       fprintf(log_ , "func_definition : type_specifier ID LPAREN RPAREN compound_statement\n");
@@ -775,15 +880,27 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
     func_insert($2->get_name() , $1->get_name());
     //assembly
           if($2->get_name()=="main")
+          {
 				assembly_codes="MAIN PROC\n\n";
+        //string x= "MAIN PROC\n\n";
+        //fprintf(tempasm,"%s",x.c_str());
+          }
 			else
+      {
 				assembly_codes=$2->get_name()+" PROC\n\n";
-
+        //string x= $2->get_name()+" PROC\n\n";
+        //fprintf(tempasm,"%s",x.c_str());
+      }
 			if($2->get_name()=="main"){
 				assembly_codes+=main_proc_start_code();
+        //string x= main_proc_start_code()+proc_stack_start_code();
+        //fprintf(tempasm,"%s",x.c_str());
+
 			}
 			else{
 			  assembly_codes+=pushCode();
+        //string x= pushCode()+proc_stack_start_code();
+        //fprintf(tempasm,"%s",x.c_str());
 			}
 
 			//inside func body
@@ -791,15 +908,34 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
 			//ending of main proc
 			if($2->get_name()=="main") {
 				assembly_codes+=main_proc_ending_code();
+        //string x= proc_stack_end_code()+main_proc_ending_code();
+        //fprintf(tempasm,"%s",x.c_str());
+
 			}
 			else{
 				assembly_codes+=popCode();
 				assembly_codes+=("RET\n");
 				assembly_codes+=($2->get_name()+" ENDP\n\n");
+        //string x= proc_stack_end_code()+popCode()+"RET\n"+$2->get_name()+" ENDP\n\n";
+        //fprintf(tempasm,"%s",x.c_str());
+
 			}
       //cout<<modify_proc($2->get_name() , assembly_codes)<<endl;
       if($2->get_name()=="main")$$->set_code(assembly_codes);
       if($2->get_name()!="main")assembly_procs += modify_proc($2->get_name() , assembly_codes);
+
+      if($2->get_name()=="main") {
+				//assembly_codes+=main_proc_ending_code();
+        string x= proc_stack_end_code()+main_proc_ending_code();
+        fprintf(tempasm,"%s",x.c_str());
+			}
+			else{
+				//assembly_codes+=popCode();
+        string x= proc_stack_end_code()+popCode()+"RET\n"+$2->get_name()+" ENDP\n\n";
+        fprintf(tempasm,"%s",x.c_str());
+				//assembly_codes+=("RET\n");
+			//	assembly_codes+=($2->get_name()+" ENDP\n\n");
+			}
 	}
 	 	;
 parameter_list  : parameter_list COMMA type_specifier ID
@@ -949,12 +1085,37 @@ var_declaration : type_specifier declaration_list SEMICOLON
             if(table.get_current_scopeid()==1)
             {
               tmp->set_global_flag(true);
+              if(tmp->get_id()=="var")
+              {
+              variableList_to_be_Initializedv2.push_back({tmp->get_name()+to_string(table.get_current_scopeid()),"0"});
+              }
+              else
+              {
+                 variableList_to_be_Initializedv2.push_back({tmp->get_name()+to_string(table.get_current_scopeid()),to_string(var_list[i].size)});
+              }
             }
             else
             {
               tmp->set_global_flag(false);
               tmp->set_stack_offset(stack_offset);
+              if(tmp->get_id()=="var")
+              {
               stack_offset+=2;
+              string temp = "\tSUB SP , 2\n";
+              fprintf(tempasm,"%s",temp.c_str());
+              }
+              else
+              {
+                stack_offset+=2*($2->var_list[i].size);
+                for(int i=0;i<($2->var_list[i].size);i++)
+                {
+                  string temp = "\tSUB SP , 2\n";
+                  fprintf(tempasm,"%s",temp.c_str());
+                }
+              
+                
+              }
+          
             }
 					}
 				}
@@ -1028,11 +1189,17 @@ declaration_list : declaration_list COMMA ID
       /* 3 arguments are name , type, size of variable */
       $$->var_list = $1->var_list;
       $$->push_var($3->get_name() , "" , 0);
+      // //assembly v2
+      // SymbolInfo * temp=table.Lookup($3->get_name());
+      // if(temp->get_global_flag()==true)
+      // {
+      //   variableList_to_be_Initializedv2.push_back({$3->get_name()+to_string(table.get_current_scopeid()),"0"});
+      // }
 
 		}
  		  | declaration_list COMMA ID LSQUARE CONST_INT RSQUARE
 		{
-			variableList_to_be_Initialized.push_back({$3->get_name()+to_string(table.get_current_scopeid()),$5->get_name()});
+			variableList_to_be_Initialized.push_back({$3->get_name()+to_string(table.get_current_scopeid()),$5->get_name()}); 
       fprintf(log_,"declaration_list : declaration_list COMMA ID LSQUARE CONST_INT RSQUARE\n");
 			$$ = new SymbolInfo((string)$1->get_name()+(string)","+(string)$3->get_name()+(string)"["+(string)$5->get_name()+(string)"]", "NON_TERMINAL");
 			 $$->set_print("declaration_list : declaration_list COMMA ID LSQUARE CONST_INT RSQUARE");
@@ -1056,6 +1223,13 @@ declaration_list : declaration_list COMMA ID
 
       $$->var_list = $1->var_list;
       $$->push_var($3->get_name() , "" , size);
+      // //assembly v2
+      // SymbolInfo * temp=table.Lookup($3->get_name());
+      // if(temp->get_global_flag()==true)
+      // {
+      //   variableList_to_be_Initializedv2.push_back({$3->get_name()+to_string(table.get_current_scopeid()),$5->get_name()});
+      // }
+
 		}
 
  		  | ID
@@ -1073,6 +1247,11 @@ declaration_list : declaration_list COMMA ID
       var_list.push_back(temp_var);
 
       $$->push_var($1->get_name() , "" , 0);
+      SymbolInfo * temp=table.Lookup($1->get_name());
+      // if(temp->get_global_flag()==true)
+      // {
+      //   variableList_to_be_Initializedv2.push_back({$1->get_name()+to_string(table.get_current_scopeid()),"0"});
+      // }
 
 		}
  		| ID LSQUARE CONST_INT RSQUARE
@@ -1097,7 +1276,11 @@ declaration_list : declaration_list COMMA ID
       geek >> size;
 
       $$->push_var($1->get_name() , "" , size);
-    
+    // SymbolInfo * temp=table.Lookup($1->get_name());
+    //   if(temp->get_global_flag()==true)
+    //   {
+    //     variableList_to_be_Initializedv2.push_back({$1->get_name()+to_string(table.get_current_scopeid()),$3->get_name()});
+    //   }
 
 		}
     | declaration_list error
@@ -1398,9 +1581,15 @@ variable : ID
       if(x)
       {$$->set_var_type(x->get_var_type());}
       $$->set_assembly_value($$->get_name()+to_string(table.get_current_scopeid()));
+      if(x->get_global_flag()==true)
+      { 
+      $$->set_assembly_valuev2($$->get_name()+to_string(table.get_current_scopeid()));
+      }
+      else
+      {
+      $$->set_assembly_valuev2("[BP - "+to_string(x->get_stack_offset()+2)+"]");
+      }
       
-
-
 
     }
 
@@ -1424,6 +1613,19 @@ variable : ID
     $$->set_end($4->get_end());
      $$->set_id("array");
      //array index must be integer
+     //assembly v2
+     SymbolInfo *x1=table.Lookup($1->get_name());
+     if(x1)
+      {     
+      if(x1->get_global_flag()==true)
+      { 
+      $$->set_assembly_valuev2($$->get_name()+to_string(table.get_current_scopeid()));
+      }
+      else
+      {
+      $$->set_assembly_valuev2("[BP - "+to_string(x1->get_stack_offset()+2*x+2)+"]");
+      }
+      }
 
    }
 
@@ -2289,7 +2491,9 @@ int main(int argc,char *argv[])
 	fclose(asmCode);
   asmCode=fopen("code.asm","a");
   tempasm=fopen("tempcode.asm","w");
-  asmCodev2=fopen("codev2.asm","w");
+  fclose(tempasm);
+  tempasm=fopen("tempcode.asm","a");
+//  asmCodev2=fopen("codev2.asm","w");
 	yyparse();
 
 	fprintf(log_,"Total Lines: %d \n",line_count);
@@ -2298,6 +2502,8 @@ int main(int argc,char *argv[])
 	fclose(fp);
 	fclose(log_);
 	fclose(error);
+  fclose(tempasm);
+//  fclose(asmCodev2);
 	return 0;
 }          
 
