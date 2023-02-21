@@ -1,8 +1,9 @@
 .MODEL SMALL
 .STACK 100H
 .DATA
-	i1 DW ?
-	j1 DW ?
+	a1 DW ?
+	b1 DW ?
+	c1 DW ?
 	T1 DW ?
 	T2 DW ?
 	T3 DW ?
@@ -11,7 +12,6 @@
 	T6 DW ?
 	T7 DW ?
 	T8 DW ?
-	T9 DW ?
 .CODE
 ;------printing procedure----
 PRINT_ID PROC
@@ -74,6 +74,93 @@ PRINT_ID PROC
 	RET
 PRINT_ID ENDP
 
+func_a PROC
+
+	PUSH AX
+	PUSH BX
+	PUSH CX
+	PUSH DX
+	PUSH BP
+	MOV BP , SP
+
+
+	MOV AX, 7
+	MOV a1, AX
+	ADD SP, 0
+	POP BP
+
+	POP DX
+	POP CX
+	POP BX
+	POP AX
+RET
+func_a ENDP
+
+foo PROC
+
+	PUSH AX
+	PUSH BX
+	PUSH CX
+	PUSH DX
+	PUSH BP
+	MOV BP , SP
+
+	SUB SP , 2
+
+	MOV AX, [BP - 2]
+	ADD AX, 3
+	MOV T1, AX
+
+	MOV AX, T1
+	MOV [BP - 2], AX
+	ADD SP, 2
+	POP BP
+
+	POP DX
+	POP CX
+	POP BX
+	POP AX
+RET
+foo ENDP
+
+bar PROC
+
+	PUSH AX
+	PUSH BX
+	PUSH CX
+	PUSH DX
+	PUSH BP
+	MOV BP , SP
+
+	SUB SP , 2
+	SUB SP , 2
+
+	MOV AX, 4
+	MOV BX, [BP - 2]
+	MUL BX
+	MOV T2, AX
+
+	MOV AX, 2
+	MOV BX, [BP - 4]
+	MUL BX
+	MOV T3, AX
+
+	MOV AX, T2
+	ADD AX, T3
+	MOV T4, AX
+
+	MOV AX, T4
+	MOV c1, AX
+	ADD SP, 4
+	POP BP
+
+	POP DX
+	POP CX
+	POP BX
+	POP AX
+RET
+bar ENDP
+
 MAIN PROC
 
 	;INITIALIZE DATA SEGMENT
@@ -87,158 +174,79 @@ MAIN PROC
 	SUB SP , 2
 	SUB SP , 2
 	SUB SP , 2
-	SUB SP , 2
-	SUB SP , 2
-
-	MOV AX, 1
-	MOV i1, AX
-;--------print function called---------
-
-	MOV AX, i1
-	CALL PRINT_ID
 
 	MOV AX, 5
-	ADD AX, 8
-	MOV T1, AX
+	MOV [BP - 2], AX
+
+	MOV AX, 6
+	MOV [BP - 4], AX
+	CALL func_a
+;--------print function called---------
+
+	MOV AX, a1
+	CALL PRINT_ID
+
+	MOV AX, [BP - 2]
+	MOV [BP - 2], AX
+	CALL foo
 
 	MOV AX, T1
-	MOV j1, AX
-;--------print function called---------
-
-	MOV AX, j1
-	CALL PRINT_ID
-
-	MOV AX, 2
-	MOV BX, j1
-	MUL BX
-	MOV T2, AX
-
-	MOV AX, i1
-	ADD AX, T2
-	MOV T3, AX
-
-	MOV AX, T3
-	MOV [BP - 2], AX
-;--------print function called---------
-
-	MOV AX, [BP - 2]
-	CALL PRINT_ID
-
-	MOV AX, [BP - 2]
-	MOV BX, 9
-	XOR DX, DX
-	DIV BX
-	MOV T4 , DX
-
-	MOV AX, T4
 	MOV [BP - 6], AX
 ;--------print function called---------
 
 	MOV AX, [BP - 6]
 	CALL PRINT_ID
 
-	MOV AX, [BP - 6]
-	CMP AX, [BP - 4]
-	JLE Label1
+	MOV AX, [BP - 2]
+	MOV [BP - 2], AX
 
-	MOV T5, 0
-	JMP Label2
+	MOV AX, [BP - 4]
+	MOV [BP - 4], AX
+	CALL bar
 
-	Label1:
-	MOV T5, 1
-
-	Label2:
-
-	MOV AX, T5
+	MOV AX, T4
 	MOV [BP - 8], AX
 ;--------print function called---------
 
 	MOV AX, [BP - 8]
 	CALL PRINT_ID
 
-	MOV AX, i1
-	CMP AX, j1
-	JNE Label3
-
-	MOV T6, 0
-	JMP Label4
-
-	Label3:
-	MOV T6, 1
-
-	Label4:
-
-	MOV AX, T6
-	MOV [BP - 10], AX
-;--------print function called---------
-
-	MOV AX, [BP - 10]
-	CALL PRINT_ID
-
-	MOV AX, [BP - 8]
-	MOV BX, [BP - 10]
-	CMP AX, 1
-	JE Label5
-	CMP BX, 1
-	JE Label5
-	MOV AX, 0
-	MOV T7, AX
-	JMP Label6
-
-	Label5:
-	MOV AX, 1
-	MOV T7, AX
-
-	Label6:
-
-	MOV AX, T7
-	MOV [BP - 12], AX
-;--------print function called---------
-
-	MOV AX, [BP - 12]
-	CALL PRINT_ID
-
-	MOV AX, [BP - 8]
-	MOV BX, [BP - 10]
-	CMP AX, 1
-	JNE Label7
-	CMP BX, 1
-	JNE Label7
-	MOV AX, 1
-	MOV T8, AX
-	JMP Label8
-
-	Label7:
-	MOV AX, 0
-	MOV T8, AX
-
-	Label8:
-
-	MOV AX, T8
-	MOV [BP - 12], AX
-;--------print function called---------
-
-	MOV AX, [BP - 12]
-	CALL PRINT_ID
-	MOV AX, [BP - 12]
-	INC AX
-	MOV [BP - 12], AX
-;--------print function called---------
-
-	MOV AX, [BP - 12]
-	CALL PRINT_ID
-
-	MOV AX, [BP - 12]
-	NEG AX
-	MOV T9, AX
-
-	MOV AX, T9
+	MOV AX, [BP - 2]
 	MOV [BP - 2], AX
-;--------print function called---------
+
+	MOV AX, [BP - 4]
+	MOV [BP - 4], AX
+	CALL bar
+
+	MOV AX, 6
+	MOV BX, T4
+	MUL BX
+	MOV T5, AX
+
+	MOV AX, T5
+	ADD AX, 2
+	MOV T6, AX
 
 	MOV AX, [BP - 2]
+	MOV [BP - 2], AX
+	CALL foo
+
+	MOV AX, 3
+	MOV BX, T1
+	MUL BX
+	MOV T7, AX
+
+	MOV AX, T6
+	SUB AX, T7
+	MOV T8, AX
+
+	MOV AX, T8
+	MOV [BP - 4], AX
+;--------print function called---------
+
+	MOV AX, [BP - 4]
 	CALL PRINT_ID
-	ADD SP, 12
+	ADD SP, 8
 	POP BP
 
 

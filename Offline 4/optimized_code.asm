@@ -1,23 +1,21 @@
 .MODEL SMALL
 .STACK 100H
 .DATA
-	i1 DW ?
-	j1 DW ?
-	k2 DW ?
-	ll2 DW ?
-	m2 DW ?
-	n2 DW ?
-	o2 DW ?
-	p2 DW ?
+	a1 DW ?
+	b1 DW ?
+	c1 DW ?
 	T1 DW ?
 	T2 DW ?
 	T3 DW ?
 	T4 DW ?
+	i5 DW ?
+	j5 DW ?
+	k5 DW ?
+	l5 DW ?
 	T5 DW ?
 	T6 DW ?
 	T7 DW ?
 	T8 DW ?
-	T9 DW ?
 .CODE
 ;------printing procedure----
 PRINT_ID PROC
@@ -80,152 +78,64 @@ PRINT_ID PROC
 	RET
 PRINT_ID ENDP
 
-MAIN PROC
+func_a PROC
 
-	;INITIALIZE DATA SEGMENT
-	MOV AX, @DATA
-	MOV DS, AX
+	PUSH AX
+	PUSH BX
+	PUSH CX
+	PUSH DX
 
- 
-	MOV AX, 1
-	MOV i2, AX
- ;--------print function called---------
+	MOV AX, 7
+	MOV a2, AX
+	POP DX
+	POP CX
+	POP BX
+	POP AX
+RET
+func_a ENDP
 
-	CALL PRINT_ID
- 
-	MOV AX, 5
-	ADD AX, 8
+foo PROC
+
+	PUSH AX
+	PUSH BX
+	PUSH CX
+	PUSH DX
+
+	MOV AX, a3
+	ADD AX, 3
 	MOV T1, AX
+ 	POP DX
+	POP CX
+	POP BX
+	POP AX
+RET
+foo ENDP
 
-	MOV j2, AX
- ;--------print function called---------
+bar PROC
 
-	CALL PRINT_ID
- 
-	MOV AX, 2
-	MOV BX, j2
+	PUSH AX
+	PUSH BX
+	PUSH CX
+	PUSH DX
+
+	MOV AX, 4
+	MOV BX, a4
 	MUL BX
 	MOV T2, AX
 
-	MOV AX, i2
-	ADD AX, T2
+	MOV AX, 2
+	MOV BX, b4
+	MUL BX
 	MOV T3, AX
 
-	MOV k2, AX
- ;--------print function called---------
+	MOV AX, T2
+	ADD AX, T3
+	MOV T4, AX
+ 	POP DX
+	POP CX
+	POP BX
+	POP AX
+RET
+bar ENDP
 
-	CALL PRINT_ID
- 
-	MOV AX, k2
-	MOV BX, 9
-	XOR DX, DX
-	DIV BX
-	MOV T4 , DX
-
-	MOV AX, T4
-	MOV m2, AX
- ;--------print function called---------
-
-	CALL PRINT_ID
- 
-	MOV AX, m2
-	CMP AX, ll2
-	JLE Label1
-
-	MOV T5, 0
-	JMP Label2
-
-	Label1:
-	MOV T5, 1
-
-	Label2:
-
-	MOV AX, T5
-	MOV n2, AX
- ;--------print function called---------
-
-	CALL PRINT_ID
- 
-	MOV AX, i2
-	CMP AX, j2
-	JNE Label3
-
-	MOV T6, 0
-	JMP Label4
-
-	Label3:
-	MOV T6, 1
-
-	Label4:
-
-	MOV AX, T6
-	MOV o2, AX
- ;--------print function called---------
-
-	CALL PRINT_ID
- 
-	MOV AX, n2
-	MOV BX, o2
-	CMP AX, 1
-	JE Label5
-	CMP BX, 1
-	JE Label5
-	MOV AX, 0
-	MOV T7, AX
-	JMP Label6
-
-	Label5:
-	MOV AX, 1
-	MOV T7, AX
-
-	Label6:
-
-	MOV AX, T7
-	MOV p2, AX
- ;--------print function called---------
-
-	CALL PRINT_ID
- 
-	MOV AX, n2
-	MOV BX, o2
-	CMP AX, 1
-	JNE Label7
-	CMP BX, 1
-	JNE Label7
-	MOV AX, 1
-	MOV T8, AX
-	JMP Label8
-
-	Label7:
-	MOV AX, 0
-	MOV T8, AX
-
-	Label8:
-
-	MOV AX, T8
-	MOV p2, AX
- ;--------print function called---------
-
-	CALL PRINT_ID
- 	MOV AX, p2
-	INC AX
-	MOV p2, AX
- ;--------print function called---------
-
-	CALL PRINT_ID
- 
-	MOV AX, p2
-	NEG AX
-	MOV T9, AX
-
-	MOV k2, AX
- ;--------print function called---------
-
-	CALL PRINT_ID
- 
-	MOV AX, 4CH
-	INT 21H
-MAIN ENDP
-
-END MAIN
-
+d‹û®2V

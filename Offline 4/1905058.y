@@ -810,6 +810,29 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
 
 
     table.Enter_Scope();
+        //Resetting Stack Offset
+    stack_offset=0;
+      if($2->get_name()=="main"){
+        //assembly_codes="MAIN PROC\n\n";
+        string x= "MAIN PROC\n\n";
+        fprintf(tempasm,"%s",x.c_str());
+      }
+			else{
+        //assembly_codes=$2->get_name()+" PROC\n\n";
+        string x= $2->get_name()+" PROC\n\n";
+        fprintf(tempasm,"%s",x.c_str());
+      }
+      	if($2->get_name()=="main"){
+				//assembly_codes+=main_proc_start_code();
+        string x= main_proc_start_code()+proc_stack_start_code();
+        fprintf(tempasm,"%s",x.c_str());
+			}
+			else{
+			  //assembly_codes+=pushCode();
+        string x= pushCode()+proc_stack_start_code();
+        fprintf(tempasm,"%s",x.c_str());
+			}
+
     for(int i=0;i<$4->param_list.size();i++){
         string name = $4->param_list[i].name;
         string type = "ID";
@@ -822,33 +845,20 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
           table.Insert(name , type , log_);
           // SymbolInfo *par =  table.Lookup_current_scope(name);
           // par->set_var_type($4->param_list[i].type);
+          tmp =table.Lookup_current_scope(name);
+          tmp->set_global_flag(false);
+              tmp->set_stack_offset(stack_offset);
+                stack_offset+=2;
+              string temp = "\tSUB SP , 2\n";
+              fprintf(tempasm,"%s",temp.c_str()); 
+              
+          
         }
     }
 
-    //Resetting Stack Offset
-    stack_offset=0;
-    if($2->get_name()=="main"){
-        //assembly_codes="MAIN PROC\n\n";
-        string x= "MAIN PROC\n\n";
-        fprintf(tempasm,"%s",x.c_str());
-      }
-			else{
-        //assembly_codes=$2->get_name()+" PROC\n\n";
-        string x= $2->get_name()+" PROC\n\n";
-        fprintf(tempasm,"%s",x.c_str());
-      }
 
-			if($2->get_name()=="main"){
-				//assembly_codes+=main_proc_start_code();
-        string x= main_proc_start_code()+proc_stack_start_code();
-        fprintf(tempasm,"%s",x.c_str());
-			}
-			else{
-			  //assembly_codes+=pushCode();
-        string x= pushCode()+proc_stack_start_code();
-        fprintf(tempasm,"%s",x.c_str());
-			}
-
+  
+		
 			//assembly_codes+=($7->get_code());
 
 			
@@ -2560,10 +2570,10 @@ factor	: variable
 						$$->add_code("\tMOV "+f.parametres[i].second +to_string(table.get_current_scopeid())+", AX\n");
             //assemblyv2
             string tmp="\n\tMOV AX, " ;
-            tmp+= $3->argument_list[i].name;
-            tmp+= to_string(table.get_current_scopeid())+"\n";
-            tmp+="\tMOV "+f.parametres[i].second ;
-            tmp+=to_string(table.get_current_scopeid())+", AX\n";
+            SymbolInfo *x = table.Lookup( $3->argument_list[i].name);
+            tmp+=x->get_assembly_valuev2()+"\n";
+            tmp+="\tMOV "+x->get_assembly_valuev2();
+            tmp+=", AX\n";
             $$->add_codev2(tmp);
             fprintf(tempasm,"%s",tmp.c_str());
           }
