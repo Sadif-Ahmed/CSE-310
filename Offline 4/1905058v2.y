@@ -1741,20 +1741,42 @@ expression : logic_expression
           //assembly codes
           $$->set_code($3->get_code()+$1->get_code());
 			$$->add_code("\n\tMOV AX, "+$3->get_assembly_value()+"\n");
+      string tmp = "\n\tMOV AX, "+$3->get_assembly_valuev2()+"\n";
+      fprintf(tempasm,"%s",tmp.c_str());
 
       string temp = array_name($1->get_name())+to_string(table.get_current_scopeid());
       $$->set_name(temp);
 			$$->set_assembly_value(temp);
+      string tempv2=x->get_assembly_valuev2();
+      $$->set_assembly_valuev2(tempv2);
 
       //if variable
       if($1->get_id()!="array"){
 				$$->add_code("\tMOV "+temp+", AX\n");
+        string tmp = "\tMOV "+tempv2+", AX\n";
+        fprintf(tempasm,"%s",tmp.c_str());
 			}
 			//or array
 			else{
         int idx=get_index($1->get_name());
-				if(idx==0)$$->add_code("\tMOV "+temp+", AX\n");
-        else $$->add_code("\tMOV "+temp+"+"+to_string(idx)+"*2, AX\n");
+				if(idx==0){$$->add_code("\tMOV "+temp+", AX\n");
+        string tmp =  "\tMOV "+tempv2+", AX\n" ;
+        fprintf(tempasm,"%s",tmp.c_str());
+        }
+        else 
+        {$$->add_code("\tMOV "+temp+"+"+to_string(idx)+"*2, AX\n");
+        if(x->get_global_flag()==false)
+        {
+        string tmp = "\tMOV "+tempv2+", AX\n";
+        fprintf(tempasm,"%s",tmp.c_str());
+        }
+        else
+        {
+        string tmp = "\tMOV "+tempv2+"+"+to_string(idx)+"*2, AX\n";
+        fprintf(tempasm,"%s",tmp.c_str());
+        }
+
+        }
 			}
 
     }
@@ -1804,6 +1826,8 @@ logic_expression : rel_expression
       //cout<<$1->get_assembly_value()<<endl;
 			$$->add_code("\n\tMOV AX, "+$1->get_assembly_value()+"\n");
 			$$->add_code("\tMOV BX, "+$3->get_assembly_value()+"\n");
+      string tmp = "\n\tMOV AX, "+$1->get_assembly_valuev2()+"\n" + "\tMOV BX, "+$3->get_assembly_valuev2()+"\n";
+      fprintf(tempasm,"%s",tmp.c_str());
 
 			if($2->get_name()=="&&"){
 				$$->add_code("\tCMP AX, 1\n");
@@ -1821,7 +1845,18 @@ logic_expression : rel_expression
 				$$->add_code("\tMOV "+temp+", AX\n");
 
 				$$->add_code("\n\t"+l2+":\n");
-			}
+        tmp = "\tCMP AX, 1\n" ;
+        tmp += "\tJNE "+l1+"\n";
+        tmp += "\tCMP BX, 1\n" ;
+        tmp +=	"\tJNE "+l1+"\n";
+        tmp += "\tMOV AX, 1\n" ;
+        tmp += "\tMOV "+temp+", AX\n" ;
+        tmp +=  "\tJMP "+l2+"\n";
+        tmp += "\n\t"+l1+":\n" ;
+        tmp += "\tMOV AX, 0\n" ;
+        tmp += "\tMOV "+temp+", AX\n";
+        fprintf(tempasm,"%s",tmp.c_str());
+               		}
 
 			else if($2->get_name()=="||"){
 				$$->add_code("\tCMP AX, 1\n");
@@ -1839,9 +1874,21 @@ logic_expression : rel_expression
 				$$->add_code("\tMOV "+temp+", AX\n");
 
 				$$->add_code("\n\t"+l2+":\n");
+        tmp = "\tCMP AX, 1\n" ;
+        tmp += "\tJE "+l1+"\n" ;
+        tmp += "\tCMP BX, 1\n" ;
+        tmp += "\tJE "+l1+"\n" ;
+        tmp += "\tMOV AX, 0\n" ;
+        tmp += "\tMOV "+temp+", AX\n" ;
+        tmp += "\tJMP "+l2+"\n";
+        tmp += "\n\t"+l1+":\n" ;
+        tmp += "\tMOV AX, 1\n" ;
+        tmp += "\tMOV "+temp+", AX\n" ;
+        fprintf(tempasm , "%s", tmp.c_str());
 			}
       $$->set_name(temp);
 			$$->set_assembly_value(temp);
+      $$->set_assembly_valuev2(temp);
 
     }
 		 ;
@@ -1885,6 +1932,9 @@ rel_expression	: simple_expression
 
 			$$->add_code("\n\tMOV AX, "+$1->get_assembly_value()+"\n");
 			$$->add_code("\tCMP AX, "+$3->get_assembly_value()+"\n");
+      //assemblyv2
+      string tmp = "\n\tMOV AX, "+$1->get_assembly_valuev2()+"\n" + "\tCMP AX, "+$3->get_assembly_valuev2()+"\n";
+      fprintf(tempasm,"%s",tmp.c_str());
 
 			string temp=newTemp();
 			string l1=newLabel();
@@ -1892,31 +1942,40 @@ rel_expression	: simple_expression
 
 			if($2->get_name()=="<"){
 				$$->add_code("\tJL "+l1+"\n");
+        tmp = "\tJL "+l1+"\n";
 			}
       else if($2->get_name()==">"){
         $$->add_code("\tJG "+l1+"\n");
+        tmp = "\tJG "+l1+"\n" ;
       }
       else if($2->get_name()=="=="){
         $$->add_code("\tJE "+l1+"\n");
+        tmp = "\tJE "+l1+"\n" ;
       }
 			else if($2->get_name()=="<="){
 				$$->add_code("\tJLE "+l1+"\n");
+        tmp = "\tJLE "+l1+"\n" ;
 			}
 			else if($2->get_name()==">="){
 				$$->add_code("\tJGE "+l1+"\n");
+        tmp = "\tJGE "+l1+"\n" ;
 			}
 			else{
 				$$->add_code("\tJNE "+l1+"\n");
+        tmp = "\tJNE "+l1+"\n" ;
 			}
-
+      fprintf(tempasm , "%s", tmp.c_str());
 			$$->add_code("\n\tMOV "+temp+", 0\n");
 			$$->add_code("\tJMP "+l2+"\n");
 
 			$$->add_code("\n\t"+l1+":\n\tMOV "+temp+", 1\n");
 			$$->add_code("\n\t"+l2+":\n");
+      tmp = "\n\tMOV "+temp+", 0\n" + "\tJMP "+l2+"\n" + "\n\t"+l1+":\n\tMOV "+temp+", 1\n" + "\n\t"+l2+":\n" ;
+      fprintf(tempasm,"%s",tmp.c_str());
 
 			$$->set_name(temp);
 			$$->set_assembly_value(temp);
+      $$->set_assembly_valuev2(temp);
 
    }
 		;
@@ -1957,16 +2016,21 @@ simple_expression : term
   				$$->add_code("\n\tMOV AX, "+$1->get_assembly_value()+"\n");
   				$$->add_code("\tADD AX, "+$3->get_assembly_value()+"\n");
   				$$->add_code("\tMOV "+temp+", AX\n");
+          string tmp = "\n\tMOV AX, "+$1->get_assembly_valuev2()+"\n" + "\tADD AX, "+$3->get_assembly_valuev2()+"\n" + "\tMOV "+temp+", AX\n";
+          fprintf(tempasm , "%s" , tmp.c_str());
   			}
 
   			else{
   				$$->add_code("\n\tMOV AX, "+$1->get_assembly_value()+"\n");
   				$$->add_code("\tSUB AX, "+$3->get_assembly_value()+"\n");
   				$$->add_code("\tMOV "+temp+", AX\n");
+          string tmp = "\n\tMOV AX, "+$1->get_assembly_valuev2()+"\n" + "\tSUB AX, "+$3->get_assembly_valuev2()+"\n" + "\tMOV "+temp+", AX\n";
+          fprintf(tempasm,"%s",tmp.c_str());
   			}
 
   			$$->set_name(temp);
   			$$->set_assembly_value(temp);
+        $$->set_assembly_valuev2(temp);
 
 
   }

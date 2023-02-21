@@ -13,20 +13,104 @@ MAIN PROC
 	SUB SP , 2
 	SUB SP , 2
 	SUB SP , 2
+
+	MOV AX, 1
+	MOV i1, AX
 	MOV AX, i1
 	INC AX
 	MOV i1, AX
+
+	MOV AX, 5
+	ADD AX, 8
+	MOV T1, AX
+
+	MOV AX, T1
+	MOV j1, AX
 
 	MOV AX, 2
 	MOV BX, j1
 	MUL BX
 	MOV T2, AX
 
+	MOV AX, i1
+	ADD AX, T2
+	MOV T3, AX
+
+	MOV AX, T3
+	MOV [BP - 2], AX
+
 	MOV AX, [BP - 2]
 	MOV BX, 9
 	XOR DX, DX
 	DIV BX
 	MOV T4 , DX
+
+	MOV AX, T4
+	MOV [BP - 6], AX
+
+	MOV AX, [BP - 6]
+	CMP AX, [BP - 4]
+	JLE Label1
+
+	MOV T5, 0
+	JMP Label2
+
+	Label1:
+	MOV T5, 1
+
+	Label2:
+
+	MOV AX, T5
+	MOV [BP - 8], AX
+
+	MOV AX, i1
+	CMP AX, j1
+	JNE Label3
+
+	MOV T6, 0
+	JMP Label4
+
+	Label3:
+	MOV T6, 1
+
+	Label4:
+
+	MOV AX, T6
+	MOV [BP - 10], AX
+
+	MOV AX, [BP - 8]
+	MOV BX, [BP - 10]
+	CMP AX, 1
+	JE Label5
+	CMP BX, 1
+	JE Label5
+	MOV AX, 0
+	MOV T7, AX
+	JMP Label6
+
+	Label5:
+	MOV AX, 1
+	MOV T7, AX
+
+	MOV AX, T7
+	MOV [BP - 12], AX
+
+	MOV AX, [BP - 8]
+	MOV BX, [BP - 10]
+	CMP AX, 1
+	JNE Label7
+	CMP BX, 1
+	JNE Label7
+	MOV AX, 1
+	MOV T8, AX
+	JMP Label8
+
+	Label7:
+	MOV AX, 0
+	MOV T8, AX
+
+	MOV AX, T8
+	MOV [BP - 12], AX
 	MOV AX, [BP - 12]
 	INC AX
 	MOV [BP - 12], AX
@@ -34,6 +118,9 @@ MAIN PROC
 	MOV AX, [BP - 12]
 	NEG AX
 	MOV T9, AX
+
+	MOV AX, T9
+	MOV [BP - 2], AX
 	ADD SP, 12
 	POP BP
 
