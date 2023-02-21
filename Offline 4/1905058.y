@@ -1910,7 +1910,7 @@ expression : logic_expression
 
           //assembly codes
           $$->set_code($3->get_code()+$1->get_code());
-          $$->set_codev2($3->get_code2()+$1->get_code2());
+          $$->set_codev2($3->get_codev2()+$1->get_codev2());
 			$$->add_code("\n\tMOV AX, "+$3->get_assembly_value()+"\n");
       string tmp = "\n\tMOV AX, "+$3->get_assembly_valuev2()+"\n";
       $$->add_codev2(tmp);
