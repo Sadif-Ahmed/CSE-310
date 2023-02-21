@@ -250,6 +250,7 @@ class SymbolInfo
         global_flag=false;
         set_func_decl_state(false);
         next=NULL;
+        codev2="";
     }
     SymbolInfo(string type)
     {
@@ -262,6 +263,7 @@ class SymbolInfo
         code="";
         global_flag=false;
         next=NULL;
+        codev2="";
 
     }
     SymbolInfo()

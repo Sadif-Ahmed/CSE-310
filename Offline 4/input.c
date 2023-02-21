@@ -4,7 +4,6 @@ int main(){
 	int k,ll,m,n,o,p;
  
 	i = 1;
-	i++;
 	println(i);
 	j = 5 + 8;
 	println(j);
