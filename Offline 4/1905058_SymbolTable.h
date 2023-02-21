@@ -174,6 +174,7 @@ class SymbolInfo
     this->assembly_value=temp->get_assembly_value();
     this->stack_offset=temp->get_stack_offset();
     this->global_flag=temp->get_global_flag();
+    this->assembly_valuev2=temp->get_assembly_valuev2();
     }
     void print_tree(SymbolInfo *head,int depth,FILE *fp)
     {

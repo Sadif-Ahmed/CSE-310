@@ -89,6 +89,9 @@ MAIN PROC
  
 	MOV AX, 1
 	MOV i2, AX
+ 	MOV AX, i2
+	INC AX
+	MOV i2, AX
  ;--------print function called---------
 
 	MOV AX, i2

@@ -1093,6 +1093,7 @@ var_declaration : type_specifier declaration_list SEMICOLON
               {
                  variableList_to_be_Initializedv2.push_back({tmp->get_name()+to_string(table.get_current_scopeid()),to_string(var_list[i].size)});
               }
+              tmp->set_assembly_valuev2(tmp->get_name()+to_string(table.get_current_scopeid()));
             }
             else
             {
@@ -1583,11 +1584,11 @@ variable : ID
       $$->set_assembly_value($$->get_name()+to_string(table.get_current_scopeid()));
       if(x->get_global_flag()==true)
       { 
-      $$->set_assembly_valuev2($$->get_name()+to_string(table.get_current_scopeid()));
+      //x->set_assembly_valuev2($$->get_name()+to_string(table.get_current_scopeid()));
       }
       else
       {
-      $$->set_assembly_valuev2("[BP - "+to_string(x->get_stack_offset()+2)+"]");
+      x->set_assembly_valuev2("[BP - "+to_string(x->get_stack_offset()+2)+"]");
       }
       
 
@@ -1619,11 +1620,11 @@ variable : ID
       {     
       if(x1->get_global_flag()==true)
       { 
-      $$->set_assembly_valuev2($$->get_name()+to_string(table.get_current_scopeid()));
+      //x1->set_assembly_valuev2($$->get_name()+to_string(table.get_current_scopeid()));
       }
       else
       {
-      $$->set_assembly_valuev2("[BP - "+to_string(x1->get_stack_offset()+2*x+2)+"]");
+      x1->set_assembly_valuev2("[BP - "+to_string(x1->get_stack_offset()+2*x+2)+"]");
       }
       }
 
@@ -2026,28 +2027,46 @@ term :	unary_expression
       $$->add_code($3->get_code());
 			$$->add_code("\n\tMOV AX, "+ $1->get_assembly_value()+"\n");
 			$$->add_code("\tMOV BX, "+ $3->get_assembly_value()+"\n");
+      //assemblyv2
+      string tmp="\n\tMOV AX, "+ $1->get_assembly_valuev2()+"\n"+"\tMOV BX, "+ $3->get_assembly_valuev2()+"\n";
+      fprintf(tempasm,"%s",tmp.c_str());
 
 			string temp=newTemp();
       //perform multiplication
 			if($2->get_name()=="*"){
 				$$->add_code("\tMUL BX\n");
 				$$->add_code("\tMOV "+temp+", AX\n");
+        string tmp = "\tMUL BX\n" ;
+        tmp+= "\tMOV ";
+        tmp+=temp+", AX\n" ;
+        fprintf(tempasm,"%s",tmp.c_str());
 			}
       //perform division
 			else if($2->get_name()=="/"){
 				$$->add_code("\tXOR DX, DX\n");
 				$$->add_code("\tDIV BX\n");
 				$$->add_code("\tMOV "+temp+" , AX\n");
+        string tmp = "\tXOR DX, DX\n" ;
+        tmp+= "\tDIV BX\n";
+        tmp+= "\tMOV ";
+        tmp+=temp+" , AX\n" ;
+        fprintf(tempasm,"%s",tmp.c_str());
 			}
       //perform mod operation
 			else{
 				$$->add_code("\tXOR DX, DX\n");
 				$$->add_code( "\tDIV BX\n");
 				$$->add_code("\tMOV "+temp+" , DX\n");
+        string tmp =  "\tXOR DX, DX\n" ;
+        tmp+= "\tDIV BX\n" ;
+        tmp+= "\tMOV ";
+        tmp+=temp+" , DX\n" ;
+        fprintf(tempasm,"%s",tmp.c_str());
 			}
 
 		 	$$->set_name(temp);
 			$$->set_assembly_value(temp);
+      $$->set_assembly_valuev2(temp);
 
 
     }
@@ -2082,14 +2101,21 @@ unary_expression : ADDOP unary_expression
 				$$->add_code("\n\tMOV AX, "+$2->get_assembly_value()+"\n");
 				$$->add_code("\tNEG AX\n");
 				$$->add_code("\tMOV "+temp+", AX\n");
+        //assemblyv2
+        string tmp = "\n\tMOV AX, "+$2->get_assembly_valuev2()+"\n"+"\tNEG AX\n"+"\tMOV "+temp+", AX\n";
+        fprintf(tempasm,"%s",tmp.c_str());
 			}
 
 			else{
 				$$->add_code("\n\tMOV AX, "+$2->get_assembly_value()+"\n");
 				$$->add_code("\tMOV "+temp+", AX\n");
+        //assembly v2
+        string tmp = "\n\tMOV AX, "+$2->get_assembly_valuev2()+"\n"+"\tMOV "+temp+", AX\n";
+        fprintf(tempasm,"%s",tmp.c_str());
 			}
 			$$->set_name(temp);
 			$$->set_assembly_value(temp);
+      $$->set_assembly_valuev2(temp);
 
     }
 		 | NOT unary_expression
@@ -2116,7 +2142,10 @@ unary_expression : ADDOP unary_expression
 			$$->add_code("\tMOV "+temp+", AX\n");
       $$->set_name(temp);
 			$$->set_assembly_value(temp);
-      
+      //assembly v2
+      string tmp="\n\tMOV AX, "+$2->get_assembly_valuev2()+"\n"+"\tNOT AX\n"+"\tMOV "+temp+", AX\n";
+      fprintf(tempasm,"%s",tmp.c_str());
+      $$->set_assembly_valuev2(temp);
 
     }
 		 | factor
@@ -2146,12 +2175,25 @@ factor	: variable
     //assembly codes
       if($1->get_id()=="array"){
         int idx = get_index($$->get_name());
-        if(idx==0)$$->set_assembly_value(array_name($$->get_name()) +to_string(table.get_current_scopeid()));
-        else $$->set_assembly_value(array_name($$->get_name()) +to_string(table.get_current_scopeid())+"+"+to_string(idx)+"*2");
+        if(idx==0)
+        {$$->set_assembly_value(array_name($$->get_name()) +to_string(table.get_current_scopeid()));
+         SymbolInfo * x = table.Lookup(array_name($1->get_name()));
+         $$->set_assembly_valuev2(x->get_assembly_valuev2());
+        //$$->set_assembly_valuev2(array_name($$->get_name()) +to_string(table.get_current_scopeid()));
+
+        }
+        else{ $$->set_assembly_value(array_name($$->get_name()) +to_string(table.get_current_scopeid())+"+"+to_string(idx)+"*2");
+         SymbolInfo * x = table.Lookup(array_name($1->get_name()));
+         $$->set_assembly_valuev2(x->get_assembly_valuev2());     
+        // $$->set_assembly_valuev2(array_name($$->get_name()) +to_string(table.get_current_scopeid())+"+"+to_string(idx)+"*2");   
+        }
       }
       else{
         //cout<<modified_name($$->get_name()) +table.get_current_id()[0]<<endl;
         $$->set_assembly_value (array_name($$->get_name()) +to_string(table.get_current_scopeid()));
+         SymbolInfo * x = table.Lookup(array_name($1->get_name()));
+        $$->set_assembly_valuev2(x->get_assembly_valuev2());
+         //$$->set_assembly_valuev2(array_name($$->get_name()) +to_string(table.get_current_scopeid()));
       }
 
       ///pass arrayname if array otherwise pass varname only
@@ -2254,16 +2296,30 @@ factor	: variable
             }
             $$->add_code("\n\tMOV AX, " + $3->argument_list[i].name + to_string(table.get_current_scopeid())+"\n");
 						$$->add_code("\tMOV "+f.parametres[i].second +to_string(table.get_current_scopeid())+", AX\n");
+            //assemblyv2
+            string tmp="\n\tMOV AX, " ;
+            tmp+= $3->argument_list[i].name;
+            tmp+= to_string(table.get_current_scopeid())+"\n";
+            tmp+="\tMOV "+f.parametres[i].second ;
+            tmp+=to_string(table.get_current_scopeid())+", AX\n";
+            fprintf(tempasm,"%s",tmp.c_str());
           }
         }
         //cout<<$1->get_name()<<" "<<already_error_in_arg<<endl;
         
       }
       $$->add_code("\tCALL "+$1->get_name()+"\n");
+      //assemblyv2
+      string tmp;
+      tmp+="\tCALL ";
+      tmp+=$1->get_name();
+      tmp+="\n";
+      fprintf(tempasm,"%s",tmp.c_str());
 
           string fnm = func_name($1->get_name());
           func_ f = get_func(fnm);
           $$->set_assembly_value("T" + to_string(f.return_reg_no));
+          $$->set_assembly_valuev2("T" + to_string(f.return_reg_no));
 
 
     }
@@ -2273,6 +2329,7 @@ factor	: variable
       $$->make_copy($2);
       //assembly codes
       $$->set_assembly_value($$->get_name());
+      $$->set_assembly_valuev2($$->get_name());
 
       fprintf(log_,"factor : LPAREN expression RPAREN\n");
       $$->set_print("factor : LPAREN expression RPAREN");
@@ -2298,6 +2355,7 @@ factor	: variable
 			$$->set_var_type("int");
       //assembly codes
       $$->set_assembly_value($$->get_name());
+      $$->set_assembly_valuev2($$->get_name());
 
 
     }
@@ -2314,6 +2372,7 @@ factor	: variable
 			$$->set_var_type("float");
       //assembly codes
       $$->set_assembly_value($$->get_name());
+      $$->set_assembly_valuev2($$->get_name());
 
 
     }
@@ -2358,6 +2417,13 @@ factor	: variable
 
          $$->set_var_type($1->get_var_type());
          $$->set_id($1->get_id());
+          //assembly v2
+        string var_namev2=x->get_assembly_valuev2();
+        string str ;
+        str+="\tMOV AX, "+var_namev2+"\n";
+				str+="\tINC AX\n";
+				str+="\tMOV "+var_namev2+", AX\n";
+        fprintf(tempasm,"%s",str.c_str());    
       }
 
       }
@@ -2378,6 +2444,7 @@ factor	: variable
         error_count++;
         fprintf(error,"Line# %d: Undeclared variable '%s'\n",line_count,$1->get_name().c_str());      }
       else{
+        
  //assembly
 				string var_name=array_name($1->get_name())+to_string(table.get_current_scopeid());
 				string temp_str=newTemp();
@@ -2388,7 +2455,6 @@ factor	: variable
 				if($1->get_id()=="array"){
 
 					$$->add_code("\tMOV AX, "+var_name+"+"+to_string($1->get_idx())+"*2\n");
-					$$->add_code("\tMOV "+temp_str+", AX\n");
 					$$->add_code("\tDEC AX\n");
 					$$->add_code("\tMOV "+var_name+"+"+to_string($1->get_idx())+"*2, AX\n");
 				}
@@ -2402,7 +2468,17 @@ factor	: variable
 				$$->set_name(temp_str);
 
         $$->set_var_type($1->get_var_type());
-        $$->set_id($1->get_id());      }
+        $$->set_id($1->get_id()); 
+
+        //assembly v2
+        string var_namev2=x->get_assembly_valuev2();
+        string str ;
+        str+="\tMOV AX, "+var_namev2+"\n";
+				str+="\tMOV "+temp_str+", AX\n";
+				str+="\tDEC AX\n";
+				str+="\tMOV "+var_namev2+", AX\n";
+        fprintf(tempasm,"%s",str.c_str());    
+        }
     }
 
 	;   

@@ -89,6 +89,8 @@ MAIN PROC
  
 	MOV AX, 1
 	MOV i2, AX
+	INC AX
+	MOV i2, AX
  ;--------print function called---------
 
 	CALL PRINT_ID

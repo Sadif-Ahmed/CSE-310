@@ -13,6 +13,27 @@ MAIN PROC
 	SUB SP , 2
 	SUB SP , 2
 	SUB SP , 2
+	MOV AX, i1
+	INC AX
+	MOV i1, AX
+
+	MOV AX, 2
+	MOV BX, j1
+	MUL BX
+	MOV T2, AX
+
+	MOV AX, [BP - 2]
+	MOV BX, 9
+	XOR DX, DX
+	DIV BX
+	MOV T4 , DX
+	MOV AX, [BP - 12]
+	INC AX
+	MOV [BP - 12], AX
+
+	MOV AX, [BP - 12]
+	NEG AX
+	MOV T9, AX
 	ADD SP, 12
 	POP BP
 
