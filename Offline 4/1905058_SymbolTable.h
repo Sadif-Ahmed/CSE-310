@@ -43,7 +43,8 @@ class SymbolInfo
     int stack_offset;
     bool global_flag;
     int idx;
-    string assembly_valuev2;  
+    string assembly_valuev2; 
+    string codev2; 
     SymbolInfo *next;
     public:
     //List of Parametres,Variable and Arguments
@@ -93,6 +94,18 @@ class SymbolInfo
     void add_code(string temp)
     {
         code += temp;
+    }
+    void set_codev2(string temp)
+    {
+        codev2=temp;
+    }
+    string get_codev2()
+    {
+        return codev2;
+    }
+    void add_codev2(string temp)
+    {
+        codev2 += temp;
     }
     void set_stack_offset(int n)
     {
@@ -175,6 +188,7 @@ class SymbolInfo
     this->stack_offset=temp->get_stack_offset();
     this->global_flag=temp->get_global_flag();
     this->assembly_valuev2=temp->get_assembly_valuev2();
+    this->codev2= temp->get_codev2();
     }
     void print_tree(SymbolInfo *head,int depth,FILE *fp)
     {
