@@ -2961,8 +2961,8 @@ yyreduce:
       tmp+="\tMOV AX, "+(yyvsp[-3].symbol)->get_name()+"\n";
       tmp+="\tCMP AX, 0\n";
       tmp+="\tJE "+l2+"\n";
-      tmp+=(yyvsp[0].symbol)->get_codev2();
-      tmp+=(yyvsp[-2].symbol)->get_codev2();
+    //  tmp+=$7->get_codev2();
+    //  tmp+=$5->get_codev2();
       tmp+="\tJMP "+l1+"\n";
       tmp+="\t"+l2+":\n";
       (yyval.symbol)->add_codev2(tmp);
@@ -3010,7 +3010,7 @@ yyreduce:
       tmp+="\tMOV AX, "+(yyvsp[-2].symbol)->get_name()+"\n";
       tmp+="\tCMP AX, 0\n";
       tmp+="\tJE "+label+"\n";
-      tmp+=(yyvsp[0].symbol)->get_codev2();
+    //  tmp+=$5->get_codev2();
       tmp+="\t"+label+":\n";
       (yyval.symbol)->add_codev2(tmp);
       fprintf(tempasm,"%s",tmp.c_str());
@@ -3058,10 +3058,10 @@ yyreduce:
       tmp+="\tMOV AX, "+(yyvsp[-4].symbol)->get_name()+"\n";
       tmp+="\tCMP AX, 0\n";
       tmp+="\tJE "+else_condition+"\n";
-      tmp+=(yyvsp[-2].symbol)->get_codev2();
+    //  tmp+=$5->get_codev2();
       tmp+="\tJMP "+after_else;
       tmp+="\n\t"+else_condition+":\n";
-      tmp+=(yyvsp[0].symbol)->get_codev2();
+    //  tmp+=$7->get_codev2();
       tmp+="\n\t"+after_else+":\n";
       (yyval.symbol)->add_codev2(tmp);
       fprintf(tempasm,"%s",tmp.c_str());
@@ -3110,11 +3110,11 @@ yyreduce:
       //assembly v2
       string tmp=";--------while loop---------\n\t";
       tmp+=l1+":\n";
-      tmp+=(yyvsp[-2].symbol)->get_codev2();
+    //  tmp+=$3->get_codev2();
       tmp+="\tMOV AX, "+(yyvsp[-2].symbol)->get_name()+"\n";
       tmp+="\tCMP AX, 0\n";
       tmp+="\tJE "+l2+"\n";
-      tmp+=(yyvsp[0].symbol)->get_codev2();
+    //  tmp+=$5->get_codev2();
       tmp+="\tJMP "+l1+"\n";
       tmp+=("\t"+l2+":\n");
       (yyval.symbol)->set_codev2(tmp);

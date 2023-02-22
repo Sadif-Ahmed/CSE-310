@@ -1,21 +1,14 @@
 .MODEL SMALL
 .STACK 100H
 .DATA
-	a1 DW ?
-	b1 DW ?
-	c1 DW ?
+	i2 DW ?
+	j2 DW ?
+	k2 DW ?
 	T1 DW ?
 	T2 DW ?
 	T3 DW ?
 	T4 DW ?
-	i5 DW ?
-	j5 DW ?
-	k5 DW ?
-	l5 DW ?
 	T5 DW ?
-	T6 DW ?
-	T7 DW ?
-	T8 DW ?
 .CODE
 ;------printing procedure----
 PRINT_ID PROC
@@ -78,64 +71,4 @@ PRINT_ID PROC
 	RET
 PRINT_ID ENDP
 
-func_a PROC
-
-	PUSH AX
-	PUSH BX
-	PUSH CX
-	PUSH DX
-
-	MOV AX, 7
-	MOV a2, AX
-	POP DX
-	POP CX
-	POP BX
-	POP AX
-RET
-func_a ENDP
-
-foo PROC
-
-	PUSH AX
-	PUSH BX
-	PUSH CX
-	PUSH DX
-
-	MOV AX, a3
-	ADD AX, 3
-	MOV T1, AX
- 	POP DX
-	POP CX
-	POP BX
-	POP AX
-RET
-foo ENDP
-
-bar PROC
-
-	PUSH AX
-	PUSH BX
-	PUSH CX
-	PUSH DX
-
-	MOV AX, 4
-	MOV BX, a4
-	MUL BX
-	MOV T2, AX
-
-	MOV AX, 2
-	MOV BX, b4
-	MUL BX
-	MOV T3, AX
-
-	MOV AX, T2
-	ADD AX, T3
-	MOV T4, AX
- 	POP DX
-	POP CX
-	POP BX
-	POP AX
-RET
-bar ENDP
-
-d‹û®2V
+`²¡¥ÌU

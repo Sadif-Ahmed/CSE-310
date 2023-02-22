@@ -1500,8 +1500,8 @@ statement : var_declaration
       tmp+="\tMOV AX, "+$4->get_name()+"\n";
       tmp+="\tCMP AX, 0\n";
       tmp+="\tJE "+l2+"\n";
-      tmp+=$7->get_codev2();
-      tmp+=$5->get_codev2();
+    //  tmp+=$7->get_codev2();
+    //  tmp+=$5->get_codev2();
       tmp+="\tJMP "+l1+"\n";
       tmp+="\t"+l2+":\n";
       $$->add_codev2(tmp);
@@ -1545,7 +1545,7 @@ statement : var_declaration
       tmp+="\tMOV AX, "+$3->get_name()+"\n";
       tmp+="\tCMP AX, 0\n";
       tmp+="\tJE "+label+"\n";
-      tmp+=$5->get_codev2();
+    //  tmp+=$5->get_codev2();
       tmp+="\t"+label+":\n";
       $$->add_codev2(tmp);
       fprintf(tempasm,"%s",tmp.c_str());
@@ -1589,10 +1589,10 @@ statement : var_declaration
       tmp+="\tMOV AX, "+$3->get_name()+"\n";
       tmp+="\tCMP AX, 0\n";
       tmp+="\tJE "+else_condition+"\n";
-      tmp+=$5->get_codev2();
+    //  tmp+=$5->get_codev2();
       tmp+="\tJMP "+after_else;
       tmp+="\n\t"+else_condition+":\n";
-      tmp+=$7->get_codev2();
+    //  tmp+=$7->get_codev2();
       tmp+="\n\t"+after_else+":\n";
       $$->add_codev2(tmp);
       fprintf(tempasm,"%s",tmp.c_str());
@@ -1637,11 +1637,11 @@ statement : var_declaration
       //assembly v2
       string tmp=";--------while loop---------\n\t";
       tmp+=l1+":\n";
-      tmp+=$3->get_codev2();
+    //  tmp+=$3->get_codev2();
       tmp+="\tMOV AX, "+$3->get_name()+"\n";
       tmp+="\tCMP AX, 0\n";
       tmp+="\tJE "+l2+"\n";
-      tmp+=$5->get_codev2();
+    //  tmp+=$5->get_codev2();
       tmp+="\tJMP "+l1+"\n";
       tmp+=("\t"+l2+":\n");
       $$->set_codev2(tmp);

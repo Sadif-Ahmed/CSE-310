@@ -1,39 +1,37 @@
-int a,b,c;
-
-void func_a(){
-	a = 7;
-}
-
-int foo(int a){
-	a = a + 3;
-	return a;
-}
-
-
-int bar(int a, int b){	
-	c = 4*a + 2*b;
-	return c;
-}
-
 int main(){
  
-	int i,j,k,l;
+	int i,j,k;
 	
-	i = 5;
-	j = 6;
+	i = 3;
+	j = 8;
+	k = 6;
 	
-	func_a();
-	println(a);
 	
-	k = foo(i);
-	println(k);
+	if(i==3){
+		println(j);
+	}
 	
-	l = bar(i,j);
-	println(l);
+	if(j<8){
+		println(i);
+	}
+	else{
+		println(k);
+	}
 	
-	j = 6 * bar(i,j) + 2 - 3 * foo(i);
-	println(j);
-	
+	if(k != 6){
+		println(k);
+	}
+	else if(j > 8){
+		println(j);
+	}
+	else if(i < 5){
+		println(i);
+	}
+	else{
+		k = 0;
+		println(k);
+	}
+ 
  
 	return 0;
 }
