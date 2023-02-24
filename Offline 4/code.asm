@@ -2,13 +2,19 @@
 .STACK 100H
 .DATA
 	i2 DW ?
-	j2 DW ?
-	k2 DW ?
+	x2 DW 10 DUP(?)
 	T1 DW ?
 	T2 DW ?
 	T3 DW ?
 	T4 DW ?
 	T5 DW ?
+	T6 DW ?
+	T7 DW ?
+	T8 DW ?
+	T9 DW ?
+	T10 DW ?
+	T11 DW ?
+	T12 DW ?
 .CODE
 ;------printing procedure----
 PRINT_ID PROC
@@ -71,4 +77,4 @@ PRINT_ID PROC
 	RET
 PRINT_ID ENDP
 
-`²¡¥ÌU
+`ŽPo¢U

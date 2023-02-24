@@ -1,38 +1,27 @@
+//int x[10];
 int main(){
  
-	int i,j,k;
+	int i, x[10];	
+	x[0]=-2;
+	x[1]=x[0];
+	i=x[0];	
+	println(i);
+	x[1]=x[0]++;
+	i=x[1];	
+	println(i);
+	i=x[0];
+	println(i);	
 	
-	i = 3;
-	j = 8;
-	k = 6;
+	i=i+0;
+	i=i-0;
+	i=i*1;
+	println(i);	
 	
+	if((i>0 && i<10) || (i<0 && i>-10))
+		i=100;
+	else 
+		i=200;
+	println(i);	
 	
-	if(i==3){
-		println(j);
-	}
-	
-	if(j<8){
-		println(i);
-	}
-	else{
-		println(k);
-	}
-	
-	if(k != 6){
-		println(k);
-	}
-	else if(j > 8){
-		println(j);
-	}
-	else if(i < 5){
-		println(i);
-	}
-	else{
-		k = 0;
-		println(k);
-	}
- 
- 
 	return 0;
 }
-

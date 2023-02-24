@@ -8,146 +8,188 @@ MAIN PROC
 	MOV BP , SP
 
 	SUB SP , 2
-	SUB SP , 2
-	SUB SP , 2
 
-	MOV AX, 3
-	MOV [BP - 2], AX
+	MOV AX, 2
+	NEG AX
+	MOV T1, AX
 
-	MOV AX, 8
+	MOV AX, T1
 	MOV [BP - 4], AX
 
-	MOV AX, 6
-	MOV [BP - 6], AX
+	MOV AX, [BP - 4]
+	MOV [BP - 4], AX
+
+	MOV AX, [BP - 4]
+	MOV [BP - 2], AX
+;--------print function called---------
 
 	MOV AX, [BP - 2]
-	CMP AX, 3
-	JE Label1
+	CALL PRINT_ID
+	MOV AX, [BP - 4]
+	INC AX
+	MOV [BP - 4], AX
 
-	MOV T1, 0
+	MOV AX, 
+	MOV [BP - 4], AX
+
+	MOV AX, [BP - 6]
+	MOV [BP - 2], AX
+;--------print function called---------
+
+	MOV AX, [BP - 2]
+	CALL PRINT_ID
+
+	MOV AX, [BP - 4]
+	MOV [BP - 2], AX
+;--------print function called---------
+
+	MOV AX, [BP - 2]
+	CALL PRINT_ID
+
+	MOV AX, [BP - 2]
+	ADD AX, 0
+	MOV T2, AX
+
+	MOV AX, T2
+	MOV [BP - 2], AX
+
+	MOV AX, [BP - 2]
+	SUB AX, 0
+	MOV T3, AX
+
+	MOV AX, T3
+	MOV [BP - 2], AX
+
+	MOV AX, [BP - 2]
+	MOV BX, 1
+	MUL BX
+	MOV T4, AX
+
+	MOV AX, T4
+	MOV [BP - 2], AX
+;--------print function called---------
+
+	MOV AX, [BP - 2]
+	CALL PRINT_ID
+
+	MOV AX, [BP - 2]
+	CMP AX, 0
+	JG Label1
+
+	MOV T5, 0
 	JMP Label2
 
 	Label1:
-	MOV T1, 1
-
-	Label2:
-;--------print function called---------
-
-	MOV AX, [BP - 4]
-	CALL PRINT_ID
-;--------if block---------
-	MOV AX, T1
-	CMP AX, 0
-	JE Label3
-	Label3:
-
-	MOV AX, [BP - 4]
-	CMP AX, 8
-	JL Label4
-
-	MOV T2, 0
-	JMP Label5
-
-	Label4:
-	MOV T2, 1
-
-	Label5:
-;--------print function called---------
-
-	MOV AX, [BP - 2]
-	CALL PRINT_ID
-;--------print function called---------
-
-	MOV AX, [BP - 6]
-	CALL PRINT_ID
-;--------if else block---------
-	MOV AX, T2
-	CMP AX, 0
-	JE Label6
-	JMP Label7
-	Label6:
-
-	Label7:
-
-	MOV AX, [BP - 6]
-	CMP AX, 6
-	JNE Label8
-
-	MOV T3, 0
-	JMP Label9
-
-	Label8:
-	MOV T3, 1
-
-	Label9:
-;--------print function called---------
-
-	MOV AX, [BP - 6]
-	CALL PRINT_ID
-
-	MOV AX, [BP - 4]
-	CMP AX, 8
-	JG Label10
-
-	MOV T4, 0
-	JMP Label11
-
-	Label10:
-	MOV T4, 1
-
-	Label11:
-;--------print function called---------
-
-	MOV AX, [BP - 4]
-	CALL PRINT_ID
-
-	MOV AX, [BP - 2]
-	CMP AX, 5
-	JL Label12
-
-	MOV T5, 0
-	JMP Label13
-
-	Label12:
 	MOV T5, 1
 
+	Label2:
+
+	MOV AX, [BP - 2]
+	CMP AX, 10
+	JL Label3
+
+	MOV T6, 0
+	JMP Label4
+
+	Label3:
+	MOV T6, 1
+
+	Label4:
+
+	MOV AX, T5
+	MOV BX, T6
+	CMP AX, 1
+	JNE Label5
+	CMP BX, 1
+	JNE Label5
+	MOV AX, 1
+	MOV T7, AX
+	JMP Label6
+
+	Label5:
+	MOV AX, 0
+	MOV T7, AX
+
+	Label6:
+
+	MOV AX, [BP - 2]
+	CMP AX, 0
+	JL Label7
+
+	MOV T8, 0
+	JMP Label8
+
+	Label7:
+	MOV T8, 1
+
+	Label8:
+
+	MOV AX, 10
+	NEG AX
+	MOV T9, AX
+
+	MOV AX, [BP - 2]
+	CMP AX, T9
+	JG Label9
+
+	MOV T10, 0
+	JMP Label10
+
+	Label9:
+	MOV T10, 1
+
+	Label10:
+
+	MOV AX, T8
+	MOV BX, T10
+	CMP AX, 1
+	JNE Label11
+	CMP BX, 1
+	JNE Label11
+	MOV AX, 1
+	MOV T11, AX
+	JMP Label12
+
+	Label11:
+	MOV AX, 0
+	MOV T11, AX
+
+	Label12:
+
+	MOV AX, T7
+	MOV BX, T11
+	CMP AX, 1
+	JE Label13
+	CMP BX, 1
+	JE Label13
+	MOV AX, 0
+	MOV T12, AX
+	JMP Label14
+
 	Label13:
+	MOV AX, 1
+	MOV T12, AX
+
+	Label14:
+
+	MOV AX, 100
+	MOV [BP - 2], AX
+
+	MOV AX, 200
+	MOV [BP - 2], AX
+;--------if else block---------
+	MOV AX, T12
+	CMP AX, 0
+	JE Label15
+	JMP Label16
+	Label15:
+
+	Label16:
 ;--------print function called---------
 
 	MOV AX, [BP - 2]
 	CALL PRINT_ID
-
-	MOV AX, 0
-	MOV [BP - 6], AX
-;--------print function called---------
-
-	MOV AX, [BP - 6]
-	CALL PRINT_ID
-;--------if else block---------
-	MOV AX, T5
-	CMP AX, 0
-	JE Label14
-	JMP Label15
-	Label14:
-
-	Label15:
-;--------if else block---------
-	MOV AX, T4
-	CMP AX, 0
-	JE Label16
-	JMP Label17
-	Label16:
-
-	Label17:
-;--------if else block---------
-	MOV AX, T3
-	CMP AX, 0
-	JE Label18
-	JMP Label19
-	Label18:
-
-	Label19:
-	ADD SP, 6
+	ADD SP, 22
 	POP BP
 
 
@@ -165,6 +207,13 @@ END MAIN
 	T3 DW ?
 	T4 DW ?
 	T5 DW ?
+	T6 DW ?
+	T7 DW ?
+	T8 DW ?
+	T9 DW ?
+	T10 DW ?
+	T11 DW ?
+	T12 DW ?
 .CODE
 ;------printing procedure----
 PRINT_ID PROC
